@@ -23,7 +23,7 @@ x_bus, y_bus = 1500, 550
 girl_x, girl_y = 440, 490
 boy_x, boy_y = -100, 490
 cloud1_x, cloud1_y = 200, 110
-cloud2_x, cloud2_y = 1000, 200
+cloud2_x, cloud2_y = 1000, 250
 
 
 def sunrun(x, y):
@@ -35,15 +35,11 @@ def sunrun(x, y):
     pg.draw.line(screen, (255, 255, 0), (int(x - 40), int(y + 40)), (int(x + 120), int(y + 40)), 5)
 
 
-def cloud(x, y):
-    radius = 20
-    pg.draw.ellipse(screen, (191, 239, 255), [x + radius * 0.1, y + radius * 0.1, x - radius, y + radius * 0.7])
-    pg.draw.ellipse(screen, (191, 239, 255), [x - radius * 0.1, y + radius * 0.1, x + radius, y + radius * 0.7])
-    pg.draw.ellipse(screen, (191, 239, 255), [x + radius * 0.1, y - radius * 0.1, x - radius, y - radius * 0.7])
-    pg.draw.ellipse(screen, (191, 239, 255), [x - radius * 0.1, y - radius * 0.1, x + radius, y - radius * 0.7])
-    pg.draw.ellipse(screen, (191, 239, 255), [x - radius * 0.5, y - radius * 0.4, x - radius * 1.5, y + radius * 0.4])
-    pg.draw.ellipse(screen, (191, 239, 255), [x + radius * 0.5, y - radius * 0.4, x + radius * 1.5, y + radius * 0.4])
-    pg.draw.ellipse(screen, (191, 239, 255), [x - radius * 0.5, y - radius * 0.5, x + radius * 0.5, y + radius * 0.5])
+def cloud(x, y,wid):
+    pg.draw.ellipse(screen, (191, 239, 255), [x-40,y-10,wid*1,wid*0.3],0)
+    pg.draw.ellipse(screen, (191, 239, 255), [x-30,y-20,wid*0.8,wid*0.25],0)
+    pg.draw.ellipse(screen, (191, 239, 255), [x-10,y+10,wid*0.5,wid*0.2],0)
+
 
 
 def busrun(x, y):
@@ -101,18 +97,15 @@ while done == False:
     # ----------------------------
 
     # ------- clouds motion -------
-    cloud1_x += 3
-    cloud2_x -= 2
 
-    cloud(cloud1_x,cloud1_y)
-    # x = cloud1_x
-    # y = cloud1_y
-    # radius = 5
-    # pg.draw.ellipse(screen, (191, 239, 255), [10, 10, -100, 70])
+    cloud1_x += 2
+    cloud2_x -= 3
     if cloud1_x > 1300:
         cloud1_x = -150
     if cloud2_x < -200:
         cloud2_x = 1500
+    cloud(cloud1_x, cloud1_y,150)
+    cloud(cloud2_x,cloud2_y,180)
 
 
     # ----------------------------
