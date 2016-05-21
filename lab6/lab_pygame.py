@@ -106,9 +106,7 @@ while done == False:
         cloud2_x = 1500
     cloud(cloud1_x, cloud1_y,150)
     cloud(cloud2_x,cloud2_y,180)
-
-
-    # ----------------------------
+ # ----------------------------
 
 
 
