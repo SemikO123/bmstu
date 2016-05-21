@@ -24,7 +24,6 @@ girl_x, girl_y = 440, 490
 boy_x, boy_y = -100, 490
 cloud1_x, cloud1_y = 200, 110
 cloud2_x, cloud2_y = 1000, 200
-hvjhhjb
 
 
 def sunrun(x, y):
