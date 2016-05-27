@@ -24,3 +24,4 @@ else
     else writeln(mn);
   end;
  end.
+ 
