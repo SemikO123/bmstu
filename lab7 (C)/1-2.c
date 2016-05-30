@@ -22,10 +22,12 @@ int e = scanf("%f %f",&x,&eps);
 		puts("\n");
 		printf("The value of the sum of series: %f\n", exp1);
 		printf("The exact exponential value: %f\n", exp(x));
-		if (exp1 > exp(x))
-			puts("exp > exp0");
-		else
-			puts("exp < exp0");
+		float diff = fabs(exp1 - exp(x));
+		printf("Difference %f\n",diff);
+//		if (exp1 > exp(x))
+//			puts("exp > exp0");
+//		else
+//			puts("exp < exp0");
 
 
 	}

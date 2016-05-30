@@ -13,7 +13,7 @@ int main(void)
 {
     int hour = 0;
     int min = 0;
-    int sec = 4000;
+    int sec = 5000;
     printf("%d Seconds\n",sec);
     time(&hour,&min,&sec);
     printf("%d Hours %d Minutes %d Seconds\n",hour,min,sec);

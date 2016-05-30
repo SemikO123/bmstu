@@ -57,7 +57,7 @@ Matr[1][2] := -6;
 Matr[2][0] := 7;
 Matr[2][1] := 8;
 Matr[2][2] := 9;
-out := ' 1 6 9';
+out := ' 1 5 9';
 TestMod(Matr,razm,out,2);
 end;
 
