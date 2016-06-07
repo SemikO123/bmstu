@@ -1,5 +1,22 @@
 # include  <stdio.h>
 
+int fibon(int x);
+
+int main()
+{
+    int is = 1;
+    int count = 0;
+    int x;
+    puts("Input sequence of numbers:");
+    while (scanf("%d",&x) == 1)
+    {
+        count += fibon(x);
+        //printf("%d %d\n",x,fibon(x));
+    }
+    printf("Amount of Fibonacci numbers: %d\n",count);
+
+}
+
 int fibon(int x)
 {
     int num1 = 0;
@@ -24,20 +41,5 @@ int fibon(int x)
     }
     else
         return 0;
-
-}
-
-int main()
-{
-    int is = 1;
-    int count = 0;
-    int x;
-    puts("Input sequence of numbers:");
-    while (scanf("%d",&x) == 1)
-    {
-        count += fibon(x);
-        //printf("%d %d\n",x,fibon(x));
-    }
-    printf("Amount of Fibonacci numbers: %d\n",count);
 
 }
