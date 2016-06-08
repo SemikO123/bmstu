@@ -4,7 +4,7 @@ int fibon(int x);
 
 int main()
 {
-    int is = 1;
+    //int is = 1;
     int count = 0;
     int x;
     puts("Input sequence of numbers:");
