@@ -1,0 +1,39 @@
+        -:    0:Source:2.c
+        -:    0:Graph:2.gcno
+        -:    0:Data:2.gcda
+        -:    0:Runs:6
+        -:    0:Programs:1
+        -:    1:#include <stdio.h>
+        -:    2:float average(FILE *file);
+        -:    3:float search(FILE *file, float avrg);
+        -:    4:
+        6:    5:int main(int argc, char** argv)
+        -:    6:{
+        -:    7:    FILE *file;
+        -:    8:    float avrg;
+        6:    9:    if (argc != 2)
+        -:   10:    {
+        1:   11:        fprintf(stderr, "Put the name of file as parameter of launch\n");
+        1:   12:        return -1;
+        -:   13:    }
+        5:   14:    file = fopen(argv[1],"r");
+        5:   15:    if (file == NULL)
+        -:   16:    {
+        1:   17:        fprintf(stderr,"File doesn't exist");
+        1:   18:        return -2;
+        -:   19:    }
+        4:   20:    avrg = average(file);
+        4:   21:    if (avrg != -1)
+        -:   22:    {
+        3:   23:        printf("Average is %.2f\n",avrg);
+        3:   24:        fclose(file);
+        3:   25:        file = fopen(argv[1],"r");
+        3:   26:        printf("Close to average number of sequence is %.2f",search(file,avrg));
+        3:   27:        fclose(file);
+        -:   28:        //return 0;
+        -:   29:    }
+        -:   30:    else
+        1:   31:        printf("No numbers in file");
+        -:   32:
+        -:   33:
+        -:   34:}

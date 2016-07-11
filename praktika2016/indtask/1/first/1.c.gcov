@@ -1,0 +1,63 @@
+        -:    0:Source:1.c
+        -:    0:Graph:1.gcno
+        -:    0:Data:1.gcda
+        -:    0:Runs:5
+        -:    0:Programs:1
+        -:    1:#include <stdio.h>
+        -:    2:
+        -:    3:int counter(int x, int y);
+        -:    4:int process(FILE *file, char* filename);
+        -:    5:
+        5:    6:int main(void)
+        -:    7:{
+        -:    8:    FILE *file;
+        5:    9:    char* filename = "out.txt";
+        5:   10:    file = fopen(filename,"w");
+        5:   11:    process(file,filename);
+        5:   12:    fclose(file);
+        -:   13:}
+        -:   14:
+        5:   15:int process(FILE *file, char* filename)
+        -:   16:{
+        -:   17:    int first,second,s;
+        5:   18:    puts("Input numbers:");
+        5:   19:    if (scanf("%d",&first) == 1)
+        -:   20:    {
+        4:   21:        s = 0;
+       17:   22:        while(scanf("%d",&second) == 1)
+        -:   23:        {
+        -:   24:            //printf("f %d s %d result %d\n",first,second,counter(first,second));
+        9:   25:            s = s + counter(first,second);
+        9:   26:            first = second;
+        -:   27:        }
+        4:   28:        fprintf(file,"Mark of sequence is changing %d times",s);
+        4:   29:        printf("Result in file 'out.txt'");
+        4:   30:        return 0;
+        -:   31:    }
+        -:   32:    else
+        -:   33:    {
+        1:   34:        fprintf(file,"No numbers");
+        1:   35:        printf("Result in file 'out.txt'");
+        1:   36:        return -1;
+        -:   37:    }
+        -:   38:}
+        -:   39:
+        9:   40:int counter(int x, int y)
+        -:   41:{
+        9:   42:    if (x*y < 0)
+        3:   43:        return 1;
+        -:   44:    else //x*y >= 0
+        -:   45:    {
+        6:   46:        if (x*y > 0)
+        4:   47:            return 0;
+        -:   48:        else
+        -:   49:        {
+        2:   50:            if ((x==0 && y<0)==1 || (y==0 && x<0)==1)
+        1:   51:                    return 1;
+        -:   52:            else
+        1:   53:                return 0;
+        -:   54:        }
+        -:   55:    }
+        -:   56:
+        -:   57:
+        -:   58:}
