@@ -1,39 +1,63 @@
         -:    0:Source:2.c
         -:    0:Graph:2.gcno
         -:    0:Data:2.gcda
-        -:    0:Runs:6
+        -:    0:Runs:8
         -:    0:Programs:1
         -:    1:#include <stdio.h>
-        -:    2:float average(FILE *file);
-        -:    3:float search(FILE *file, float avrg);
+        -:    2:#define errempty -3
+        -:    3:#define errnonum -4
         -:    4:
-        6:    5:int main(int argc, char** argv)
-        -:    6:{
-        -:    7:    FILE *file;
-        -:    8:    float avrg;
-        6:    9:    if (argc != 2)
-        -:   10:    {
-        1:   11:        fprintf(stderr, "Put the name of file as parameter of launch\n");
-        1:   12:        return -1;
-        -:   13:    }
-        5:   14:    file = fopen(argv[1],"r");
-        5:   15:    if (file == NULL)
-        -:   16:    {
-        1:   17:        fprintf(stderr,"File doesn't exist");
-        1:   18:        return -2;
-        -:   19:    }
-        4:   20:    avrg = average(file);
-        4:   21:    if (avrg != -1)
-        -:   22:    {
-        3:   23:        printf("Average is %.2f\n",avrg);
-        3:   24:        fclose(file);
-        3:   25:        file = fopen(argv[1],"r");
-        3:   26:        printf("Close to average number of sequence is %.2f",search(file,avrg));
-        3:   27:        fclose(file);
-        -:   28:        //return 0;
-        -:   29:    }
-        -:   30:    else
-        1:   31:        printf("No numbers in file");
-        -:   32:
-        -:   33:
-        -:   34:}
+        -:    5:float avrg;
+        -:    6:
+        -:    7:/**
+        -:    8: * @function average
+        -:    9: * This function finds the average of the sequence of numbers
+        -:   10: * @param[in] file file, from which we get the sequence
+        -:   11: * @param[in] avrg average value of the sequence
+        -:   12: * @return 0 or error
+        -:   13: */
+        -:   14:int average(FILE *file, float *avrg);
+        -:   15:
+        -:   16:/**
+        -:   17: * @function search
+        -:   18: * This function finds number of sequence which is closest to average
+        -:   19: * @param file file, from which we get the sequence
+        -:   20: * @param avrg average value of the sequence
+        -:   21: * @return the closest to average number of sequence
+        -:   22: */
+        -:   23:float search(FILE *file, float avrg);
+        -:   24:
+        8:   25:int main(int argc, char** argv)
+        -:   26:{
+        -:   27:    FILE *file;
+        8:   28:    if (argc != 2)   //Правильность подачи файла как параметра
+        -:   29:    {
+        1:   30:        fprintf(stderr, "Put the name of file as parameter of launch\n");
+        1:   31:        return -1;
+        -:   32:    }
+        7:   33:    file = fopen(argv[1],"r");
+        7:   34:    if (file == NULL)  //Существование заданного файла
+        -:   35:    {
+        1:   36:        fprintf(stderr,"File doesn't found");
+        1:   37:        return -1;
+        -:   38:    }
+        6:   39:    switch(average(file,&avrg))
+        -:   40:    {
+        -:   41:        case errempty:
+        1:   42:            fprintf(stderr,"File is empty");  //Файл пуст
+        1:   43:            fclose(file);
+        1:   44:            return -1;
+        -:   45:            break;
+        -:   46:        case errnonum:
+        1:   47:            fprintf(stderr,"Can't get numbers from file");   //Файл содержит не только числа
+        1:   48:            fclose(file);
+        1:   49:            return -1;
+        -:   50:            break;
+        -:   51:       case 0:
+        4:   52:            rewind(file);
+        4:   53:            fprintf(stdout,"Close to average number of sequence is %.2f",search(file,avrg));
+        4:   54:            fclose(file);
+        4:   55:            return 0;
+        -:   56:
+        -:   57:    }
+        -:   58:}

@@ -1,4 +1,5 @@
 2.c
-2.h
 func.c
 tests.c
+2pr.h
+err.h

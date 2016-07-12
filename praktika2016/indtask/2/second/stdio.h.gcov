@@ -1,7 +1,7 @@
         -:    0:Source:c:/mingw/include/stdio.h
         -:    0:Graph:2.gcno
         -:    0:Data:2.gcda
-        -:    0:Runs:6
+        -:    0:Runs:8
         -:    0:Programs:1
         -:    1:/*
         -:    2: * stdio.h
@@ -243,23 +243,23 @@
         -:  238:# endif
         -:  239:
         -:  240:__mingw_stdio_redirect__
-        2:  241:int fprintf (FILE *__stream, const char *__format, ...)
+        8:  241:int fprintf (FILE *__stream, const char *__format, ...)
         -:  242:{
         -:  243:  register int __retval;
-        2:  244:  __builtin_va_list __local_argv; __builtin_va_start( __local_argv, __format );
-        2:  245:  __retval = __mingw_vfprintf( __stream, __format, __local_argv );
-        2:  246:  __builtin_va_end( __local_argv );
-        2:  247:  return __retval;
+        8:  244:  __builtin_va_list __local_argv; __builtin_va_start( __local_argv, __format );
+        8:  245:  __retval = __mingw_vfprintf( __stream, __format, __local_argv );
+        8:  246:  __builtin_va_end( __local_argv );
+        8:  247:  return __retval;
         -:  248:}
         -:  249:
         -:  250:__mingw_stdio_redirect__
-        7:  251:int printf (const char *__format, ...)
+        -:  251:int printf (const char *__format, ...)
         -:  252:{
         -:  253:  register int __retval;
-        7:  254:  __builtin_va_list __local_argv; __builtin_va_start( __local_argv, __format );
-        7:  255:  __retval = __mingw_vprintf( __format, __local_argv );
-        7:  256:  __builtin_va_end( __local_argv );
-        7:  257:  return __retval;
+        -:  254:  __builtin_va_list __local_argv; __builtin_va_start( __local_argv, __format );
+        -:  255:  __retval = __mingw_vprintf( __format, __local_argv );
+        -:  256:  __builtin_va_end( __local_argv );
+        -:  257:  return __retval;
         -:  258:}
         -:  259:
         -:  260:__mingw_stdio_redirect__

@@ -1,49 +1,58 @@
 #include <stdio.h>
+#define errempty -3
+#define errnonum -4
+
+float avrg;
 
 /**
  * @function average
  * This function finds the average of the sequence of numbers
- * @param file
- * @return average of sequence
+ * @param[in] file file, from which we get the sequence
+ * @param[in] avrg average value of the sequence
+ * @return 0 or error
  */
-float average(FILE *file);
+int average(FILE *file, float *avrg);
 
 /**
  * @function search
  * This function finds number of sequence which is closest to average
- * @param file
- * @param avrg
+ * @param file file, from which we get the sequence
+ * @param avrg average value of the sequence
  * @return the closest to average number of sequence
  */
-
 float search(FILE *file, float avrg);
 
 int main(int argc, char** argv)
 {
     FILE *file;
-    float avrg;
-    if (argc != 2)
+    if (argc != 2)   //Правильность подачи файла как параметра
     {
         fprintf(stderr, "Put the name of file as parameter of launch\n");
         return -1;
     }
     file = fopen(argv[1],"r");
-    if (file == NULL)
+    if (file == NULL)  //Существование заданного файла
     {
-        fprintf(stderr,"File doesn't exist");
-        return -2;
+        fprintf(stderr,"File doesn't found");
+        return -1;
     }
-    avrg = average(file);
-    if (avrg != -1)
+    switch(average(file,&avrg))
     {
-        printf("Average is %.2f\n",avrg);
-        rewind(file);
-        printf("Close to average number of sequence is %.2f",search(file,avrg));
-        fclose(file);
-        //return 0;
+        case errempty:
+            fprintf(stderr,"File is empty");  //Файл пуст
+            fclose(file);
+            return -1;
+            break;
+        case errnonum:
+            fprintf(stderr,"Can't get numbers from file");   //Файл содержит не только числа
+            fclose(file);
+            return -1;
+            break;
+       case 0:
+            rewind(file);
+            fprintf(stdout,"Close to average number of sequence is %.2f",search(file,avrg));
+            fclose(file);
+            return 0;
+
     }
-    else
-        printf("No numbers in file");
-
-
 }

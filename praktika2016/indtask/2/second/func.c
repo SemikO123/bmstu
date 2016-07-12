@@ -1,32 +1,37 @@
 #include <stdio.h>
 #include <math.h>
-float num;
+#define errempty -3
+#define errnonum -4
 
-float average(FILE *file)
+float num;
+float avrg;
+
+int average(FILE *file,float *avrg)
 {
      int count;
      float sum;
-     if (fscanf(file, "%f", &num) == 1)
+     switch(fscanf(file, "%f", &num))
      {
-         sum = num;
-         count = 1;
-         while (fscanf(file, "%f", &num) == 1)
-         {
-             sum = sum + num;
-             count++;
-         }
-         return sum/count;
+        case -1 :
+            return errempty;
+        case 0 :
+            return errnonum;
      }
-     else
-         return -1;
-
+     sum = num;
+     count = 1;
+     while (fscanf(file, "%f", &num) == 1)
+     {
+         sum = sum + num;
+         count++;
+     }
+     *avrg = sum/count;
+     //printf("Average is %.2f\n",*avrg);
+     return 0;
 }
 
 float search(FILE *file, float avrg)
 {
     float minmod,uneedme;
-    if (fscanf(file, "%f", &num) == 1)
-    {
         minmod = fabs(num-avrg);
         uneedme = num;
         while (fscanf(file, "%f", &num) == 1)
@@ -36,8 +41,4 @@ float search(FILE *file, float avrg)
                 uneedme = num;
             }
         return uneedme;
-    }
-    else
-        return -1;
-
 }
