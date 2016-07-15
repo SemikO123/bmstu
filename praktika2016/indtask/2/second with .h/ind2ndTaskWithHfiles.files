@@ -2,3 +2,5 @@
 func.c
 2pr.h
 err.h
+function.c
+function.h

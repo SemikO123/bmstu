@@ -3,6 +3,9 @@
 #define P(A, B, C) (A+B+C)/2  // подсчет полупериметра
 
 int array[3];
+int initperem=5;
+int noninitperem;
+int array1[3]={1,2,3};
 
 int main(void)
 {

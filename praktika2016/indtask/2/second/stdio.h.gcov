@@ -1,7 +1,7 @@
         -:    0:Source:c:/mingw/include/stdio.h
         -:    0:Graph:2.gcno
         -:    0:Data:2.gcda
-        -:    0:Runs:8
+        -:    0:Runs:7
         -:    0:Programs:1
         -:    1:/*
         -:    2: * stdio.h
@@ -243,13 +243,13 @@
         -:  238:# endif
         -:  239:
         -:  240:__mingw_stdio_redirect__
-        8:  241:int fprintf (FILE *__stream, const char *__format, ...)
+        7:  241:int fprintf (FILE *__stream, const char *__format, ...)
         -:  242:{
         -:  243:  register int __retval;
-        8:  244:  __builtin_va_list __local_argv; __builtin_va_start( __local_argv, __format );
-        8:  245:  __retval = __mingw_vfprintf( __stream, __format, __local_argv );
-        8:  246:  __builtin_va_end( __local_argv );
-        8:  247:  return __retval;
+        7:  244:  __builtin_va_list __local_argv; __builtin_va_start( __local_argv, __format );
+        7:  245:  __retval = __mingw_vfprintf( __stream, __format, __local_argv );
+        7:  246:  __builtin_va_end( __local_argv );
+        7:  247:  return __retval;
         -:  248:}
         -:  249:
         -:  250:__mingw_stdio_redirect__

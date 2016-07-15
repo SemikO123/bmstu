@@ -6,7 +6,7 @@ int main(void)
 {
 	float a,b,c;
 	float area;
-	puts("Input a,b,c");
+	printf("Input a,b,c");
 	int counter = scanf("%f %f %f",&a,&b,&c);
 	// проверка ввода
 	if (counter == 3)
@@ -17,6 +17,6 @@ int main(void)
 	}
 	else
 	{
-		puts("Incorrect entry");
+		printf("Incorrect entry");
 	}
 }
