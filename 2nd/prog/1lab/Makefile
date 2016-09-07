@@ -12,14 +12,24 @@ endif
 1lab.exe : 1lab.o functions.o
 	$(CC) -o  1lab.exe 1lab.o functions.o
 
+tests.exe : tests.o functions.o
+	$(CC) -o tests.exe tests.o functions.o
+
 1lab.o : 1lab.c functions.h errors.h 
 	$(CC) $(FLAGS) -c 1lab.c
 
 functions.o : functions.c functions.h errors.h
 	$(CC) $(FLAGS) -c functions.c
 
+tests.o : tests.c functions.h errors.h
+	$(CC) $(FLAGS) -c tests.c
+
+
 st : 1lab.exe
 	./1lab.exe input.txt
+
+tests : tests.exe
+	./tests.exe in1.txt in2.txt in3.txt in4.txt
 
 rm : 
 	rm *.o *.exe
