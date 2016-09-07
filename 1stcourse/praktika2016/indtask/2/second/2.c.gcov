@@ -1,0 +1,100 @@
+        -:    0:Source:2.c
+        -:    0:Graph:2.gcno
+        -:    0:Data:2.gcda
+        -:    0:Runs:7
+        -:    0:Programs:1
+        -:    1:#include <stdio.h>
+        -:    2:#define NOPARAM -1
+        -:    3:#define NOFILE -2
+        -:    4:#define ERREMPTY -3
+        -:    5:#define ERRNONUM -4
+        -:    6:#define BADMARK -5
+        -:    7:#define OK 0
+        -:    8:
+        -:    9:
+        -:   10:/**
+        -:   11: * @function average
+        -:   12: * This function finds the average of the sequence of numbers
+        -:   13: * @param[in] file file, from which we get the sequence
+        -:   14: * @param[in] avrg average value of the sequence
+        -:   15: * @return 0 or error
+        -:   16: */
+        -:   17:int average(FILE *file, float *avrg);
+        -:   18:
+        -:   19:/**
+        -:   20: * @function search
+        -:   21: * This function finds number of sequence which is closest to average
+        -:   22: * @param[in] file file, from which we get the sequence
+        -:   23: * @param[in] avrg average value of the sequence
+        -:   24: * @param[in] *needs the closest to average number of sequence
+        -:   25: * @return 0 or error
+        -:   26: */
+        -:   27:int search(FILE *file, float avrg, float *needs);
+        -:   28:
+        7:   29:int main(int argc, char** argv)
+        -:   30:{
+        -:   31:    float avrg,needs;
+        -:   32:    int code;
+        -:   33:    FILE *file;
+        7:   34:    if (argc != 2)
+        -:   35:    {
+        -:   36:        //Правильность подачи файла как параметра
+        1:   37:        fprintf(stderr, "Put the name of file as parameter of launch\n");
+        1:   38:        code = NOPARAM;
+        -:   39:    }
+        -:   40:    else
+        -:   41:    {
+        6:   42:        file = fopen(argv[1],"r");
+        6:   43:        if (file == NULL)  //Существование заданного файла
+        -:   44:        {
+        1:   45:            fprintf(stderr,"File doesn't found");
+        1:   46:            code = NOFILE;
+        -:   47:        }
+        -:   48:        else
+        -:   49:        {
+        5:   50:            code = average(file,&avrg);
+        5:   51:            switch(code)
+        -:   52:            {
+        -:   53:                case ERREMPTY:
+        1:   54:                    fprintf(stderr,"File is empty");  //Файл пуст
+        1:   55:                    fclose(file);
+        1:   56:                    break;
+        -:   57:                case BADMARK:
+    #####:   58:                    fprintf(stderr,"Bad pointer");
+    #####:   59:                    fclose(file);
+    #####:   60:                    break;
+        -:   61:                case ERRNONUM:
+        1:   62:                    fprintf(stderr,"Can't get numbers from file");   //Файл содержит не только числа
+        1:   63:                    fclose(file);
+        1:   64:                    break;
+        -:   65:                case OK:
+        3:   66:                    rewind(file);
+        3:   67:                    code = search(file,avrg,&needs);
+        3:   68:                    switch(code)
+        -:   69:                    {
+        -:   70:                        case ERREMPTY:
+    #####:   71:                            fprintf(stderr,"File is empty");  //Файл пуст
+    #####:   72:                            fclose(file);
+    #####:   73:                            break;
+        -:   74:                        case BADMARK:
+    #####:   75:                            fprintf(stderr,"Bad pointer");
+    #####:   76:                            fclose(file);
+    #####:   77:                            break;
+        -:   78:                        case ERRNONUM:
+    #####:   79:                            fprintf(stderr,"Can't get numbers from file");   //Файл содержит не только числа
+    #####:   80:                            fclose(file);
+    #####:   81:                            break;
+        -:   82:                        case OK:
+        3:   83:                            fprintf(stdout,"Close to average number of sequence is %.2f",needs);
+        3:   84:                            fclose(file);
+        3:   85:                            break;
+        -:   86:                    }
+        3:   87:                    break;
+        -:   88:            }
+        -:   89:        }
+        -:   90:
+        -:   91:    }
+        7:   92:    return code;
+        -:   93:}
+        -:   94:
+        -:   95:
