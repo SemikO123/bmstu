@@ -19,8 +19,9 @@ int main(int argc, char** argv)
 	f2 = fopen(argv[2],"r");
 	f3 = fopen(argv[3],"r");
 	f4 = fopen(argv[4],"r");
+
 	
-	printf("FUNCTION 'READARR'\n");
+	printf("\nFUNCTION 'READARR'\n");
 	code = ReadArr(array, N, f1, &count);
 	result = 0;
 	printf("№  Obtained         Expected      Test\n");
@@ -62,20 +63,21 @@ int main(int argc, char** argv)
 	float arr1[6] = {-3.3,-2.2,-1.1,1.1,2.2,3.3};
 	Average(arr1,6,&avrg);
 	if (res == avrg)
-		printf("1.  %.2f              %.2f      PASSED\n",avrg,res);
+		printf("1.  %.2f              %.2f        PASSED\n",avrg,res);
 	else
-		printf("1.  %.2f              %.2f      FAILED\n",avrg,res);
+		printf("1.  %.2f              %.2f        FAILED\n",avrg,res);
 
 	res = 0.2;
 	float arr2[10] = {8,7,6,8,4,-6,-4,-5,-6,-10};
 	Average(arr2,10,&avrg);
-	if ((-1e-30 < res - avrg) & (res - avrg < 1e-30)) // КОСТЫЛЬ :((
-		printf("2.  %.2f              %.2f      PASSED\n",avrg,res);
+	//if ((-1e-30 < res - avrg) & (res - avrg < 1e-30)) // КОСТЫЛЬ :((
+	if (res == avrg)
+		printf("2.  %.2f              %.2f        PASSED\n",avrg,res);
 	else
-		printf("2.  %.2f              %.2f      FAILED\n",avrg,res);
+		printf("2.  %.2f              %.2f        FAILED\n",avrg,res);
 
 
-	float narr1[3];
+	float narr1[N];
 	int m=0;
 	printf("FUNCTION 'NEWARRGEN'\n");
 	printf("№  Obtained         Expected      Test\n");
@@ -91,9 +93,28 @@ int main(int argc, char** argv)
 			break;
 		}
 	if (flag == 1)
-		printf("1.                               PASSED\n");
+		printf("1.                                PASSED\n");
 	else
-		printf("1.                               FAILED\n");
+		printf("1.                                FAILED\n");
+
+	float narr2[N];
+	m=0;
+	float resull[5] = {8,7,6,8,4};
+	NewArrGen(arr2,narr2,10,&m,0.2);
+	flag = 0;
+	for (int i=0;i<m;i++)
+		if (narr2[i] == resull[i])
+			flag = 1;
+		else
+		{
+			flag = 0;
+			break;
+		}
+	if (flag == 1)
+		printf("2.                                PASSED\n");
+	else
+		printf("2.                                FAILED\n");
+
 
 
 }

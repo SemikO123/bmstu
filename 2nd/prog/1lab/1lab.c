@@ -4,6 +4,7 @@
 
 int main(int argc, char** argv)
 {
+	printf("\n");
 	float avrg;
 	float array[N];
 	float newarray[N];
@@ -35,12 +36,12 @@ int main(int argc, char** argv)
 					printf("File contains other numbers which weren't included in array\n");
 				case OK:
 					Average(array,count, &avrg);
-					printf("Average is %f \n",avrg);
+					printf("Average is %.3f \n",avrg);
 					fclose(file);
 					file = fopen("out.txt","w");
-					NewArrGen(array,newarray,count,&m,avrg);
+					NewArrGen(array, newarray,count,&m,avrg);
 					for (i=0;i<m;i++)
-						fprintf(file, "%f \n", newarray[i]);
+						fprintf(file, "%.3f \n", newarray[i]);
 					printf("Output in file out.txt\n");
 					fclose(file);
 					break;
