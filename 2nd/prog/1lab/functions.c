@@ -19,11 +19,8 @@ int ReadArr(float arr[],int n, FILE *file, int *count)
 		case 1:
 			priznak = OK;
 			*count += 1;
-			while (*count < n) 
-				if (fscanf(file, "%f",&arr[*count]) == 1) 
-					*count += 1;
-				else
-					break;
+			while ((*count < n) && (fscanf(file, "%f",&arr[*count]) == 1))
+				*count += 1;
 			if (fscanf(file, "%f", &num) == 1)
 				priznak = EXCESS;
 	//printf("N=%d\n",*count);
@@ -41,16 +38,21 @@ void Average(const float arr[],int n, float *avrg)
 
 }
 
-/* Получает исходный массив, новый массив(пустой), количество элементов в исходном
-массиве, количество элементов в новом массиве, значение среднего арифметического */
-
-void NewArrGen(const float arr[], float newarr[], int n, int *j, float avrg)
+/* Получает исходный массив, файловая переменная, количество элементов в исходном 
+массиве, значение среднего арифметического */
+void NewArrGen(const float arr[], FILE *file, int n, float avrg)
 {
-	int i;
-	for (i=0;i<n;i++)
+	int j=0;
+	float newarr[N];
+	for (int i=0;i<n;i++)
 		if (arr[i] > avrg)
 		{
-			newarr[*j] = arr[i];
-			*j+=1;
+			newarr[j] = arr[i];
+			// for (int k=0;k<n;k++)
+			// 	printf("%f ",newarr[k]);
+			fprintf(file, "%.3f \n", newarr[j]);
+			j+=1;
+
 		}
 }
+

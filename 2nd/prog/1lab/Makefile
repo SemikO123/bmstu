@@ -28,6 +28,12 @@ tests.o : tests.c functions.h errors.h
 st : 1lab.exe
 	./1lab.exe input.txt
 
+stnofile : 1lab.exe
+	./1lab.exe 
+
+stbadname : 1lab.exe
+	./1lab.exe name.txt
+
 tests : tests.exe
 	./tests.exe in1.txt in2.txt in3.txt in4.txt
 

@@ -7,10 +7,7 @@ int main(int argc, char** argv)
 	printf("\n");
 	float avrg;
 	float array[N];
-	float newarray[N];
 	int count = 0;
-	int i;
-	int m = 0;
 	FILE *file;
 	if (argc != 2)
 	{
@@ -39,9 +36,7 @@ int main(int argc, char** argv)
 					printf("Average is %.3f \n",avrg);
 					fclose(file);
 					file = fopen("out.txt","w");
-					NewArrGen(array, newarray,count,&m,avrg);
-					for (i=0;i<m;i++)
-						fprintf(file, "%.3f \n", newarray[i]);
+					NewArrGen(array, file, count, avrg);
 					printf("Output in file out.txt\n");
 					fclose(file);
 					break;

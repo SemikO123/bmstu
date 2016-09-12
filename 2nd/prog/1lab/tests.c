@@ -51,13 +51,16 @@ int main(int argc, char** argv)
 	else
 		printf("4.    %d             %d           FAILED\n",code,result);
 
+	printf("*Errors: \n 0 - Work, \n-1 - Excess data, \n-3 - Empty input, \n-4 - Bad input\n");
 	fclose(f1);
 	fclose(f2);
 	fclose(f3);
 	fclose(f4);
 
+/* $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ */
+
 	float avrg;
-	printf("FUNCTION 'AVERAGE'\n");
+	printf("\nFUNCTION 'AVERAGE'\n");
 	printf("№  Obtained         Expected      Test\n");
 	float res = 0;
 	float arr1[6] = {-3.3,-2.2,-1.1,1.1,2.2,3.3};
@@ -67,8 +70,8 @@ int main(int argc, char** argv)
 	else
 		printf("1.  %.2f              %.2f        FAILED\n",avrg,res);
 
-	res = 0.2;
-	float arr2[10] = {8,7,6,8,4,-6,-4,-5,-6,-10};
+	res = 0.1;
+	float arr2[10] = {8,7,6,8,4,-6,-4,-5,-6,-11};
 	Average(arr2,10,&avrg);
 	//if ((-1e-30 < res - avrg) & (res - avrg < 1e-30)) // КОСТЫЛЬ :((
 	if (res == avrg)
@@ -76,15 +79,21 @@ int main(int argc, char** argv)
 	else
 		printf("2.  %.2f              %.2f        FAILED\n",avrg,res);
 
+/* $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ */
 
-	float narr1[N];
-	int m=0;
-	printf("FUNCTION 'NEWARRGEN'\n");
+	printf("\nFUNCTION 'NEWARRGEN'\n");
 	printf("№  Obtained         Expected      Test\n");
+	float narr1[N];
 	float resul[3] = {1.1,2.2,3.3};
-	NewArrGen(arr1,narr1,6,&m,0);
+	FILE *f11;
+	f11 = fopen("test1.txt","w");
+	NewArrGen(arr1,f11,6,0);
+	count = 0;
+	fclose(f11);
+	f11 = fopen("test1.txt","r");
+	ReadArr(narr1, N, f11, &count);
 	int flag = 0;
-	for (int i=0;i<m;i++)
+	for (int i=0;i<count;i++)
 		if (narr1[i] == resul[i])
 			flag = 1;
 		else
@@ -96,13 +105,20 @@ int main(int argc, char** argv)
 		printf("1.                                PASSED\n");
 	else
 		printf("1.                                FAILED\n");
+	fclose(f11);
+
 
 	float narr2[N];
-	m=0;
 	float resull[5] = {8,7,6,8,4};
-	NewArrGen(arr2,narr2,10,&m,0.2);
+	FILE *f12;
+	f12 = fopen("test2.txt","w");
+	NewArrGen(arr2,f12,10,0.1);
+	count = 0;
+	fclose(f12);
+	f12 = fopen("test2.txt","r");
+	ReadArr(narr2, N, f12, &count);
 	flag = 0;
-	for (int i=0;i<m;i++)
+	for (int i=0;i<count;i++)
 		if (narr2[i] == resull[i])
 			flag = 1;
 		else
@@ -114,6 +130,7 @@ int main(int argc, char** argv)
 		printf("2.                                PASSED\n");
 	else
 		printf("2.                                FAILED\n");
+	fclose(f12);
 
 
 
