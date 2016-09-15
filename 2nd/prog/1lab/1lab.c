@@ -2,6 +2,7 @@
 #include "errors.h"
 #include "functions.h"
 
+
 int main(int argc, char** argv)
 {
 	printf("\n");
@@ -9,9 +10,9 @@ int main(int argc, char** argv)
 	float array[N];
 	int count = 0;
 	FILE *file;
-	if (argc != 2)
+	if (argc != 3)
 	{
-		printf("Put the name of file\n");
+		printf("Put name of i/o files\n");
 	}
 	else
 	{
@@ -24,26 +25,32 @@ int main(int argc, char** argv)
 				case EMPTYFILE:
 					printf("File is empty\n");
 					fclose(file);
-					break;
+					return EMPTYFILE;
+					// break;
 				case BADFILE:
 					printf("Can't get numbers from file\n");
 					fclose(file);
-					break;
+					return BADFILE;
+					// break;
 				case EXCESS:
 					printf("File contains other numbers which weren't included in array\n");
 				case OK:
 					Average(array,count, &avrg);
 					printf("Average is %.3f \n",avrg);
 					fclose(file);
-					file = fopen("out.txt","w");
-					NewArrGen(array, file, count, avrg);
+					file = fopen(argv[2],"w");
+					float newarr[N];
+					int new_arr_count = 0;
+					NewArrGen(array, count, avrg, newarr, &new_arr_count);
+					ArrToFile(newarr, &new_arr_count, file);
 					printf("Output in file out.txt\n");
 					fclose(file);
-					break;
+					return OK;
+					// break;
 
 
 			}
 
 	}
-	return 0;
+	
 }

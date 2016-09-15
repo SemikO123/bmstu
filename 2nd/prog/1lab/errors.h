@@ -2,6 +2,7 @@
 #define ERRORS_H
 
 #define N 10
+#define NT 10
 
 #define EMPTYFILE -3
 #define BADFILE -4

@@ -18,3 +18,6 @@ endif
 st : 1lab.exe
 	./1lab.exe
 
+rm : 
+	rm *.o *.exe
+

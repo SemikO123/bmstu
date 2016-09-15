@@ -1,9 +1,18 @@
 #include <stdio.h>
+#include <assert.h>
 #include "errors.h"
 #include "functions.h"
 
-// Получает массив, размер массива, указатель фактическое количество элементов
-// Возвращает код ошибки обработки файла или признак об избыточности чисел в нем
+
+/**
+ * @function ReadArr
+ * This function reads numbers from file and puts it to array
+ * @param[in] arr array of numbers from file
+ * @param[in] n max count of numbers
+ * @param[in] file file with numbers 
+ * @param[out] count real count of numbers in array
+ * @return priznak error code 
+ */
 int ReadArr(float arr[],int n, FILE *file, int *count)
 {
 	int priznak;
@@ -21,13 +30,22 @@ int ReadArr(float arr[],int n, FILE *file, int *count)
 			*count += 1;
 			while ((*count < n) && (fscanf(file, "%f",&arr[*count]) == 1))
 				*count += 1;
-			if (fscanf(file, "%f", &num) == 1)
+			if ((fscanf(file, "%f", &num) == 1) && (*count == n))
 				priznak = EXCESS;
+
+			
 	//printf("N=%d\n",*count);
 	}
 	return priznak;
 }
 
+/**
+* @function Average
+* This function counts average of numbers in array
+* @param[in] arr array with numbers
+* @param[in] n count of numbers in array
+* @param[out] avrg average of numbers
+*/
 void Average(const float arr[],int n, float *avrg)
 {
 	int i;
@@ -38,21 +56,38 @@ void Average(const float arr[],int n, float *avrg)
 
 }
 
-/* Получает исходный массив, файловая переменная, количество элементов в исходном 
-массиве, значение среднего арифметического */
-void NewArrGen(const float arr[], FILE *file, int n, float avrg)
+/**
+* function NewArrGen
+* This function generates new array with numbers from 1st array
+* @param[in] arr array with numbers
+* @param[in] n count of numbers in array
+* @param[in] avrg average of numbers
+* @param[out] newarr new array with numbers from 1st array
+* @param[out] j count of numbers in new array
+*/
+void NewArrGen(const float *arr,  int n, float avrg, float *newarr, int *j)
 {
-	int j=0;
-	float newarr[N];
 	for (int i=0;i<n;i++)
 		if (arr[i] > avrg)
 		{
-			newarr[j] = arr[i];
-			// for (int k=0;k<n;k++)
-			// 	printf("%f ",newarr[k]);
-			fprintf(file, "%.3f \n", newarr[j]);
-			j+=1;
+			newarr[*j] = arr[i];
+			*j+=1;
 
 		}
+}
+
+/**
+* @function ArrToFile
+* This function puts numbers from new array to new file
+* @param[in] newarr array with numbers
+* @param[in] j count of numbers in array
+* @param[out] file file with numbers
+*/
+void ArrToFile(const float *newarr, int *j, FILE *file)
+{
+	for (int i=0; i<*j; i++)
+	{
+		fprintf(file, "%.3f \n",newarr[i]);
+	}
 }
 
