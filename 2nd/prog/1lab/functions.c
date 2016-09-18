@@ -32,6 +32,7 @@ int ReadArr(float arr[],int n, FILE *file, int *count)
 				*count += 1;
 			if ((fscanf(file, "%f", &num) == 1) && (*count == n))
 				priznak = EXCESS;
+			assert(*count != 0);
 
 			
 	//printf("N=%d\n",*count);

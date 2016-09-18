@@ -9,58 +9,80 @@
  */
 
 #include <stdio.h>
-#define EMPTY -2
-#define BADINPUT -3
-#define OK 0
+#include <stdlib.h>
+#include "functions.h"
+#include "errors.h"
 
-int LenOfArray(FILE *file, int *count);
 
 int main(int argc, char **argv)
 {
+	int out_error;
 	FILE *file;
 	if (argc != 2)
-		printf("Put the name of file as parameter of launch\n");
+	{
+		printf("\nPut the name of file as parameter of launch\n");
+		out_error = NOFILENAME;
+	}
 	else
 	{
 		file = fopen(argv[1],"r");
 		if (file == NULL)
-			printf("File doesn't found\n");
+		{
+			printf("\nFile doesn't found\n");
+			out_error = NOFILE;
+		}
 		else
-			int count;
-			switch(LenOfArray(file,&count))
+		{
+			int count_of_numbers=0;
+			switch(len_of_array(file,&count_of_numbers))
 			{
 				case EMPTY:
-					printf("File is empty\n");
+					printf("\nFile is empty\n");
 					fclose(file);
+					out_error = EMPTY;
 					break;
 				case BADINPUT:
-					printf("Can't get numbers from file\n");
+					printf("\nCan't get numbers from file\n");
 					fclose(file);
+					out_error = BADINPUT;
 					break;
 				case OK:
-					printf("Count of numbers=%d",count);
+					printf("\nCount of numbers = %d\n",count_of_numbers);
+					int *array = array_generate(&count_of_numbers);
+					if (array == NULL)
+					{
+						printf("MEMORY PROBLEM");
+						out_error = MEMORYPROBLEM;
+						free(array);
+					}
+					else
+					{
+						rewind(file);
+						array_filling(array, array + count_of_numbers, file);
+						fclose(file);
+						int min;
+						switch(counting(array,array+count_of_numbers,&min))
+						{
+							case ONEELEMENT:
+								printf("Array has only one element\n");
+								free(array);
+								out_error = ONEELEMENT;
+								break;
+							case OK:
+								printf("Minimum of x[0]*x[1], x[1]*x[2]... = %d\n",min);
+								out_error = OK;
+								free(array);
+						}
+
+
+					}
+									
 			}
+		}
 
 	}
-	return 0;
+	//printf("ERROR = %d\n",out_error);
+	return out_error;
 }
 
-int LenOfArray(FILE *file, int *count)
-{
-	int num;
-	switch(fscanf(file, "%f",&num))
-	{
-		case -1:
-			err = EMPTY;
-			break;
-		case 0:
-			err = BADINPUT;
-			break;
-		case 1:
-			err = OK;
-			*count += 1;
-			while (fscanf(file, "%f", &num) == 1)
-				*count += 1;
-	}
-	return err;
-}
+
