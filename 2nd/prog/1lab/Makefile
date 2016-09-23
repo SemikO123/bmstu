@@ -37,6 +37,9 @@ stbadname : 1lab.exe
 tests : tests.exe
 	./tests.exe 
 
+stfunc : functest.sh
+	bash functest.sh
+
 rm : 
 	rm *.o *.exe
 

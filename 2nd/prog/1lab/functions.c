@@ -5,7 +5,7 @@
 
 
 /**
- * @function ReadArr
+ * @function read_array
  * This function reads numbers from file and puts it to array
  * @param[in] arr array of numbers from file
  * @param[in] n max count of numbers
@@ -13,7 +13,7 @@
  * @param[out] count real count of numbers in array
  * @return priznak error code 
  */
-int ReadArr(float arr[],int n, FILE *file, int *count)
+int read_array(float arr[],int n, FILE *file, int *count)
 {
 	int priznak;
 	float num;
@@ -32,7 +32,7 @@ int ReadArr(float arr[],int n, FILE *file, int *count)
 				*count += 1;
 			if ((fscanf(file, "%f", &num) == 1) && (*count == n))
 				priznak = EXCESS;
-			assert(*count != 0);
+			assert(*count > 0);
 
 			
 	//printf("N=%d\n",*count);
@@ -41,13 +41,13 @@ int ReadArr(float arr[],int n, FILE *file, int *count)
 }
 
 /**
-* @function Average
+* @function count_average
 * This function counts average of numbers in array
 * @param[in] arr array with numbers
 * @param[in] n count of numbers in array
 * @param[out] avrg average of numbers
 */
-void Average(const float arr[],int n, float *avrg)
+void count_average(const float arr[],int n, float *avrg)
 {
 	int i;
 	float sum=0;
@@ -58,7 +58,7 @@ void Average(const float arr[],int n, float *avrg)
 }
 
 /**
-* function NewArrGen
+* function new_array_generate
 * This function generates new array with numbers from 1st array
 * @param[in] arr array with numbers
 * @param[in] n count of numbers in array
@@ -66,7 +66,7 @@ void Average(const float arr[],int n, float *avrg)
 * @param[out] newarr new array with numbers from 1st array
 * @param[out] j count of numbers in new array
 */
-void NewArrGen(const float *arr,  int n, float avrg, float *newarr, int *j)
+void new_array_generate(const float *arr,  int n, float avrg, float *newarr, int *j)
 {
 	for (int i=0;i<n;i++)
 		if (arr[i] > avrg)
@@ -78,13 +78,13 @@ void NewArrGen(const float *arr,  int n, float avrg, float *newarr, int *j)
 }
 
 /**
-* @function ArrToFile
+* @function array_to_file
 * This function puts numbers from new array to new file
 * @param[in] newarr array with numbers
 * @param[in] j count of numbers in array
 * @param[out] file file with numbers
 */
-void ArrToFile(const float *newarr, int *j, FILE *file)
+void array_to_file(const float *newarr, int *j, FILE *file)
 {
 	for (int i=0; i<*j; i++)
 	{

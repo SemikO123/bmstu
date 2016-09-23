@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 		else
 		{
 			file2 = fopen(argv[2],"w");
-			switch(ReadArr(array, N, file, &count))
+			switch(read_array(array, N, file, &count))
 			{
 				case EMPTYFILE:
 					printf("File is empty\n");
@@ -43,13 +43,13 @@ int main(int argc, char** argv)
 					printf("File contains other numbers which weren't included in array\n");
 					fprintf(file2,"File contains other numbers which weren't included in array\n");
 				case OK:
-					Average(array,count, &avrg);
-					printf("Average is %.3f \n",avrg);
+					count_average(array,count, &avrg);
+					printf("count_average is %.3f \n",avrg);
 					fclose(file);
 					float newarr[N];
 					int new_arr_count = 0;
-					NewArrGen(array, count, avrg, newarr, &new_arr_count);
-					ArrToFile(newarr, &new_arr_count, file2);
+					new_array_generate(array, count, avrg, newarr, &new_arr_count);
+					array_to_file(newarr, &new_arr_count, file2);
 					printf("Look in output file\n");
 					fclose(file2);
 					return OK;
