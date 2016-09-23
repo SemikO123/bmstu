@@ -13,11 +13,11 @@
  * @param[out] count real count of numbers in array
  * @return priznak error code 
  */
-int read_array(float arr[],int n, FILE *file, int *count)
+int read_array(float arr[], int n, FILE *file, int *count)
 {
 	int priznak;
 	float num;
-	switch(fscanf(file,"%f",&arr[*count]))
+	switch (fscanf(file, "%f", &arr[*count]))
 	{
 		case -1:
 			priznak = EMPTYFILE;
@@ -28,7 +28,7 @@ int read_array(float arr[],int n, FILE *file, int *count)
 		case 1:
 			priznak = OK;
 			*count += 1;
-			while ((*count < n) && (fscanf(file, "%f",&arr[*count]) == 1))
+			while ((*count < n) && (fscanf(file, "%f", &arr[*count]) == 1))
 				*count += 1;
 			if ((fscanf(file, "%f", &num) == 1) && (*count == n))
 				priznak = EXCESS;
@@ -47,14 +47,13 @@ int read_array(float arr[],int n, FILE *file, int *count)
 * @param[in] n count of numbers in array
 * @param[out] avrg average of numbers
 */
-void count_average(const float arr[],int n, float *avrg)
+void count_average(const float arr[], int n, float *avrg)
 {
 	int i;
-	float sum=0;
-	for (i=0; i<n; i++)
+	float sum = 0;
+	for (i = 0; i < n; i++)
 		sum += arr[i];
-	*avrg = sum/n;
-
+	*avrg = sum / n;
 }
 
 /**
@@ -66,14 +65,13 @@ void count_average(const float arr[],int n, float *avrg)
 * @param[out] newarr new array with numbers from 1st array
 * @param[out] j count of numbers in new array
 */
-void new_array_generate(const float *arr,  int n, float avrg, float *newarr, int *j)
+void new_array_generate(const float *arr, int n, float avrg, float *newarr, int *j)
 {
-	for (int i=0;i<n;i++)
+	for (int i = 0;i < n;i++)
 		if (arr[i] > avrg)
 		{
 			newarr[*j] = arr[i];
-			*j+=1;
-
+			*j += 1;
 		}
 }
 
@@ -86,9 +84,9 @@ void new_array_generate(const float *arr,  int n, float avrg, float *newarr, int
 */
 void array_to_file(const float *newarr, int *j, FILE *file)
 {
-	for (int i=0; i<*j; i++)
+	for (int i = 0; i < *j; i++)
 	{
-		fprintf(file, "%.3f \n",newarr[i]);
+		fprintf(file, "%.3f \n", newarr[i]);
 	}
 }
 

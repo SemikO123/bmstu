@@ -3,7 +3,7 @@
 #include "functions.h"
 
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	printf("\n");
 	float avrg;
@@ -17,34 +17,34 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		file = fopen(argv[1],"r");
+		file = fopen(argv[1], "r");
 		if (file == NULL) 
 			printf("File doesn't found\n");
 		else
 		{
-			file2 = fopen(argv[2],"w");
-			switch(read_array(array, N, file, &count))
+			file2 = fopen(argv[2], "w");
+			switch (read_array(array, N, file, &count))
 			{
 				case EMPTYFILE:
 					printf("File is empty\n");
-					fprintf(file2,"File is empty\n");
+					fprintf(file2, "File is empty\n");
 					fclose(file);
 					fclose(file2);
 					return EMPTYFILE;
 					// break;
 				case BADFILE:
 					printf("Can't get numbers from file\n");
-					fprintf(file2,"Can't get numbers from file\n");
+					fprintf(file2, "Can't get numbers from file\n");
 					fclose(file);
 					fclose(file2);
 					return BADFILE;
 					// break;
 				case EXCESS:
 					printf("File contains other numbers which weren't included in array\n");
-					fprintf(file2,"File contains other numbers which weren't included in array\n");
+					fprintf(file2, "File contains other numbers which weren't included in array\n");
 				case OK:
-					count_average(array,count, &avrg);
-					printf("count_average is %.3f \n",avrg);
+					count_average(array, count, &avrg);
+					printf("count_average is %.3f \n", avrg);
 					fclose(file);
 					float newarr[N];
 					int new_arr_count = 0;
@@ -54,10 +54,7 @@ int main(int argc, char** argv)
 					fclose(file2);
 					return OK;
 					// break;
-
-
 			}
 		}
-	}
-	
+	}	
 }
