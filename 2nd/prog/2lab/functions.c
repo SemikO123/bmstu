@@ -7,7 +7,7 @@ int len_of_array(FILE *file, int *count)
 {
 	int num;
 	int error;
-	switch(fscanf(file, "%d",&num))
+	switch(fscanf(file, "%d", &num))
 	{
 		case -1:
 			error = EMPTY;
@@ -44,7 +44,7 @@ int array_filling(int *begin, int *end, FILE *file)
 	}
 	else
 		for (int *current = begin; current < end; current++)
-			fscanf(file,"%d",&*current);
+			fscanf(file,"%d", &*current);
 
 		return OK;
 }

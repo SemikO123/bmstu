@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		file = fopen(argv[1],"r");
+		file = fopen(argv[1], "r");
 		if (file == NULL)
 		{
 			printf("\nFile doesn't found\n");
@@ -33,8 +33,8 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			int count_of_numbers=0;
-			switch(len_of_array(file,&count_of_numbers))
+			int count_of_numbers = 0;
+			switch (len_of_array(file, &count_of_numbers))
 			{
 				case EMPTY:
 					printf("\nFile is empty\n");
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 					out_error = BADINPUT;
 					break;
 				case OK:
-					printf("\nCount of numbers = %d\n",count_of_numbers);
+					printf("\nCount of numbers = %d\n", count_of_numbers);
 					int *array = array_generate(&count_of_numbers);
 					if (array == NULL)
 					{
@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 						array_filling(array, array + count_of_numbers, file);
 						fclose(file);
 						int min;
-						switch(counting(array,array+count_of_numbers,&min))
+						switch (counting(array, array + count_of_numbers, &min))
 						{
 							case ONEELEMENT:
 								printf("Array has only one element\n");
@@ -69,17 +69,13 @@ int main(int argc, char **argv)
 								out_error = ONEELEMENT;
 								break;
 							case OK:
-								printf("Minimum of x[0]*x[1], x[1]*x[2]... = %d\n",min);
+								printf("Minimum of x[0]*x[1], x[1]*x[2]... = %d\n", min);
 								out_error = OK;
 								free(array);
 						}
-
-
-					}
-									
+					}						
 			}
 		}
-
 	}
 	//printf("ERROR = %d\n",out_error);
 	return out_error;
