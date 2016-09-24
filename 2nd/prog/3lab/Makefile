@@ -16,4 +16,7 @@ endif
 	$(CC) $(FLAGS) -c 3lab.c
 
 st : 3lab.exe
-	./3lab.exe input.txt output.txt
+	./3lab.exe input.txt output.txt 6
+
+vlgr : 3lab.exe
+	valgrind --tool=memcheck ./3lab.exe input.txt output.txt 6
