@@ -9,25 +9,20 @@ ifeq ($(mode), release)
 	FLAGS += -DNDEBUG -g0
 endif
 
-1lab.exe : 1lab.o 
-	$(CC) -o  1lab.exe 1lab.o 
+qwe.exe : qwe.o func.o
+	$(CC) -o  qwe.exe qwe.o func.o
 
-1lab.o : 1lab.c
-	$(CC) $(FLAGS) -c 1lab.c
+qwe.o : qwe.c func.h
+	$(CC) $(FLAGS) -c qwe.c func.h
 
-sst : 1lab.exe
-	./1lab.exe
+func.o : func.c func.h
+	$(CC) $(FLAGS) -c func.c func.h
+
+st : qwe.exe
+	./qwe.exe
 
 rm : 
 	rm *.o *.exe
 
 
-qwe.exe : qwe.o 
-	$(CC) -o  qwe.exe qwe.o 
-
-qwe.o : qwe.c
-	$(CC) $(FLAGS) -c qwe.c
-
-st : qwe.exe
-	./qwe.exe
 
