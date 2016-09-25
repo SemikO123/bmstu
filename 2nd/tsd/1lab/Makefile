@@ -15,9 +15,19 @@ endif
 1lab.o : 1lab.c
 	$(CC) $(FLAGS) -c 1lab.c
 
-st : 1lab.exe
+sst : 1lab.exe
 	./1lab.exe
 
 rm : 
 	rm *.o *.exe
+
+
+qwe.exe : qwe.o 
+	$(CC) -o  qwe.exe qwe.o 
+
+qwe.o : qwe.c
+	$(CC) $(FLAGS) -c qwe.c
+
+st : qwe.exe
+	./qwe.exe
 
