@@ -8,5 +8,6 @@ int count_of_digits(int number);
 void counting(const int *array_int, int int_len, const int *array_float, int float_len, int *result);
 void normalize(int *array, int *result, int *exponent, int count);
 void print_float(char znak, int *mantissa, int exponent, int len_mantissa);
+void rounding(int *array);
 
 #endif // FUNC_H

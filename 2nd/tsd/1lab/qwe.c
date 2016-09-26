@@ -7,7 +7,7 @@ int main(void)
 {
 	char znak_int;
 	char znak_float;
-	char integer_num[30];
+	char integer_num[32] = "";
 	char float_num[40] = "";
 	int integer_number[30] = {0};
 	int float_number[30] = {0};
@@ -23,7 +23,6 @@ int main(void)
 
 	printf("Вещественное число (например +11.2E-5 .112 112.E1): ");
 	input_numbers(float_num,&znak_float);
-	//printf("float = %s\n",float_num);
 	int count_of_dig_float = 0;
 	float_array_generate(float_num, float_number, &exponent, &count_of_dig_float);
 
@@ -34,10 +33,7 @@ int main(void)
 		for (int i = 0; i < count_of_dig_float ;i++)
 			printf("%d",float_number[i]);
 		printf("\nСтепень = %d\n",exponent);
-		// for (int i = 0; i < count_of_dig_float; i++)
-		// 	printf("array_int[%d]=%d\n",i,float_number[i]);
-
-		//printf("IntLen = %d, FloatLen = %d\n",count_of_dig_int, count_of_dig_float);
+		
 		int result[60] = {0};
 		if (count_of_dig_int > count_of_dig_float)
 			counting(integer_number, count_of_dig_int, float_number, count_of_dig_float, result);
@@ -56,13 +52,16 @@ int main(void)
 		// printf("E%d",exponent);
 		// printf("\n");
 
-		int result_with_pointer[62] = {0};
+		int result_with_pointer[30] = {0};
 		normalize(result, result_with_pointer, &exponent, count_of_dig_int+count_of_dig_float);
-		printf("\nРезультат умножения : ");
-		print_float(znak_result, result_with_pointer, exponent, count_of_dig_float+count_of_dig_int);
+		if (exponent >= -99999 && exponent <= 99999)
+			print_float(znak_result, result_with_pointer, exponent, count_of_dig_float+count_of_dig_int);
+		else
+			printf("Ошибка вычисления\n");
+
 	}
 	else
-		printf("Ошибка вычисления");
+		printf("Ошибка вычисления\n");
 }
 
 

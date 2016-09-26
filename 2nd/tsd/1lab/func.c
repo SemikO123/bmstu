@@ -5,31 +5,118 @@
 
 void print_float(char znak, int *mantissa, int exponent, int len_mantissa)
 {
-	printf("%c0.",znak);
-	for (int i=2; i <= len_mantissa; i++)
-		printf("%d",mantissa[i]);
-	if (exponent >= 0)
-		printf("E+%d\n",exponent);
-	else
-		printf("E%d\n",exponent);
+	printf("\nРезультат умножения : ");
+	int flag_null = 0;
+	for (int i = 0; i < len_mantissa; i++)
+		if (mantissa[i] != 0)
+			flag_null = 1;
+	
+	if (flag_null == 1) 
+	{
+		printf("%c0.",znak);
+		// ограничение вывода мантиссы до 30 чисел (на всякий случай)
+		if (len_mantissa > 30) 
+			len_mantissa = 30;
+		int null_mant = 0;
+		// считает незначащие нули в конце
+		for (int i = len_mantissa; i > 0; i--)
+			if (mantissa[i] == 0)
+				null_mant += 1; 
+			else
+				break;
+		// печатает без незначащих нулей в конце
+		for (int i=0; i <= len_mantissa-null_mant; i++) 
+			printf("%d",mantissa[i]);
+		if (exponent >= 0)
+			printf("E+%d\n",exponent);
+		else
+			printf("E%d\n",exponent);
+	}
+	else 
+		printf("0\n");
+}
+
+void rounding(int *array)
+{
+	// for (int i = 0; i < 35; i++)
+	// 	printf("array[%d] = %d\n",i,array[i]);
+	// printf("\n");
+	int result[31] = {0};
+	int pointer = 1;
+	for (int i=30; i > 0; i--)
+	{
+		result[i] = (pointer + array[i-1]) % 10;
+		pointer = (pointer + array[i-1]) / 10;
+	}
+	result[0] = pointer;
+	//переприсваивание элементов полученного в функцию массива
+	for (int i = 0; i < 31; i++)
+		array[i] = result[i];
+	// printf("\n\n");
+
+	// for (int i = 0; i < 35; i++)
+	// 	printf("array[%d] = %d\n",i,array[i]);
+
 }
 
 void normalize(int *array, int *result, int *exponent, int count)
 {
-	result[0] = 0;
-	result[1] = -1;
-	int k = 2;
+	int k = 0;
 	int begin;
+	// убирает незначащий ноль в начале (при наличии)
 	if (array[0] == 0)
 		begin = 1;
 	else
 		begin = 0;
-	for (int i = begin; i < count; i++)
+	int last;
+	if (count > 30)
 	{
-		if (k < 32)
-			result[k] = array[i];
-		*exponent += 1;
-		k++;
+		// last - число, относительно которого рассматривается округление
+		last = array[30];
+		printf("last = %d\n",last);
+		// округление и перезапись округленной мантиссы
+		if (last >= 5)
+		{
+			rounding(array);
+			if (array[0] == 0)
+				for (int i = 1; i < 31; i++)
+				{	
+					result[i-1] = array[i];
+					*exponent += 1;
+				}
+			else
+			{
+				*exponent += 1;
+				for (int i = 0; i < 30; i++)
+				{
+					result[i] = array[i];
+					*exponent += 1;
+				}
+			}
+
+		}
+		// last < 5. обычная перезапись мантиссы без возможного 0 в начале
+		else
+		{
+			while (k < 30)
+			{
+				result[k] = array[begin];
+				begin++;
+				k++;
+				*exponent += 1;
+			}
+		}
+	}
+	// длина меньше 30
+	else
+	{
+		for (int i = begin; i < count; i++)
+		{
+			if (k < 30)
+				result[k] = array[i];
+			*exponent += 1;
+			k++;
+		}
 	}
 }
 
@@ -55,7 +142,8 @@ void float_array_generate(const char *array_char, int *array_int, int *exponent,
 {
 	int flag_point=0;
 	int flag_e=0;
-	for (int i=0; i < strlen(array_char); i++)
+	// подсчет количества встречающихся точек и Е
+	for (int i=0; array_char[i] != '\0'; i++)
 	{
 		if (array_char[i] == '.')
 			flag_point += 1;
@@ -66,7 +154,7 @@ void float_array_generate(const char *array_char, int *array_int, int *exponent,
 		printf("Числа введены неверно");
 	else
 	{
-		char curr[1] = {0};
+		char curr[2] = {'0','\0'};
 		switch (flag_e)
 		{
 			case 1:
@@ -98,8 +186,8 @@ void float_array_generate(const char *array_char, int *array_int, int *exponent,
 							i++;
 						}
 						i++;
-						char exp[5];
-						for (int k=0; k < 6; k++)
+						char exp[6] = "";
+						for (int k=0; array_char[i] != '\0'; k++)
 						{
 							exp[k] = array_char[i];
 							i++;
@@ -119,8 +207,8 @@ void float_array_generate(const char *array_char, int *array_int, int *exponent,
 							i++;
 						}
 						i++;
-						char exp[5];
-						for (int k=0; k < 6; k++)
+						char exp[6] = "";
+						for (int k=0; array_char[i] != '\0'; k++)
 						{
 							exp[k] = array_char[i];
 							i++;
@@ -137,7 +225,7 @@ void float_array_generate(const char *array_char, int *array_int, int *exponent,
 					{	
 						int flag = 0;
 						int i=0;
-						while (i < strlen(array_char))
+						while (array_char[i] != '\0')
 						{
 							if (array_char[i] != '.')
 									if (flag == 0)
@@ -162,7 +250,7 @@ void float_array_generate(const char *array_char, int *array_int, int *exponent,
 					case 0:	// нет E нет .
 					{
 						int i = 0;
-						while (i < strlen(array_char))
+						while (array_char[i] != '\0')
 						{
 							curr[0] = array_char[i];
 							array_int[*counter] = atoi(curr);
@@ -179,6 +267,7 @@ void float_array_generate(const char *array_char, int *array_int, int *exponent,
 
 }
 
+// не используется
 int count_of_digits(int number) 
 {
     int count = (number == 0) ? 1 : 0;
@@ -193,8 +282,8 @@ int count_of_digits(int number)
 
 void integer_array_generate(const char *array_char, int *array_int, int *counter)
 {
-	char curr[1];
-	for (int i = 0; i < strlen(array_char); i++)
+	char curr[2] = {'0','\0'};
+	for (int i = 0; array_char[i] != '\0'; i++)
 	{
 		curr[0] = array_char[i];
 		array_int[i] = atoi(curr);
@@ -205,22 +294,22 @@ void integer_array_generate(const char *array_char, int *array_int, int *counter
 void input_numbers(char *number, char *znak)
 {
 	char num[40];
-	scanf("%s", num);
+	scanf("%39s", num);
 	*znak = num[0];
 	switch(*znak)
 	{
 		case '+':
 			*znak = '1';
-			for (int i = 0; i < sizeof(num)/sizeof(char); i++)
+			for (int i = 0; num[i+1] != '\0'; i++)
 				number[i] = num[i+1];
 			break;
 		case '-':
 			*znak = '0';
-			for (int i = 0; i < sizeof(num)/sizeof(char); i++)
+			for (int i = 0; num[i+1] != '\0'; i++)
 				number[i] = num[i+1];
 			break;
 		default:
-			for (int i = 0; i < sizeof(num)/sizeof(char); i++)
+			for (int i = 0; num[i] != '\0'; i++)
 				number[i] = num[i];
 			*znak = '1';
 			break;		
