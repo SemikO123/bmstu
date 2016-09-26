@@ -37,15 +37,21 @@ int *array_generate(int *count)
 
 int array_filling(int *begin, int *end, FILE *file)
 {
-	if (begin == end) // никогда не произойдет
+	if (begin == end) // юзлесс
 	{
 		printf("Length of array = 0"); 
 		return EMPTY; 
 	}
 	else
+	{
+		int tmp;
 		for (int *current = begin; current < end; current++)
-			fscanf(file,"%d", &*current);
-
+			if (fscanf(file, "%d", &tmp) == 1)
+				*current = tmp;
+			else
+				return BADINPUT;
+			//fscanf(file,"%d", current);
+	}
 		return OK;
 }
 

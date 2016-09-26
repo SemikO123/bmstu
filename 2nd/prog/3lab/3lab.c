@@ -2,12 +2,6 @@
 #include <stdlib.h>
 #include "functions.h"
 
-#define OK 0
-#define BADPARAMETERS -1
-#define NOFILE -2
-#define EMPTYFILE -3
-#define BADINPUT -4
-
 struct list* initialize(int first_number);
 struct list* add_next(struct list *head, int new_number);
 struct list* add_previous(struct list *head, int new_number);
