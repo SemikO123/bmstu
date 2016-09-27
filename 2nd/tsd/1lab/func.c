@@ -7,7 +7,7 @@ void print_float(char znak, int *mantissa, int exponent, int len_mantissa)
 {
 	printf("\nРезультат умножения : ");
 	int flag_null = 0;
-	for (int i = 0; i < len_mantissa; i++)
+	for (int i = 0; i < 30; i++)
 		if (mantissa[i] != 0)
 			flag_null = 1;
 	
@@ -15,8 +15,12 @@ void print_float(char znak, int *mantissa, int exponent, int len_mantissa)
 	{
 		printf("%c0.",znak);
 		// ограничение вывода мантиссы до 30 чисел (на всякий случай)
-		if (len_mantissa > 30) 
-			len_mantissa = 30;
+		if (len_mantissa >= 30) 
+			len_mantissa = 29;
+		// [DEBUG] печать результата с незначащими нулями
+		// for (int i = 0; i <= len_mantissa; i++)
+		// 	printf("%d",mantissa[i]);
+		// printf("\n");
 		int null_mant = 0;
 		// считает незначащие нули в конце
 		for (int i = len_mantissa; i > 0; i--)
@@ -24,9 +28,23 @@ void print_float(char znak, int *mantissa, int exponent, int len_mantissa)
 				null_mant += 1; 
 			else
 				break;
+		// printf("[DEBUG] незначащих нулей %d\n",null_mant);
 		// печатает без незначащих нулей в конце
-		for (int i=0; i <= len_mantissa-null_mant; i++) 
-			printf("%d",mantissa[i]);
+		int count = 0;
+		for (int i=0; i <= len_mantissa-null_mant; i++)
+		{
+			if (count != 3)
+			{
+				printf("%d",mantissa[i]);
+			}
+			else
+			{
+				printf("'");
+				printf("%d",mantissa[i]);
+				count = 0;
+			}
+			count += 1;
+		}
 		if (exponent >= 0)
 			printf("E+%d\n",exponent);
 		else
@@ -38,9 +56,6 @@ void print_float(char znak, int *mantissa, int exponent, int len_mantissa)
 
 void rounding(int *array)
 {
-	// for (int i = 0; i < 35; i++)
-	// 	printf("array[%d] = %d\n",i,array[i]);
-	// printf("\n");
 	int result[31] = {0};
 	int pointer = 1;
 	for (int i=30; i > 0; i--)
@@ -52,17 +67,13 @@ void rounding(int *array)
 	//переприсваивание элементов полученного в функцию массива
 	for (int i = 0; i < 31; i++)
 		array[i] = result[i];
-	// printf("\n\n");
-
-	// for (int i = 0; i < 35; i++)
-	// 	printf("array[%d] = %d\n",i,array[i]);
-
 }
 
-void normalize(int *array, int *result, int *exponent, int count)
+void normalize(int *array, int *result, int *exponent, int count, int *flag)
 {
 	int k = 0;
 	int begin;
+	*exponent -= *flag;
 	// убирает незначащий ноль в начале (при наличии)
 	if (array[0] == 0)
 		begin = 1;
@@ -73,7 +84,7 @@ void normalize(int *array, int *result, int *exponent, int count)
 	{
 		// last - число, относительно которого рассматривается округление
 		last = array[30];
-		printf("last = %d\n",last);
+		printf("[DEBUG INF]last = %d\n",last);
 		// округление и перезапись округленной мантиссы
 		if (last >= 5)
 		{
@@ -120,7 +131,7 @@ void normalize(int *array, int *result, int *exponent, int count)
 	}
 }
 
-void counting(const int *array_first, int first_len, const int *array_second, int second_len, int *result)
+void counting(const int *array_first, int first_len, const int *array_second, int second_len, int *result, int *flag)
 {
 	// первое число больше второго (  > float)
 	int pointer;
@@ -135,6 +146,17 @@ void counting(const int *array_first, int first_len, const int *array_second, in
 		}
 		result[i] += pointer;
 	}	
+	// удаление нуля в начале, если он есть и flag = 1
+	if (result[0] == 0)
+	{
+		for (int i = 1; i < first_len+second_len; i++)
+			result[i-1] = result[i];
+		result[first_len+second_len-1] = 0;
+		*flag = 1;
+	}
+	printf("\n");
+
+
 }
 
 
@@ -264,21 +286,7 @@ void float_array_generate(const char *array_char, int *array_int, int *exponent,
 				break;
 		}
 	}
-
 }
-
-// не используется
-int count_of_digits(int number) 
-{
-    int count = (number == 0) ? 1 : 0;
-    while (number != 0) 
-    {
-        count++;
-        number /= 10;
-    }
-    return count;
-}
-
 
 void integer_array_generate(const char *array_char, int *array_int, int *counter)
 {
