@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
 	FILE *f1; 
 	f1 = fopen("test1.txt", "w");
-	printf("\nFUNCTIONS 'read_array' and 'ARRTOFILE'\n");
+	printf("\nFUNCTIONS 'read_array' and 'array_to_file'\n");
 	printf("№                                 Test\n");
 	float array1[5] = { -5,6.5,1,0,11.222 };
 	float newarr[NT];
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 
 /* $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ */
 
-	printf("\nFUNCTION 'NEWARRGEN'\n");
+	printf("\nFUNCTION 'new_array_generate'\n");
 	printf("№                                 Test\n");
 	float in_arr[5] = { -1,2,3,-4,5 };
 	float test_avrg = 1.0;
@@ -81,6 +81,39 @@ int main(int argc, char **argv)
 	else
 		printf("2.                                FAILED\n");
 
+	float in_arr2[6] = { 1,2,3,4,5,6};
+	float test_avrg2 = 0;
+	float out_arr_good2[6] = {1,2,3,4,5,6};
+	float out_arr2[NT];
+	int cnt_out_arr2 = 0;
+	new_array_generate(in_arr2, 6, test_avrg2, out_arr2, &cnt_out_arr2);
+	flag = 0;
+	for (int j = 0; j < 6; j++)
+	{
+		if (out_arr2[j] == out_arr_good2[j])
+			flag = 1;
+		else
+		{
+			flag = 0;
+			break;
+		}
+	}
+	if (flag == 1)
+		printf("3.равен исходному                 PASSED\n");
+	else
+		printf("3.равен исходному                 FAILED\n");
+
+
+	float in_arr3[6] = { 1,2,3,4,5,6};
+	float test_avrg3 = 7;
+	int cnt_out_arr3_good = 0;
+	float out_arr3[NT];
+	int cnt_out_arr3 = 0;
+	new_array_generate(in_arr3, 6, test_avrg3, out_arr3, &cnt_out_arr3);
+	if (cnt_out_arr3 == cnt_out_arr3_good)
+		printf("4.пустой массив                   PASSED\n");
+	else
+		printf("4.пустой массив                   FAILED\n");
 
 
 
@@ -88,7 +121,7 @@ int main(int argc, char **argv)
 
 	float avrg;
 	float eps = 1e-10;
-	printf("\nFUNCTION 'AVERAGE'\n");
+	printf("\nFUNCTION 'count_average'\n");
 	printf("№  Obtained         Expected      Test\n");
 	float res = 0;
 	float arr1[6] = { -3.3,-2.2,-1.1,1.1,2.2,3.3 };
