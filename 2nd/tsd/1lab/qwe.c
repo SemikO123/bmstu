@@ -13,18 +13,31 @@ int main(void)
 	int float_number[30] = {0};
 	int exponent = 0;
 	char znak_result;
+	int flag_point=0;
+	int flag_e=0;
 
 	printf("\nЦелое число (например, -11 22 +33): ");
-	input_numbers(integer_num,&znak_int);
-	printf("Знак = %c \nЧисло = %s\n",znak_int,integer_num);
+	if (input_int_numbers(integer_num,&znak_int) == -1)
+	{
+		printf("Целое число введено неверно\n");
+		return -1;
+	}
 	int count_of_dig_int = 0;
 	integer_array_generate(integer_num, integer_number, &count_of_dig_int);
-	printf("\n");
+	printf("Знак = %c \n",znak_int);
+	printf("Число = ");
+	for (int i = 0; i < count_of_dig_int; i++)
+		printf("%d", integer_number[i]);
+	printf("\n\n");
 
 	printf("Вещественное число (например +11.2E-5 .112 112.E1): ");
-	input_numbers(float_num,&znak_float);
+	if (input_float_numbers(float_num,&znak_float,&flag_point ,&flag_e) == -1)
+	{
+		printf("Вещественное число введено неверно\n");
+		return -1;
+	}
 	int count_of_dig_float = 0;
-	float_array_generate(float_num, float_number, &exponent, &count_of_dig_float);
+	float_array_generate(float_num, float_number, &exponent, &count_of_dig_float, &flag_point, &flag_e);
 
 	if (exponent >= -99999)
 	{
@@ -46,12 +59,12 @@ int main(void)
 		else 
 			znak_result = '-';
 
-		printf("[DEBUG INF]Result of counting = ");
-		printf("%c",znak_result);
-		for (int i = 0; i < count_of_dig_int+count_of_dig_float; i++)
-			printf("%d",result[i]);
-		printf("E%d",exponent-flag);
-		printf("\n");
+		// printf("[DEBUG INF]Result of counting = ");
+		// printf("%c",znak_result);
+		// for (int i = 0; i < count_of_dig_int+count_of_dig_float; i++)
+		// 	printf("%d",result[i]);
+		// printf("E%d",exponent-flag);
+		// printf("\n");
 
 		int result_with_pointer[30] = {0};
 		normalize(result, result_with_pointer, &exponent, count_of_dig_int+count_of_dig_float, &flag);

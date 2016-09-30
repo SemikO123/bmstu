@@ -51,7 +51,7 @@ void print_float(char znak, int *mantissa, int exponent, int len_mantissa)
 			printf("E%d\n",exponent);
 	}
 	else 
-		printf("0\n");
+		printf("0.0\n");
 }
 
 void rounding(int *array)
@@ -160,36 +160,88 @@ void counting(const int *array_first, int first_len, const int *array_second, in
 }
 
 
-void float_array_generate(const char *array_char, int *array_int, int *exponent, int *counter)
+void float_array_generate(const char *array_char, int *array_int, int *exponent, int *counter, int *flag_point, int *flag_e)
 {
-	int flag_point=0;
-	int flag_e=0;
-	// подсчет количества встречающихся точек и Е
-	for (int i=0; array_char[i] != '\0'; i++)
+	char curr[2] = {'0','\0'};
+	switch (*flag_e)
 	{
-		if (array_char[i] == '.')
-			flag_point += 1;
-		if (array_char[i] == 'E')
-			flag_e += 1;
-	}
-	if (flag_e > 1 || flag_point > 1)
-		printf("Числа введены неверно");
-	else
-	{
-		char curr[2] = {'0','\0'};
-		switch (flag_e)
-		{
-			case 1:
-				switch (flag_point)
+		case 1:
+			switch (*flag_point)
+			{
+				case 1: // есть E есть .
 				{
-					case 1: // есть E есть .
+					int i = 0;
+					int flag = 0;
+					int expon = 0;
+					while (array_char[i] == '0')
+						i++;
+					while (array_char[i] != 'E')
 					{
-						int i = 0;
-						int flag = 0;
-						int expon = 0;
-						while (array_char[i] != 'E')
-						{
-							if (array_char[i] != '.')
+						if (array_char[i] != '.')
+							if (flag == 0)
+							{
+								curr[0] = array_char[i];
+								array_int[*counter] = atoi(curr);
+								*counter += 1;
+							}
+							else
+							{
+								curr[0] = array_char[i];
+								array_int[*counter] = atoi(curr);
+								*counter += 1;
+								expon += 1;
+							}
+						else
+							flag = 1;
+						i++;
+					}
+					i++;
+					char exp[6] = "";
+					for (int k=0; array_char[i] != '\0'; k++)
+					{
+						exp[k] = array_char[i];
+						i++;
+					}
+					*exponent = atoi(exp);
+					*exponent -= expon;
+					break;
+				}
+				case 0: // есть Е нет .
+				{
+					int i = 0;
+					while (array_char[i] == '0')
+						i++;
+					while (array_char[i] != 'E')
+					{
+						curr[0] = array_char[i];
+						array_int[*counter] = atoi(curr);
+						*counter += 1;
+						i++;
+					}
+					i++;
+					char exp[6] = "";
+					for (int k=0; array_char[i] != '\0'; k++)
+					{
+						exp[k] = array_char[i];
+						i++;
+					}
+					*exponent = atoi(exp);
+					break;
+				}
+			}
+			break;	
+		case 0:
+			switch (*flag_point)
+			{
+				case 1: // нет E есть .
+				{	
+					int flag = 0;
+					int i=0;
+					while (array_char[i] == '0')
+						i++;
+					while (array_char[i] != '\0')
+					{
+						if (array_char[i] != '.')
 								if (flag == 0)
 								{
 									curr[0] = array_char[i];
@@ -201,125 +253,135 @@ void float_array_generate(const char *array_char, int *array_int, int *exponent,
 									curr[0] = array_char[i];
 									array_int[*counter] = atoi(curr);
 									*counter += 1;
-									expon += 1;
+									*exponent -= 1;
 								}
-							else
-								flag = 1;
-							i++;
-						}
+						else
+							flag = 1;
 						i++;
-						char exp[6] = "";
-						for (int k=0; array_char[i] != '\0'; k++)
-						{
-							exp[k] = array_char[i];
-							i++;
-						}
-						*exponent = atoi(exp);
-						*exponent -= expon;
-						break;
 					}
-					case 0: // есть Е нет .
-					{
-						int i = 0;
-						while (array_char[i] != 'E')
-						{
-							curr[0] = array_char[i];
-							array_int[*counter] = atoi(curr);
-							*counter += 1;
-							i++;
-						}
-						i++;
-						char exp[6] = "";
-						for (int k=0; array_char[i] != '\0'; k++)
-						{
-							exp[k] = array_char[i];
-							i++;
-						}
-						*exponent = atoi(exp);
-						break;
-					}
+					break;	
 				}
-				break;	
-			case 0:
-				switch (flag_point)
+				case 0:	// нет E нет .
 				{
-					case 1: // нет E есть .
-					{	
-						int flag = 0;
-						int i=0;
-						while (array_char[i] != '\0')
-						{
-							if (array_char[i] != '.')
-									if (flag == 0)
-									{
-										curr[0] = array_char[i];
-										array_int[*counter] = atoi(curr);
-										*counter += 1;
-									}
-									else
-									{
-										curr[0] = array_char[i];
-										array_int[*counter] = atoi(curr);
-										*counter += 1;
-										*exponent -= 1;
-									}
-							else
-								flag = 1;
-							i++;
-						}
-						break;	
-					}
-					case 0:	// нет E нет .
+					int i = 0;
+					while (array_char[i] == '0')
+						i++;
+					while (array_char[i] != '\0')
 					{
-						int i = 0;
-						while (array_char[i] != '\0')
-						{
-							curr[0] = array_char[i];
-							array_int[*counter] = atoi(curr);
-							*counter += 1;
-							i++;
-						}
-						*exponent = 0;
-						break;
+						curr[0] = array_char[i];
+						array_int[*counter] = atoi(curr);
+						*counter += 1;
+						i++;
 					}
-				}	
-				break;
-		}
+					*exponent = 0;
+					break;
+				}
+			}	
+			break;
 	}
 }
 
 void integer_array_generate(const char *array_char, int *array_int, int *counter)
 {
 	char curr[2] = {'0','\0'};
-	for (int i = 0; array_char[i] != '\0'; i++)
+	int zeros = 0, i = 0;
+	while (array_char[i] == '0')
+	{
+		i++;
+		zeros++;
+	}
+	for (; array_char[i] != '\0'; i++)
 	{
 		curr[0] = array_char[i];
-		array_int[i] = atoi(curr);
+		array_int[i-zeros] = atoi(curr);
 		*counter += 1;
 	}
 }
 
-void input_numbers(char *number, char *znak)
+
+int input_int_numbers(char *number, char *znak)
+{
+	char num[32];
+	scanf("%31s", num);
+	if ((num[0] >= '0' && num[0] <= '9') || num[0] == '+' || num[0] == '-')
+	{
+		for (int i = 0; num[i] != '\0'; i++)
+			if (num[i] >= '0' && num[i] <= '9')
+			{ 
+				*znak = num[0];
+				switch(*znak)
+				{
+					case '+':
+						*znak = '1';
+						for (int i = 0; num[i+1] != '\0'; i++)
+							number[i] = num[i+1];
+						break;
+					case '-':
+						*znak = '0';
+						for (int i = 0; num[i+1] != '\0'; i++)
+							number[i] = num[i+1];
+						break;
+					default:
+						for (int i = 0; num[i] != '\0'; i++)
+							number[i] = num[i];
+						*znak = '1';
+						break;		
+				}
+			}
+			else
+				return -1;
+	}
+	else
+		return -1;
+	return 0;
+}
+
+int input_float_numbers(char *number, char *znak, int *flag_point, int *flag_e)
 {
 	char num[40];
 	scanf("%39s", num);
-	*znak = num[0];
-	switch(*znak)
+
+	if ((num[0] >= '0' && num[0] <= '9') || num[0] == '+' || num[0] == '-' || num[0] == '.')
 	{
-		case '+':
-			*znak = '1';
-			for (int i = 0; num[i+1] != '\0'; i++)
-				number[i] = num[i+1];
-			break;
-		case '-':
-			*znak = '0';
-			for (int i = 0; num[i+1] != '\0'; i++)
-				number[i] = num[i+1];
-			break;
-		default:
-			for (int i = 0; num[i] != '\0'; i++)
-				number[i] = num[i];
-			*znak = '1';
-			break;		
+		int flag_plusminus = 0;
+		for (int i = 0; num[i] != '\0'; i++)
+			if ((num[i] >= '0' && num[i] <= '9') || num[i] == '.' || num[i] == '+' || num[i] == '-' || num[i] == 'E')
+			{
+				if (num[i] == '.')
+					*flag_point += 1;
+				if (num[i] == 'E')
+					*flag_e += 1;
+				if (num[i] == '+' || num[i] == '-')
+					flag_plusminus += 1;
+				*znak = num[0];
+				switch(*znak)
+				{
+					case '+':
+						*znak = '1';
+						for (int i = 0; num[i+1] != '\0'; i++)
+							number[i] = num[i+1];
+						break;
+					case '-':
+						*znak = '0';
+						for (int i = 0; num[i+1] != '\0'; i++)
+							number[i] = num[i+1];
+						break;
+					default:
+						for (int i = 0; num[i] != '\0'; i++)
+							number[i] = num[i];
+						*znak = '1';
+						break;		
+				}
+			}
+			// есть другие символы кроме цифр, Е+-.
+			else
+				return -1;
+		if (*flag_e > 1 || *flag_point > 1 || flag_plusminus > 1)
+			// E или точка встречаются больше одного раза, знаков в запили больше 2
+			return -1;
 	}
+	// первый символ не цифра, не + и не -
+	else
+		return -1;
+	return 0;
 }

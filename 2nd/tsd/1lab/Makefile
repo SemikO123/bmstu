@@ -12,14 +12,23 @@ endif
 qwe.exe : qwe.o func.o
 	$(CC) -o  qwe.exe qwe.o func.o
 
+tests.exe : tests.o func.o
+	$(CC) -o tests.exe tests.o func.o
+
 qwe.o : qwe.c func.h
 	$(CC) $(FLAGS) -c qwe.c func.h
 
 func.o : func.c func.h
 	$(CC) $(FLAGS) -c func.c func.h
 
+tests.o : tests.c func.h
+	$(CC) $(FLAGS) -c tests.c func.h
+
 st : qwe.exe
 	./qwe.exe
+
+sttests : tests.exe
+	./tests.exe
 
 rm : 
 	rm *.o *.exe
