@@ -30,6 +30,9 @@ st : qwe.exe
 sttests : tests.exe
 	./tests.exe
 
+ft : functionaltests.sh
+	bash functionaltests.sh
+
 rm : 
 	rm *.o *.exe
 

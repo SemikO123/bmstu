@@ -72,13 +72,8 @@ void rounding(int *array)
 void normalize(int *array, int *result, int *exponent, int count, int *flag)
 {
 	int k = 0;
-	int begin;
+	// флаг = 1, если был незначащий ноль слева при умножении
 	*exponent -= *flag;
-	// убирает незначащий ноль в начале (при наличии)
-	if (array[0] == 0)
-		begin = 1;
-	else
-		begin = 0;
 	int last;
 	if (count > 30)
 	{
@@ -109,6 +104,7 @@ void normalize(int *array, int *result, int *exponent, int count, int *flag)
 		// last < 5. обычная перезапись мантиссы без возможного 0 в начале
 		else
 		{
+			int begin = 0; 
 			while (k < 30)
 			{
 				result[k] = array[begin];
@@ -121,7 +117,7 @@ void normalize(int *array, int *result, int *exponent, int count, int *flag)
 	// длина меньше 30
 	else
 	{
-		for (int i = begin; i < count; i++)
+		for (int i = 0; i < count; i++)
 		{
 			if (k < 30)
 				result[k] = array[i];
@@ -155,6 +151,7 @@ void counting(const int *array_first, int first_len, const int *array_second, in
 		*flag = 1;
 	}
 	printf("\n");
+
 
 
 }
@@ -306,7 +303,7 @@ int input_int_numbers(char *number, char *znak)
 	if ((num[0] >= '0' && num[0] <= '9') || num[0] == '+' || num[0] == '-')
 	{
 		for (int i = 0; num[i] != '\0'; i++)
-			if (num[i] >= '0' && num[i] <= '9')
+			if ((num[i] >= '0' && num[i] <= '9' && i > 0) || (num[i] == '+' && i == 0) || (num[i] == '-' && i == 0) || (num[i] >= '0' && num[i] <= '9' && i == 0))
 			{ 
 				*znak = num[0];
 				switch(*znak)
