@@ -34,7 +34,8 @@ int main(int argc, char **argv)
 		else
 		{
 			int count_of_numbers = 0;
-			switch (len_of_array(file, &count_of_numbers))
+			int *array;
+			switch (len_of_array(file, &count_of_numbers, &array))
 			{
 				case EMPTY:
 					printf("\nFile is empty\n");
@@ -48,36 +49,26 @@ int main(int argc, char **argv)
 					break;
 				case OK:
 					printf("\nCount of numbers = %d\n", count_of_numbers);
-					int *array = array_generate(&count_of_numbers);
-					if (array == NULL)
+					rewind(file);
+					array_filling(array, array + count_of_numbers, file);
+					fclose(file);
+					int min;
+					switch (counting(array, array + count_of_numbers, &min))
 					{
-						printf("MEMORY PROBLEM");
-						out_error = MEMORYPROBLEM;
-						free(array);
-					}
-					else
-					{
-						rewind(file);
-						array_filling(array, array + count_of_numbers, file);
-						fclose(file);
-						int min;
-						switch (counting(array, array + count_of_numbers, &min))
-						{
-							case ONEELEMENT:
-								printf("Array has only one element\n");
-								free(array);
-								out_error = ONEELEMENT;
-								break;
-							case OK:
-								printf("Minimum of x[0]*x[1], x[1]*x[2]... = %d\n", min);
-								out_error = OK;
-								free(array);
-						}
+						case ONEELEMENT:
+							printf("Array has only one element\n");
+							free(array);
+							out_error = ONEELEMENT;
+							break;
+						case OK:
+							printf("Minimum of x[0]*x[1], x[1]*x[2]... = %d\n", min);
+							out_error = OK;
+							free(array);
 					}						
 			}
 		}
 	}
-	//printf("ERROR = %d\n",out_error);
+	//printf("[debug inf] CODE = %d\n",out_error);
 	return out_error;
 }
 

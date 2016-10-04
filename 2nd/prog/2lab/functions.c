@@ -3,7 +3,16 @@
 #include "functions.h"
 #include "errors.h"
 
-int len_of_array(FILE *file, int *count)
+
+/**
+* @function len_of_array
+* This function counts length of array and allocates the memory
+* @param[in] file file with numbers
+* @param[out] count count of numbers in file
+* @param[out] array array without numbers (for allocating memory)
+* @return error code of error 
+*/
+int len_of_array(FILE *file, int *count, int **array)
 {
 	int num;
 	int error;
@@ -20,26 +29,31 @@ int len_of_array(FILE *file, int *count)
 			*count += 1;
 			while (fscanf(file, "%d", &num) == 1)
 				*count += 1;
+			if (*count)
+			{
+				*array = malloc(*count * sizeof(int));
+				if (*array)
+					error = OK;
+				else
+					error = MEMORYPROBLEM;
+			}
 	}
 	return error;
 }
 
-int *array_generate(int *count)
-{
-	int *array = NULL;
-	if (*count)
-	{
-		array = malloc(*count * sizeof(int));
-	}
-	return array;
-
-}
-
+/**
+* @function array_filling
+* This function puts numbers from file to array
+* @param[in] first element's pointer
+* @param[in] end after last element's pointer
+* @param[in] file file with numbers
+* @return code of error
+*/
 int array_filling(int *begin, int *end, FILE *file)
 {
-	if (begin == end) // юзлесс
+	if (begin == end)
 	{
-		printf("Length of array = 0"); 
+		//printf("Length of array = 0 "); 
 		return EMPTY; 
 	}
 	else
@@ -52,20 +66,33 @@ int array_filling(int *begin, int *end, FILE *file)
 				return BADINPUT;
 			//fscanf(file,"%d", current);
 	}
-		return OK;
+	return OK;
 }
 
+
+/**
+* @function counting
+* This function searches min(x[0]*x[1],x[1]*x[2],x[2]*x[3],...
+* @param[in] first element's pointer
+* @param[in] end after last element's pointer
+* @param[out] min minimum value (result)
+* @return code of error
+*/
 int counting(int *begin, int *end, int *min)
 {
 	if (end - begin == 1)
 		return ONEELEMENT;
-	*min = *(begin) * *(begin + 1);
-	//printf("min %d %d\n", *begin, *(begin+1));
-	for (int *current = begin + 1; current < end - 1; current++)
+	int *curr_prev = begin;
+	int *curr_next = begin + 1;
+	*min = *(curr_prev) * *(curr_next);
+	//printf("1 = %d, 2 = %d \n", *curr_prev, *curr_next);
+	while (curr_next < end - 1)
 	{
-		//printf("%d %d\n",*current,*(current+1));
-		if (*current * *(current + 1) < *min)
-			*min = *current * *(current + 1); 
+		curr_prev = curr_next;
+		curr_next = curr_prev + 1;
+		//printf("1 = %d, 2 = %d \n", *curr_prev, *curr_next);
+		if (*(curr_prev) * *(curr_next) < *min)
+			*min = *(curr_prev) * *(curr_next);
 	}
 	return OK;
 
