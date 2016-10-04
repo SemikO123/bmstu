@@ -32,7 +32,7 @@ int read_array(float arr[], int n, FILE *file, int *count)
 				*count += 1;
 			if ((fscanf(file, "%f", &num) == 1) && (*count == n))
 				priznak = EXCESS;
-			assert(*count > 0);
+			// assert(*count > 0);
 
 			
 	//printf("N=%d\n",*count);
@@ -49,6 +49,7 @@ int read_array(float arr[], int n, FILE *file, int *count)
 */
 void count_average(const float arr[], int n, float *avrg)
 {
+	assert( n > 0);
 	int i;
 	float sum = 0;
 	for (i = 0; i < n; i++)
@@ -67,6 +68,7 @@ void count_average(const float arr[], int n, float *avrg)
 */
 void new_array_generate(const float *arr, int n, float avrg, float *newarr, int *j)
 {
+	*j = 0;
 	for (int i = 0;i < n;i++)
 		if (arr[i] > avrg)
 		{
