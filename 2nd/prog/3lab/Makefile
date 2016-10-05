@@ -9,14 +9,17 @@ ifeq ($(mode), release)
 	FLAGS += -DNDEBUG -g0
 endif
 
-3lab.exe : 3lab.o functions.h
-	$(CC) -o 3lab.exe 3lab.o functions.h
+3lab.exe : 3lab.o functions.o 
+	$(CC) -o 3lab.exe 3lab.o functions.o
 
-3lab.o : 3lab.c
+3lab.o : 3lab.c functions.h errors.h
 	$(CC) $(FLAGS) -c 3lab.c
 
+functions.o : functions.c functions.h errors.h
+	$(CC) $(FLAGS) -c functions.c
+
 st : 3lab.exe
-	./3lab.exe input.txt output.txt 6
+	./3lab.exe input.txt output.txt 7
 
 vlgr : 3lab.exe
 	valgrind --tool=memcheck ./3lab.exe input.txt output.txt 6

@@ -1,30 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "functions.h"
-
-struct list* initialize(int first_number);
-struct list* add_next(struct list *head, int new_number);
-struct list* add_previous(struct list *head, int new_number);
-void print_list(struct list *head);
-void free_all(struct list *head);
+#include "errors.h"
 
 int main(int argc, char **argv)
 {
 
-	int out_error;
+	//int out_error;
 	FILE *input;
 	if (argc != 4)
 	{
 		printf("\nPut names of i/o files and number as parameters\n");
-		out_error = BADPARAMETERS;
+		return BADPARAMETERS;
 	}
 	else
 	{
 		input = fopen(argv[1], "r");
 		if (input == NULL)
 		{
-			printf("\nFile doesn't found\n");
-			out_error = NOFILE;
+			printf("\nInput file doesn't found\n");
+			return NOFILE;
 		}
 		else
 		{
@@ -33,84 +29,52 @@ int main(int argc, char **argv)
 			{
 				case -1:
 					printf("\nFile is empty\n");
-					out_error = EMPTYFILE;
-					break;
+					return EMPTYFILE;
 				case 0:
 					printf("\nCan't get numbers from file\n");
-					out_error = BADINPUT;
-					break;
+					return BADINPUT;
 				case 1:
 				{
-					struct list *head;
-					head = initialize(int_number);
-					while (fscanf(input, "%d", &int_number) == 1)
+					struct list *head = NULL;
+					head = create_new(int_number);
+					if (head)
 					{
-						for ( ; head; head = head->next)
-							if (int_number <= head->number)
-								head = add_previous(head, int_number);
-						//head = add_next(head, int_number);
-					}
-					print_list(head);
-					out_error = OK;
-					free_all(head);
-					head = NULL;
-				}
+						while (fscanf(input, "%d", &int_number) == 1)			
+							head = add_new_element(head, int_number);
 
+						print_list(head, 0, NULL);
+
+						int adding_number;
+						if (atoi(argv[3]) == 0 && argv[3][0] != '0')
+						{
+							printf("Bad number as parameter\n");
+							return BADPARAMETERS;
+						}
+						else
+						{
+							adding_number = atoi(argv[3]);
+							head = add_new_element(head, adding_number);
+							FILE *output;
+							output = fopen(argv[2], "w");
+							if (!output)
+							{
+								printf("Output file doesn't found\n");
+								return NOFILE;
+							}
+							else
+								print_list(head, 1, output);
+							fclose(output);
+						}
+						free_all(head);
+						head = NULL; 
+					}
+				}
 			}
+			fclose(input);
 		}
 	}
-	fclose(input);
-	return out_error;
+	return OK;
 }
 
-struct list* initialize(int first_number)
-{
-	struct list *element = malloc(sizeof(struct list));
-	if (element)
-	{
-		element->number = first_number;
-		element->next = NULL;
-	}
-	return element;
-}
-
-struct list* add_next(struct list *head, int new_number)
-{
-	struct list *current, *new_element;
-	new_element = malloc(sizeof(struct list));
-	current = head->next;
-	head->next = new_element;
-	new_element->number = new_number;
-	new_element->next = current;
-	return new_element;
-}
-
-void print_list(struct list *head)
-{
-	printf("List: ");
-	for ( ; head; head = head->next)
-		printf("%d", head->number);
-}
-
-void free_all(struct list *head)
-{
-    struct list *next;
-
-    for ( ; head; head = next)
-    {
-        next = head->next;
-        free(head);
-    }
-}
-
-
-struct list* add_previous(struct list *head, int new_number)
-{
-	struct list *new_element;
-	new_element = malloc(sizeof(struct list));
-	new_element->number = new_number;
-	new_element->next = head;
-	return new_element;
-}
 
 
