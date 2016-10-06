@@ -75,47 +75,7 @@ void normalize(int *array, int *result, int *exponent, int count, int *flag)
 	// флаг = 1, если был незначащий ноль слева при умножении
 	*exponent -= *flag;
 	int last;
-	if (count > 30)
-	{
-		// last - число, относительно которого рассматривается округление
-		last = array[30];
-		printf("[DEBUG INF]last = %d\n",last);
-		// округление и перезапись округленной мантиссы
-		if (last >= 5)
-		{
-			rounding(array);
-			if (array[0] == 0)
-				for (int i = 1; i < 31; i++)
-				{	
-					result[i-1] = array[i];
-					*exponent += 1;
-				}
-			else
-			{
-				*exponent += 1;
-				for (int i = 0; i < 30; i++)
-				{
-					result[i] = array[i];
-					*exponent += 1;
-				}
-			}
-
-		}
-		// last < 5. обычная перезапись мантиссы без возможного 0 в начале
-		else
-		{
-			int begin = 0; 
-			while (k < 30)
-			{
-				result[k] = array[begin];
-				begin++;
-				k++;
-				*exponent += 1;
-			}
-		}
-	}
-	// длина меньше 30
-	else
+	if (count <= 30 || (*flag == 1 && count == 31 && array[30] == 0))
 	{
 		for (int i = 0; i < count; i++)
 		{
@@ -125,6 +85,52 @@ void normalize(int *array, int *result, int *exponent, int count, int *flag)
 			k++;
 		}
 	}
+	else
+	{
+		// last - число, относительно которого рассматривается округление
+		last = array[30];
+		printf("[DEBUG INF]last = %d\n",last);
+		// округление и перезапись округленной мантиссы
+		if (last >= 5)
+		{
+			rounding(array);
+			if (array[0] == 0)
+			{
+				*exponent += 1;
+				for (int i = 1; i < 31; i++)
+				{	
+					result[i-1] = array[i];
+					*exponent += 1;
+					k++;
+				}
+			}
+			else
+			{
+				*exponent += 1;
+				for (int i = 0; i < 30; i++)
+				{
+					result[i] = array[i];
+					*exponent += 1;
+					k++;
+				}
+			}
+
+		}
+		// last < 5. обычная перезапись мантиссы
+		else
+		{
+			for (int i = 0; i < count; i++)
+			{
+				if (k < 30)
+					result[k] = array[i];
+				*exponent += 1;
+				k++;
+			}
+		}
+	}
+	// printf("\n k=%d\n",k);
+	// for (int i=0; i < 35; i++)
+	// 	printf("result[%d]=%d\n",i,result[i]);
 }
 
 void counting(const int *array_first, int first_len, const int *array_second, int second_len, int *result, int *flag)
@@ -168,7 +174,7 @@ void float_array_generate(const char *array_char, int *array_int, int *exponent,
 				case 1: // есть E есть .
 				{
 					int i = 0;
-					int flag = 0;
+					int flag = 0, flag_prev_point = 0, flag_after_point = 0;
 					int expon = 0;
 					while (array_char[i] == '0')
 						i++;
@@ -177,15 +183,28 @@ void float_array_generate(const char *array_char, int *array_int, int *exponent,
 						if (array_char[i] != '.')
 							if (flag == 0)
 							{
+								if (array_char[i] > '0' && flag_prev_point == 0)
+									flag_prev_point = 1;
 								curr[0] = array_char[i];
 								array_int[*counter] = atoi(curr);
 								*counter += 1;
 							}
 							else
 							{
+								if (array_char[i] > '0' && flag_after_point == 0)
+									flag_after_point = 1;
 								curr[0] = array_char[i];
-								array_int[*counter] = atoi(curr);
-								*counter += 1;
+								if (flag_prev_point == 1)
+								{
+									array_int[*counter] = atoi(curr);
+									*counter += 1;
+								}
+								else
+									if (flag_after_point)
+									{
+										array_int[*counter] = atoi(curr);
+									    *counter += 1;	
+									}
 								expon += 1;
 							}
 						else
@@ -232,7 +251,7 @@ void float_array_generate(const char *array_char, int *array_int, int *exponent,
 			{
 				case 1: // нет E есть .
 				{	
-					int flag = 0;
+					int flag = 0, flag_prev_point = 0, flag_after_point = 0;
 					int i=0;
 					while (array_char[i] == '0')
 						i++;
@@ -241,15 +260,28 @@ void float_array_generate(const char *array_char, int *array_int, int *exponent,
 						if (array_char[i] != '.')
 								if (flag == 0)
 								{
+									if (array_char[i] > '0' && flag_prev_point == 0)
+									    flag_prev_point = 1;
 									curr[0] = array_char[i];
 									array_int[*counter] = atoi(curr);
 									*counter += 1;
 								}
 								else
 								{
+									if (array_char[i] > '0' && flag_after_point == 0)
+										flag_after_point = 1;
 									curr[0] = array_char[i];
-									array_int[*counter] = atoi(curr);
-									*counter += 1;
+									if (flag_prev_point == 1)
+									{
+										array_int[*counter] = atoi(curr);
+										*counter += 1;	
+									}
+									else
+										if (flag_after_point)
+										{
+											array_int[*counter] = atoi(curr);
+										*counter += 1;
+										}
 									*exponent -= 1;
 								}
 						else
