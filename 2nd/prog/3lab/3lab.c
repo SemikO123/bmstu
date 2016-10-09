@@ -7,20 +7,20 @@
 int main(int argc, char **argv)
 {
 
-	//int out_error;
+	int out_error;
 	FILE *input;
 	if (argc != 4)
 	{
 		printf("\nPut names of i/o files and number as parameters\n");
-		return BADPARAMETERS;
+		out_error = BADPARAMETERS;
 	}
 	else
 	{
 		input = fopen(argv[1], "r");
-		if (input == NULL)
+		if (!input)
 		{
 			printf("\nInput file doesn't found\n");
-			return NOFILE;
+			out_error = NOFILE;
 		}
 		else
 		{
@@ -29,10 +29,12 @@ int main(int argc, char **argv)
 			{
 				case -1:
 					printf("\nFile is empty\n");
-					return EMPTYFILE;
+					out_error = EMPTYFILE;
+					break;
 				case 0:
 					printf("\nCan't get numbers from file\n");
-					return BADINPUT;
+					out_error = BADINPUT;
+					break;
 				case 1:
 				{
 					struct list *head = NULL;
@@ -48,7 +50,7 @@ int main(int argc, char **argv)
 						if (atoi(argv[3]) == 0 && argv[3][0] != '0')
 						{
 							printf("Bad number as parameter\n");
-							return BADPARAMETERS;
+							out_error = BADPARAMETERS;
 						}
 						else
 						{
@@ -59,10 +61,13 @@ int main(int argc, char **argv)
 							if (!output)
 							{
 								printf("Output file doesn't found\n");
-								return NOFILE;
+								out_error = NOFILE;
 							}
 							else
+							{
 								print_list(head, 1, output);
+								out_error = OK;
+							}
 							fclose(output);
 						}
 						free_all(head);
@@ -73,7 +78,7 @@ int main(int argc, char **argv)
 			fclose(input);
 		}
 	}
-	return OK;
+	return out_error;
 }
 
 
