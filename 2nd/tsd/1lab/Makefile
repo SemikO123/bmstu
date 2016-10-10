@@ -34,7 +34,7 @@ ft : functionaltests.sh
 	bash functionaltests.sh
 
 rm : 
-	rm *.o *.exem
+	rm *.o *.exe
 
 
 
