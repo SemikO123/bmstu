@@ -15,8 +15,8 @@ int main(void)
 	char znak_result;
 	int flag_point=0;
 	int flag_e=0;
-
-	printf("\nЦелое число (например, -11 22 +33): ");
+	printf("***********************************|---------|---------|---------|\n");
+	printf("Целое число (например, -11 22 +33): ");
 	if (input_int_numbers(integer_num,&znak_int) == -1)
 	{
 		printf("Целое число введено неверно\n");
@@ -24,12 +24,17 @@ int main(void)
 	}
 	int count_of_dig_int = 0;
 	integer_array_generate(integer_num, integer_number, &count_of_dig_int);
+	if (count_of_dig_int > 30)
+	{
+		printf("Целое число введено неверно\n\n");
+		return -1;
+	}
 	printf("Знак = %c \n",znak_int);
 	printf("Число = ");
 	for (int i = 0; i < count_of_dig_int; i++)
 		printf("%d", integer_number[i]);
 	printf("\n\n");
-
+	printf("***************************************************|---------|---------|---------|\n");
 	printf("Вещественное число (например +11.2E-5 .112 112.E1): ");
 	if (input_float_numbers(float_num,&znak_float,&flag_point ,&flag_e) == -1)
 	{
@@ -38,7 +43,11 @@ int main(void)
 	}
 	int count_of_dig_float = 0;
 	float_array_generate(float_num, float_number, &exponent, &count_of_dig_float, &flag_point, &flag_e);
-
+	if (count_of_dig_float > 30)
+	{
+		printf("Вещественное число введено неверно\n\n");
+		return -1;
+	}
 	printf("Знак = %c \n",znak_float);
 	printf("Число = ");
 	for (int i = 0; i < count_of_dig_float ;i++)
