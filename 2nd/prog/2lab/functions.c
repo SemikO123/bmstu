@@ -4,6 +4,39 @@
 #include "errors.h"
 
 
+int array_generate(FILE *file, int *count, int **array)
+{
+	int error_code;
+	int count_of_numbers = 0;
+	switch (len_of_array(file, &count_of_numbers))
+	{
+		case EMPTY:
+			printf("\nFile is empty\n");
+			fclose(file);
+			error_code = EMPTY;
+			break;
+		case BADINPUT:
+			printf("\nCan't get numbers from file\n");
+			fclose(file);
+			error_code = BADINPUT;
+			break;
+		case OK:
+			printf("\nCount of numbers = %d\n", count_of_numbers);
+			rewind(file);
+			if (count)
+			{
+				*array = malloc(count_of_numbers * sizeof(int));
+				if (*array)
+					error_code = array_filling(*array, *array + count_of_numbers, file);
+				else
+					error_code = MEMORYPROBLEM;
+			}
+			*count = count_of_numbers;
+			fclose(file);
+	}
+	return error_code;
+}
+
 /**
 * @function len_of_array
 * This function counts length of array and allocates the memory
@@ -12,7 +45,7 @@
 * @param[out] array array without numbers (for allocating memory)
 * @return error code of error 
 */
-int len_of_array(FILE *file, int *count, int **array)
+int len_of_array(FILE *file, int *count)
 {
 	int num;
 	int error;
@@ -28,15 +61,7 @@ int len_of_array(FILE *file, int *count, int **array)
 			error = OK;
 			*count += 1;
 			while (fscanf(file, "%d", &num) == 1)
-				*count += 1;
-			if (*count)
-			{
-				*array = malloc(*count * sizeof(int));
-				if (*array)
-					error = OK;
-				else
-					error = MEMORYPROBLEM;
-			}
+				*count += 1;		
 	}
 	return error;
 }

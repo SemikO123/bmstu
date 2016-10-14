@@ -66,8 +66,7 @@ int main(void)
 void len_of_array_test(int right_count, int right_code, FILE *file, char *string)
 {
 	int count = 0;
-	int *array;
-	switch (len_of_array(file, &count, &array))
+	switch (len_of_array(file, &count))
 	{
 		case EMPTY:
 			if (right_code == EMPTY)
@@ -86,7 +85,6 @@ void len_of_array_test(int right_count, int right_code, FILE *file, char *string
 				printf("Test %s passed\n",string);
 			else
 				printf("Test %s failed\n",string);
-			free(array);
 			break;
 	}
 }
@@ -122,6 +120,7 @@ void array_filling_test(int *right_array, int count, int right_code, FILE *file,
 			break;
 		}
 	}
+	free(array);
 
 }
 

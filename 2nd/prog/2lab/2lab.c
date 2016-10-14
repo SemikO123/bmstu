@@ -35,37 +35,23 @@ int main(int argc, char **argv)
 		{
 			int count_of_numbers = 0;
 			int *array;
-			switch (len_of_array(file, &count_of_numbers, &array))
+			if (array_generate(file, &count_of_numbers, &array) == 0)
 			{
-				case EMPTY:
-					printf("\nFile is empty\n");
-					fclose(file);
-					out_error = EMPTY;
-					break;
-				case BADINPUT:
-					printf("\nCan't get numbers from file\n");
-					fclose(file);
-					out_error = BADINPUT;
-					break;
-				case OK:
-					printf("\nCount of numbers = %d\n", count_of_numbers);
-					rewind(file);
-					array_filling(array, array + count_of_numbers, file);
-					fclose(file);
-					int min;
-					switch (counting(array, array + count_of_numbers, &min))
-					{
-						case ONEELEMENT:
-							printf("Array has only one element\n");
-							free(array);
-							out_error = ONEELEMENT;
-							break;
-						case OK:
-							printf("Minimum of x[0]*x[1], x[1]*x[2]... = %d\n", min);
-							out_error = OK;
-							free(array);
-					}						
-			}
+				int min;
+				switch (counting(array, array + count_of_numbers, &min))
+				{
+					case OK:
+						printf("Minimum of x[0]*x[1], x[1]*x[2]... = %d\n", min);
+						out_error = OK;
+						free(array);
+						break;
+					case ONEELEMENT:
+						printf("Array has only one element\n");
+						free(array);
+						out_error = ONEELEMENT;
+						break;
+				}
+			}						
 		}
 	}
 	//printf("[debug inf] CODE = %d\n",out_error);

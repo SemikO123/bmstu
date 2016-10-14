@@ -33,6 +33,9 @@ sttests : tests.exe
 vg : 2lab.exe
 	valgrind --tool=memcheck ./2lab.exe input.txt
 
+vgtest : tests.exe
+	valgrind --tool=memcheck ./tests.exe
+
 rm : 
 	rm *.exe *.o
 

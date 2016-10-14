@@ -1,8 +1,9 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-int len_of_array(FILE *file, int *count, int **array);
+int len_of_array(FILE *file, int *count);
 int array_filling(int *begin, int *end, FILE *file);
+int array_generate(FILE *file, int *count, int **array);
 int counting(int *begin, int *end, int *min);
 
 void len_of_array_test(int right_count, int right_code, FILE *file, char *string);
