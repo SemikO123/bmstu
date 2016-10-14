@@ -25,13 +25,13 @@ tests.o : tests.c functions.h errors.h
 	$(CC) $(FLAGS) -c tests.c
 
 st : 3lab.exe
-	./3lab.exe input.txt output.txt 7
+	./3lab.exe input.txt output.txt 1
 
 stt : tests.exe
 	./tests.exe 
 
 vlgr : 3lab.exe
-	valgrind --tool=memcheck ./3lab.exe input.txt output.txt 6
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./3lab.exe input.txt output.txt 6
 
 vlgrt : tests.exe
 	valgrind --tool=memcheck ./tests.exe

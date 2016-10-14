@@ -6,5 +6,6 @@
 #define NOFILE -2
 #define EMPTYFILE -3
 #define BADINPUT -4
+#define MEMORYPROBLEM -5
 
 #endif // #ifndef _ERRORS_H_

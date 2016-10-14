@@ -5,6 +5,38 @@
 #include "errors.h"
 
 
+struct list *read_from_file(FILE *input, int *out_error)
+{
+	int int_number;
+	switch (fscanf(input, "%d", &int_number))
+	{
+		case -1:
+			printf("File is empty\n");
+			*out_error = EMPTYFILE;
+			break;
+		case 0:
+			printf("Can't get numbers from file\n");
+			*out_error = BADINPUT;
+			break;
+		case 1:
+		{
+			*out_error = OK;
+			struct list *head = create_new(int_number);
+			if (head)
+			{
+				while (fscanf(input, "%d", &int_number) == 1)			
+					head = add_new_element(head, int_number);
+				printf("List:   ");
+				print_list(head, 0, NULL);
+				return head;
+			}
+			else 
+				*out_error = MEMORYPROBLEM;
+		}
+	}
+	return NULL;
+}
+
 /*
 * @function create_new
 * This function creates new element of list
@@ -64,18 +96,16 @@ struct list* add_next(struct list *previous, struct list *current, struct list *
 void print_list(struct list *head, int flag_printto, FILE *file)
 {
 	struct list *current;
-	printf("List: ");
 	for (current = head ; current; current = current->next)
 		printf("%d ", current->number);
 	printf("\n");
 	if (flag_printto == 1)
 	{
-		fprintf(file, "List: ");
+		// fprintf(file, "List: ");
 		for ( ; head; head = head->next)
 			fprintf(file, "%d ", head->number);
 		fprintf(file, "\n");
 	}
-
 }
 
 /*
@@ -126,7 +156,7 @@ struct list* add_new_element(struct list *head, int number)
 			if (previous->next == NULL)
 				previous = add_next(previous, current, new); 
 		}
-	}	
+	}
 	return head;
 }
 

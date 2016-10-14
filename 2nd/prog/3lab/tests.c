@@ -6,7 +6,23 @@
 
 int main(void)
 {
-	printf("------> Test function 'add_previous' <------\n");
+	printf("-----> Test function 'read_from_file' <-----\n");
+	int right1[4] = {1,3,5,6};
+	printf("Test #1. ");
+	read_from_file_test("tests/1.txt", right1, OK, 4, "                                    ");
+
+	int right2[1] = {0};
+	printf("Test #2. ");
+	read_from_file_test("tests/2.txt", right2, OK, 1, "                                    ");
+
+	printf("Test #3. ");
+	read_from_file_test("tests/empty.txt", right2, EMPTYFILE, 1, "                                    ");
+
+	printf("Test #4. ");
+	read_from_file_test("tests/bad.txt", right2, BADINPUT, 1, "                                    ");
+
+
+	printf("\n------> Test function 'add_previous' <------\n");
 	int adding1[6] = {5,3,4,2,3,1};
 	int right_answer1[6] = {1,3,2,4,3,5};
 	add_previous_test(adding1, right_answer1, "Test #1 (5 3 4 2 3 1)->(1 3 2 4 3 5)", 6);
@@ -15,11 +31,13 @@ int main(void)
 	int right_answer2[1] = {1};
 	add_previous_test(adding2, right_answer2, "Test #2 (1)->(1)                    ", 1);
 
+
 	printf("\n--------> Test function 'add_next' <--------\n");
 	int adding3[5] = {1,2,3,5,6};
 	int right_answer3[5] = {1,2,3,5,6};
 	struct list *head = NULL;
 	head = add_next_test(adding3, right_answer3, "Test #1 (1 2 3 5 6)->(1 2 3 5 6)    ", 5, head);
+
 
 	printf("\n---->  Test function 'add_new_element' <----\n");
 	int right_answer4[6] = {1,2,3,4,5,6};	
@@ -29,16 +47,35 @@ int main(void)
 	int right_answer6[8] = {0,1,2,3,4,5,6,7};
 	head = add_new_element_test(right_answer6, 7, "Test #3 (+element '7' in the end)   ", 8, head);
 
+
 	printf("\n------>  Test function 'print_list' <-------\n");
-	char result[] = "List: 0 1 2 3 4 5 6 7";
-	int count_of_symbols = 21;
+	char result[] = "0 1 2 3 4 5 6 7";
+	int count_of_symbols = 15;
 	FILE *file = fopen("test.txt", "w");
 	printf("Test #1. Result: ");
 	print_list_test(head, result, file, count_of_symbols);
 	free_all(head);
 }
 
-void print_list_test(struct list *head, char *result, FILE *file, int count)
+void read_from_file_test(const char *filename, const int *right, int right_error, int count, const char *text)
+{
+	int error;
+	struct list *head = NULL;
+	FILE *file = fopen(filename, "r");
+	head = read_from_file(file, &error);
+	if (error != right_error)
+		printf("%s FAILED\n",text);
+	else
+		if (error == OK)
+			compare(head, count, right, text);
+		else
+			printf("%s PASSED\n",text);
+	free_all(head);
+	fclose(file);
+	head = NULL;
+}
+
+void print_list_test(struct list *head, const char *result, FILE *file, int count)
 {
 	print_list(head, 1, file);
 	fclose(file);
@@ -60,50 +97,28 @@ void print_list_test(struct list *head, char *result, FILE *file, int count)
 	fclose(file);
 }
 
-struct list *add_new_element_test(int *right, int data, char *text, int count, struct list *head)
+struct list *add_new_element_test(const int *right, int data, const char *text, int count, struct list *head)
 {
 	head = add_new_element(head, data);
-	int flag = 1;
-	struct list *current = head;
-	for (int i = 0; i < count; i++)
-	{
-		if (current->number != right[i])
-			flag = 0;
-		current = current->next;
-	}
-	if (flag == 1)
-		printf("%s PASSED\n", text);
-	else
-		printf("%s FAILED\n", text);
+	compare(head, count, right, text);
 	return head;	
 }
 
-void add_previous_test(int *array, int *right, char *text, int count)
+void add_previous_test(const int *array, const int *right, const char *text, int count)
 {
-	struct list *head = NULL, *current, *new;
+	struct list *head = NULL, *new;
 	for (int i = 0; i < count; i++)
 	{
 		new = create_new(array[i]);
 		head = add_previous(head, new);
 	}
-	int flag = 1;
-	current = head;
-	for (int i = 0; i < count; i++)
-	{
-		if (current->number != right[i])
-			flag = 0;
-		current = current->next;
-	}
-	if (flag == 1)
-		printf("%s PASSED\n", text);
-	else
-		printf("%s FAILED\n", text);
+	compare(head,count, right, text);
 	free_all(head);
 }
 
-struct list *add_next_test(int *array, int *right, char *text, int count, struct list *head)
+struct list *add_next_test(const int *array, const int *right, const char *text, int count, struct list *head)
 {
-	struct list *current, *previous, *new;
+	struct list *previous, *new;
 	for (int i = 0; i < count; i++)
 	{
 		if (!head)
@@ -118,8 +133,14 @@ struct list *add_next_test(int *array, int *right, char *text, int count, struct
 				previous = add_next(previous, NULL, new);
 		}
 	}
+	compare(head, count, right, text);
+	return head;
+}
+
+void compare(struct list *head, int count, const int *right, const char *text)
+{
 	int flag = 1;
-	current = head;
+	struct list *current = head;
 	for (int i = 0; i < count; i++)
 	{
 		if (current->number != right[i])
@@ -130,5 +151,4 @@ struct list *add_next_test(int *array, int *right, char *text, int count, struct
 		printf("%s PASSED\n", text);
 	else
 		printf("%s FAILED\n", text);
-	return head;
 }
