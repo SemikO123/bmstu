@@ -1,5 +1,5 @@
 CC := gcc
-FLAGS := -std=c99 -Wall -Werror -pedantic
+FLAGS := -std=gnu99 -Wall -Werror -pedantic
 
 ifeq ($(mode), debug)
 	FLAGS += -g3
@@ -9,20 +9,20 @@ ifeq ($(mode), release)
 	FLAGS += -DNDEBUG -g0
 endif
 
-4lab.exe : 4lab.o functions.o
-	$(CC) -o  4lab.exe 4lab.o functions.o
+tests.exe : tests.o functions.o
+	$(CC) -o  tests.exe tests.o functions.o
 
-4lab.o : 4lab.c functions.h
-	$(CC) $(FLAGS) -c 4lab.c functions.h
+tests.o : tests.c functions.h
+	$(CC) $(FLAGS) -c tests.c functions.h
 
 functions.o : functions.c functions.h
 	$(CC) $(FLAGS) -c functions.c functions.h
 
-vlgr : 4lab.exe
-	valgrind --tool=memcheck ./4lab.exe
+vlgr : tests.exe
+	valgrind --tool=memcheck ./tests.exe
 
-st : 4lab.exe
-	./4lab.exe
+st : tests.exe
+	./tests.exe
 
 rm : 
 	rm *.o *.exe
