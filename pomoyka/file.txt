@@ -1,0 +1,4 @@
+potato potato potato orange banana
+banana orange
+orange banana
+potato
