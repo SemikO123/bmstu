@@ -18,5 +18,8 @@ endif
 st : 2lab.exe
 	./2lab.exe
 
+vlgr : 2lab.exe
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./2lab.exe 
+
 rm :
 	rm *.o *.exe
