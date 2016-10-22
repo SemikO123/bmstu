@@ -1,0 +1,6 @@
+File contains other numbers which weren't included in array
+6.000 
+7.000 
+8.000 
+9.000 
+10.000 

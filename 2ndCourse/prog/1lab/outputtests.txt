@@ -1,0 +1,3 @@
+
+Average is -0.338 
+Look in output file
