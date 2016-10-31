@@ -1,8 +1,8 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-#define N 100
-#define LENGTH 1000
+#define N 3
+#define LENGTH 2000
 #define RESET   "\033[0m"
 #define RED     "\033[1;31m"
 #define YELLOW  "\033[1;33m"

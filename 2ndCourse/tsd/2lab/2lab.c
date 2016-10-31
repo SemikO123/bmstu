@@ -38,16 +38,23 @@ int main(void)
 	}
 	else
 	{
+		int flag = 0;
+		for (int i = 0; string[i] != '\0'; i++)
+			if (strchr("(){}[]", string[i]))
+				flag = 1;
+		if (flag == 1)
+		{
 		char *array_free[N];
-		int time1 = clock();
+		int time11 = clock();
 		if (filling_stack_l(&head, string) != INCORRECT)
 		{
 			printf("\nВыполнение задания с реализацией стека СПИСКОМ:\n");
 			print_stack_l(head);
 			task_l(head, array_free);
 			printf("%s%s%s",RED ,error_names[error], RESET);
+			int time12 = clock();
 			printf("%s* Используемая память - %d байт%s\n",YELLOW, (int)(size_l(head)*sizeof(struct stack_tl)), RESET);
-			printf("%s* Времени потребовалось - %d тактов%s\n",YELLOW, time1, RESET);
+			printf("%s* Времени потребовалось - %d тактов%s\n",YELLOW, time12-time11, RESET);
 			printf("Напечатать свободные области памяти? (y/n)?: ");
 			char answer[2];
 			scanf("%s",answer);
@@ -59,7 +66,7 @@ int main(void)
 			}
 		}
 		printf("_________________________________________________________\n");
-		int time2 = clock();
+		int time21 = clock();
 		int size = 0;
 		if (filling_stack_a(&stack, string, &size) != INCORRECT)
 		{
@@ -67,13 +74,17 @@ int main(void)
 			print_stack_a(&stack);
 			task_a(&stack);
 			printf("%s%s%s",RED ,error_names[error], RESET);
+			int time22 = clock();
 			printf("%s* Используемая память - %d байт%s\n",YELLOW, size+(int)sizeof(stack.size), RESET);
-			printf("%s* Времени потребовалось - %d тактов%s\n",YELLOW, time2, RESET);
+			printf("%s* Времени потребовалось - %d тактов%s\n",YELLOW, time22-time21, RESET);
 		}
 		else
 			printf("%s",error_names[INCORRECT]);
 
-		
+			
+		}
+		else
+			printf("%sВы не ввели ни одной скобки. Нечего проверять%s\n", RED, RESET);
 	}
 	free_all(&head);
 	

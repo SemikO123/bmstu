@@ -1,5 +1,5 @@
 CC := gcc
-FLAGS := -std=c99 -Wall -Werror -pedantic
+FLAGS := -std=c99 -Wall -Werror -pedantic 
 
 ifeq ($(mode), debug)
 	FLAGS += -g3

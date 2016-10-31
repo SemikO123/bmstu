@@ -44,29 +44,34 @@ int pop_a(struct stack_ta *stack)
 	{
 		error = OK;
 		stack->size--;
-		return stack->data[stack->size];
+		return OK;
 	}
 }
 
 void print_stack_a(struct stack_ta *stack)
 {
-	printf("%s* Cтек: %s", YELLOW,    RESET);
-	for (int i = 0; i < stack->size; i++)
-		printf("%c ",stack->data[i]);
-	//printf("\n");
-	printf("\nВывести адреса элементов стека? (y/n): ");
-	char answer[2];
-	scanf("%s", answer);
-	if (*answer == 'y')
-	{	
-		printf("%s* Адреса элементов стека: %s", YELLOW,    RESET);
+	if (stack->size != 0)
+	{
+		printf("%s* Cтек: %s", YELLOW,    RESET);
 		for (int i = 0; i < stack->size; i++)
-		{
-			char *p = &stack->data[i];
-			printf("%p ",(void*)p);
-		}
-		printf("\n");
+			printf("%c ",stack->data[i]);
+		//printf("\n");
+		printf("\nВывести адреса элементов стека? (y/n): ");
+		char answer[2];
+		scanf("%s", answer);
+		if (*answer == 'y')
+		{	
+			printf("%s* Адреса элементов стека: %s", YELLOW,    RESET);
+			for (int i = 0; i < stack->size; i++)
+			{
+				char *p = &stack->data[i];
+				printf("%p ",(void*)p);
+			}
+			printf("\n");
+		}	
 	}
+	else
+		printf("%s* Стек пуст%s\n", YELLOW, RESET);
 
 }
 
@@ -170,24 +175,30 @@ struct stack_tl* pop_l(struct stack_tl **head)
 
 void print_stack_l(struct stack_tl *head)
 {
-	printf("%s* Стек: %s", YELLOW,    RESET);
-	struct stack_tl *current;
-	for (current = head; current; current = current->next)	
-		printf("%c ", current->data);
-	//printf("\n");
-	printf("\nВывести адреса элементов стека? (y/n): ");
-	char answer[2];
-	scanf("%s", answer);
-	if (*answer == 'y')
+	if (size_l(head) != 0)
 	{
-		printf("%s* Адреса элементов стека: %s", YELLOW,    RESET);
-		for (current = head; current; current = current->next)
+		printf("%s* Стек: %s", YELLOW,    RESET);
+		struct stack_tl *current;
+		for (current = head; current; current = current->next)	
+			printf("%c ", current->data);
+		//printf("\n");
+		printf("\nВывести адреса элементов стека? (y/n): ");
+		char answer[2];
+		scanf("%s", answer);
+		if (*answer == 'y')
 		{
-			char *p = &current->data;
-			printf("%p ", (void*)p);
-		}
-		printf("\n");
+			printf("%s* Адреса элементов стека: %s", YELLOW,    RESET);
+			for (current = head; current; current = current->next)
+			{
+				char *p = &current->data;
+				printf("%p ", (void*)p);
+			}
+			printf("\n");
+		}	
 	}
+	else
+		printf("%s* Стек пуст%s\n", YELLOW, RESET);
+
 }
 
 
