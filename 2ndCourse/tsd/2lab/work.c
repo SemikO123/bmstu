@@ -114,7 +114,8 @@ int main()
 							printf("%s* Свободные области: %s\n", YELLOW, RESET);
 							for (int i = 0; i < count; i++)
 							{
-								printf("   %p\n", array_free[i]);
+								if (array_free[i] != NULL)
+									printf("   %p\n", array_free[i]);
 							}
 						}
 						break;
