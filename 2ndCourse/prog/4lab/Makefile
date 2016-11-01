@@ -12,6 +12,12 @@ endif
 tests.exe : tests.o functions.o
 	$(CC) -o  tests.exe tests.o functions.o
 
+4lab.exe : 4lab.o functions.o
+	$(CC) -o 4lab.exe 4lab.o functions.o
+
+4lab.o : 4lab.c functions.h
+	$(CC) $(FLAGS) -c 4lab.c functions.h
+
 tests.o : tests.c functions.h
 	$(CC) $(FLAGS) -c tests.c functions.h
 
@@ -23,6 +29,9 @@ vlgr : tests.exe
 
 st : tests.exe
 	./tests.exe
+
+prog : 4lab.exe
+	./4lab.exe input.txt output.txt
 
 rm : 
 	rm *.o *.exe

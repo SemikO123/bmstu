@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "functions.h"
 #include <stdlib.h>
+#include <string.h>
 
 /*Функция strchr выполняет поиск первого вхождения символа symbol 
 * в строку string. Возвращает указатель на первое вхождение символа в строке.
@@ -42,11 +43,64 @@ int strlen_f(const char *string)
 }
 
 
-// int read_string(char *string, FILE *file)
+char *read_line(FILE *file)
+{
+	int size = 2;
+	int count = 0;
+	int symbol;
+	char *string = malloc(2 * sizeof(char));
+	if (!string)
+		return NULL;
+	else
+	{
+		symbol = fgetc(file);
+		while (symbol != EOF)
+		{
+			if (count >= size)
+			{
+				size *= 2;
+				char *new_string = malloc(size* sizeof(char)); // СПРОСИТЬ 
+				if (!new_string)
+					return NULL;
+				else
+				{
+					strcpy(new_string,string);
+					free(string);
+					string = new_string;
+				}
+			}
+			string[count++] = symbol;
+			symbol = fgetc(file);
+		}
+		string[count-1] = '\0';
+	}
+	return string;	
+}
+
+// char *change_string(const char *string, const char *old, const char *new)
 // {
-// 	char symbol;
-// 	while (fscanf(file, "%c", &symbol) != EOF)
+// 	int i = 0;
+// 	while (string[i] != '\0')
 // 	{
-// 		printf("%c",symbol;)	
+// 		int flag = 0;
+// 		for (int j = 0; j < strlen(old); j++)
+// 			if (string[i] == old[j])
+// 			{
+// 				flag = 1;
+// 				i++;
+// 			}
+// 			else
+// 			{
+// 				flag = 0;
+// 				break;
+// 			}
+// 		if (flag == 1)
+// 			for (int j == 0; j < strlen(new); j++)
+// 				new_string[i++] = new[j];
+// 		else
+// 		{
+// 			new_string[i] = string[i];
+// 			i++;
+// 		}
 // 	}
 // }
