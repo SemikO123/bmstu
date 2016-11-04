@@ -21,4 +21,10 @@ void print_list(struct list *head, FILE *out);
 char *get_word(const char *string);
 struct list *take_words(FILE *f);
 
+void test(int flag, const char *text);
+void length_test(const char *string, int result, const char *text);
+void get_word_test(const char *string, int begin, const char *result, const char *text);
+int size(struct list *head);
+void take_words_test(const char *result, int count, const char *text, FILE *file);
+
 #endif //_FUNCTIONS_H_

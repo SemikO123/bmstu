@@ -68,13 +68,14 @@ char *get_word(const char *string)
 	return word;
 }
 
+
 struct list *take_words(FILE *f)
 {
 	struct list *head = NULL;
 	char string[N+1];
 	while (fgets(string, N+1, f) != NULL)
 	{
-		printf("\n * STRING = %s * LEN = %d\n", string, (int)strlen(string));
+		//printf("\n * STRING = %s * LEN = %d\n", string, (int)strlen(string));
 		int length = strlen(string);
 		int flag = 1;
 		for (int i = 0; i < length; i++)
@@ -86,10 +87,11 @@ struct list *take_words(FILE *f)
 				{
 					char *new_word = get_word(string+i);
 					head = add(head, new(new_word));	
-					printf("Current word: %s\n", head->data);
+					//printf("Current word: %s\n", head->data);
 					flag = 0;
 				}
 		}
 	}
 	return head;			
 }
+
