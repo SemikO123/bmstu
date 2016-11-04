@@ -1,4 +1,6 @@
+---
 Account for BMSTU Labs
-***
-gorokhovairina
+---
+@gorokhovairina
 **irinqut@gmail.com**
+Irina Gorokhova
