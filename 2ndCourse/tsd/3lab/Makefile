@@ -9,14 +9,14 @@ ifeq ($(mode), release)
 	FLAGS += -DNDEBUG -g0
 endif
 
-3.exe : 3.o #functions.o
-	$(CC) -o 3.exe 3.o #functions.o
+3.exe : 3.o functions.o
+	$(CC) -o 3.exe 3.o functions.o
 
-3.o : 3.c #functions.h
-	$(CC) $(FLAGS) -c 3.c
+3.o : 3.c functions.h structurs.h
+	$(CC) $(FLAGS) -c 3.c functions.h structurs.h
 
-#functions.o : functions.c functions.h
-#	$(CC) $(FLAGS) -c functions.c
+functions.o : functions.c functions.h structurs.h
+	$(CC) $(FLAGS) -c functions.c functions.h structurs.h
 
 st : 3.exe
 	./3.exe
