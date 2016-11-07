@@ -376,6 +376,23 @@ unsigned long long int shell_table(book_t *books, int *count)
 	return time2-time1;
 }
 
+void search(book_t *books, int *count)
+{
+	printf("Введите отрасль технической литературы: ");
+	char sector[N];
+	scanf("%s", sector);
+	printf("Введите год издания: ");
+	int year;
+	scanf("%d", &year);
+	printf("%sСписок книг отрасли '%s' года издания не позже %d%s\n",RED, sector, year,RESET);
+	for (int i = 0; i < *count; i++)
+	{
+		if (strcmp(books[i].book_type.technical.sector, sector) == 0 && books[i].book_type.technical.year <= year && books[i].book_type.technical.place == 1)
+			print_table(books, i);
+	}
+
+}
+
 
 int main(int argc, char **argv)
 {	
@@ -419,7 +436,7 @@ int main(int argc, char **argv)
 	book_t books[MAXCOUNT];
 	key key_table[MAXCOUNT];
 	load_table(table, &count_of_records, books, key_table);
-	
+	int alreadysorted = 0;
 	int menu;
 	do
 	{	
@@ -429,7 +446,7 @@ int main(int argc, char **argv)
 		printf("* 3 Сортировка таблицы\n");
 		printf("* 4 Добавление новой записи\n");
 		printf("* 5 Удаление записи\n");
-		printf("* 6 Отчет о времени сортировки\n");
+		printf("* 6 Отчет о времени сортировки и памяти\n");
 		printf("* 7 Поиск записи по указанной отрасли и году\n");
 		printf("* 8 Выход%s\n", RESET);
 		printf("Выберите пункт меню:");
@@ -445,15 +462,24 @@ int main(int argc, char **argv)
 				break;
 			}
 			case 2:
-				bubblesort_keys(books, key_table, &count_of_records);
-				printf("%sСписок книг, отсортированный по количеству страниц.%s\n",RED, RESET);
-				printf("-----------------------------------------\n");
-				for (int i = 0; i < count_of_records; i++)
-					print_table(books, key_table[i].number);
+				printf("Sorted? %d\n", alreadysorted);
+				if (!alreadysorted)
+				{
+					bubblesort_keys(books, key_table, &count_of_records);
+					printf("%sСписок книг, отсортированный по количеству страниц.%s\n",RED, RESET);
+					printf("-----------------------------------------\n");
+					for (int i = 0; i < count_of_records; i++)
+						print_table(books, key_table[i].number);
+				}
+				else
+					for (int i = 0; i < count_of_records; i++)
+						print_table(books, i);
+
 				break;
 			case 3:
 				bubblesort_table(books, &count_of_records);
 				printf("%sТаблица отсортирована.%s\n",RED,RESET);
+				alreadysorted = 1;
 				break;
 			case 4:
 				add_new_rec(books, key_table, &count_of_records, filename);
@@ -462,12 +488,13 @@ int main(int argc, char **argv)
 				del_rec(books, key_table, &count_of_records, filename);
 				break;
 			case 6:
-				printf("Сортировка таблицы методом пузырька: %lld тиков\n", sort_table_bubble);
+				printf("%sСортировка таблицы методом пузырька: %lld тиков\n",RED ,sort_table_bubble);
 				printf("Сортировка таблицы методом Шелла: %lld тиков\n", sort_table_shell);
 				printf("Сортировка таблицы ключей методом пузырька: %lld тиков\n", sort_keys_bubble);
-				printf("Сортировка таблицы ключей методом Шелла: %lld тиков\n", sort_keys_shell);
+				printf("Сортировка таблицы ключей методом Шелла: %lld тиков%s\n", sort_keys_shell, RESET);
 				break;
 			case 7:
+				search(books, &count_of_records);
 				break;
 			case 8:
 				fclose(table);
