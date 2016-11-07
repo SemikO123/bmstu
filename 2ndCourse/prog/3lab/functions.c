@@ -132,6 +132,7 @@ void free_all(struct list *head)
 **/
 struct list* add_new_element(struct list *head, int number)
 {
+	assert(head);
 	struct list *new, *previous, *current;
 	new = create_new(number);
 	if (new)

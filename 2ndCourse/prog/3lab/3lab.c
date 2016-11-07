@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 			head = read_from_file(input, &error);
 			if (error == OK)
 			{
-				if (strtol(argv[3], NULL, 0) == 0 && argv[3][0] != '0')
+				if (strtol(argv[3], NULL, 10) == 0 && argv[3][0] != '0')
 				{
 					printf("Bad number as parameter\n");
 					out_error = BADPARAMETERS;

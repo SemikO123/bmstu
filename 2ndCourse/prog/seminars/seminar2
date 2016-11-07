@@ -132,11 +132,19 @@ int main(void)
 	int a[0] = {0,1,2,3,4};
 	int *p[] = {a,a+1,a+2,a+3,a+4};
 	int **pp = p;
-	printf("%d %d\n", a, *a); 		 //адрес_массива_а 0
-	printf("%d %d %d\n", p, *p, **p);	 //адрес массива_р адрес_массива_а 0
-	printf("%d %d %d \n", pp, *pp, **pp);	 //адрес_массива_р адрес_массива_а 0
+	printf("%d %d\n", a, *a); 		 // адрес_массива_а 0
+	printf("%d %d %d\n", p, *p, **p);	 // адрес массива_р адрес_массива_а 0
+	printf("%d %d %d \n", pp, *pp, **pp);	 // адрес_массива_р адрес_массива_а 0
 	pp++;
-	printf("%d %d %d\n", pp-p, *pp-a, **pp); //1 1 1
+	printf("%d %d %d\n", pp-p, *pp-a, **pp); // 1 1 1
+	*pp++;
+	printf("%d %d %d\n", pp-p, *pp-a, **pp); // 2 2 2
+	*++pp;
+	printf("%d %d %d\n", pp-p, *pp-a, **pp); // 3 3 3
+	++*pp;
+	printf("%d %d %d\n", pp-p, *pp-a, **pp); // 3 4 4
+	
+	
 }
 
 

@@ -2,10 +2,6 @@
 #include "functions.h"
 #include <stdlib.h>
 
-#define BADPARAMETERS -1
-#define NOFILE -2
-#define MEMPROBLEM -3
-#define OK 0
 
 char *read_line(FILE *file);
 

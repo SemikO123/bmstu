@@ -1,4 +1,4 @@
-CC := gcc
+maCC := gcc
 FLAGS := -std=c99 -Wall -Werror -pedantic
 
 ifeq ($(mode), debug)
