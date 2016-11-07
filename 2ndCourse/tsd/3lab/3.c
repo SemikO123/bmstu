@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define RESET   "\033[0m"
 #define RED     "\033[1;31m"
@@ -65,14 +66,16 @@ static char *art[] =
 	"Стихи"
 };
 
-int load_table(FILE *file, int *count, book_t *books)
+int load_table(FILE *file, int *count, book_t *books, key *key_table)
 {
 	while (fscanf(file, "%s", books[*count].author) != EOF && *count < MAXCOUNT)
 	{
 		books[*count].number = *count;
+		key_table[*count].number = *count;
 		fscanf(file, "%s", books[*count].title);
 		fscanf(file, "%s", books[*count].publisher);
 		fscanf(file, "%d", &books[*count].pages);
+		key_table[*count].pages = books[*count].pages;
 		fscanf(file, "%d", &books[*count].type);
 		if (books[*count].type == 0)
 		{
@@ -96,15 +99,11 @@ int load_table(FILE *file, int *count, book_t *books)
 }
 
 
-void print_table(book_t *books, int *count)
+void print_table(book_t *books, int i)
 {
-	printf("-----------------------------------------\n");
-	int i = 0;
-	while (i < *count)
-	{
-		if (books[i].pages)
-		{			
-		printf("Запись №%d.\n",i+1);
+	if (books[i].pages)
+	{			
+		printf("Запись №%d.\n", i+1);
 		printf("Автор: %s\n", books[i].author);
 		printf("Название: %s\n", books[i].title);
 		printf("Издательство: %s\n",books[i].publisher);
@@ -118,8 +117,6 @@ void print_table(book_t *books, int *count)
 		if (books[i].type == 1)
 			printf("Жанр: %s\n", art[books[i].book_type.art.kind]);
 		printf("-----------------------------------------\n");
-		i++;
-		}
 	}
 }
 
@@ -130,14 +127,29 @@ void replace_spaces(char *string)
 			string[i] = '_';
 }
 
+int read_line(char *s, int n)
+{
+	int ch, i = 0;
+	while ((ch = getchar()) != '\n' && ch != EOF)
+		if (i < n - 1)
+			s[i++] = ch;
+	s[i] = '\0';
+	return i;
+}
 
-int add_new_rec(book_t *books, int *count, char *filename)
+
+int add_new_rec(book_t *books,key *key_table ,int *count, char *filename)
 {
 	printf("%s Добавление новой записи%s\n", RED, RESET);
 	books[*count].number = *count;
-	printf("Введите автора книги (вместо пробелов '_'): ");
+	key_table[*count].number = *count;
 	char string[N];
-	scanf("%s", string);
+
+	fgets(string, N, stdin);
+	printf("Введите автора книги: ");
+	//scanf("%s", string);
+
+	read_line(string, N);
 	if (strlen(string) < N)
 	{
 		replace_spaces(string);
@@ -149,8 +161,9 @@ int add_new_rec(book_t *books, int *count, char *filename)
 		return -1;
 	}
 
-	printf("Введите название книги (вместо пробелов '_'): ");
-	scanf("%s", string);
+	printf("Введите название книги: ");
+	//scanf("%s", string);
+	read_line(string, N);
 	if (strlen(string) < N)
 	{
 		replace_spaces(string);
@@ -162,8 +175,9 @@ int add_new_rec(book_t *books, int *count, char *filename)
 		return -1;
 	}
 	
-	printf("Введите название издательства (вместо пробелов '_'): ");
-	scanf("%s", string);
+	printf("Введите название издательства: ");
+	//scanf("%s", string);
+	read_line(string, N);
 	if (strlen(string) < N)
 	{
 		replace_spaces(string);
@@ -179,7 +193,10 @@ int add_new_rec(book_t *books, int *count, char *filename)
 	int number;
 	scanf("%d", &number);
 	if (number > 0)
+	{
 		books[*count].pages = number;
+		key_table[*count].pages = number;
+	}
 	else
 	{
 		printf("Incorrect input\n");
@@ -193,8 +210,9 @@ int add_new_rec(book_t *books, int *count, char *filename)
 		books[*count].type = number-1;
 		if (number == 1)
 		{
-			printf("Введите отрасль (вместо пробелов '_'): ");
+			printf("Введите отрасль: ");
 			scanf("%s", string);
+			//read_line(string, N);
 			if (strlen(string) < N)
 			{
 				replace_spaces(string);
@@ -258,44 +276,196 @@ int add_new_rec(book_t *books, int *count, char *filename)
 	return 0;
 }
 
+int del_rec(book_t *books,key *key_table ,int *count, char *filename)
+{
+	printf("%s Удаление записи%s\n", RED, RESET);
+	printf("Введите номер записи (от 1 до %d), которую вы хотите удалить: ", *count);
+	int number;
+	scanf("%d", &number);
+	number--;
+	if (number > 0 && number < *count)
+	{
+		int i = 0;
+		while (i < *count)
+		{
+			if (books[i].number == number) 
+			{
+				for (int j = i; j < *count; j++)
+				{
+					books[j] = books[j+1];
+					key_table[j] = key_table[j+1];
+				}
+				(*count)--;
+			}
+			i++;
+		}
+	}
+	else
+		printf("Нет такой записи\n");
+	return 0;
+}
+
+unsigned long long int tick(void)
+{
+	unsigned long long int time = 0;
+	__asm__ __volatile__ ("rdtsc" : "=A" (time));
+	return time;
+}
+
+unsigned long long int bubblesort_keys(book_t *books, key *key_table, int *count)
+{
+	unsigned long long int time1, time2;
+	time1 = tick();
+	for (int i = 0; i < *count; i++)
+		for (int j = *count - 1; j > i; j--)
+			if (key_table[j].pages < key_table[j-1].pages)
+			{
+				key tmp = key_table[j];
+				key_table[j] = key_table[j-1];
+				key_table[j-1] = tmp;
+			}
+	time2 = tick();
+	return time2-time1;
+}
+
+unsigned long long int shell_keys(book_t *books, key *key_table, int *count)
+{
+	unsigned long long int time1, time2;
+	time1 = tick();
+	for (int mid = *count / 2; mid > 0; mid /= 2)
+		for (int i = mid; i < *count; i++)
+			for (int j = i - mid; (j >= 0) && (key_table[j+mid].pages < key_table[j].pages); j -= mid)
+			{
+				key tmp = key_table[j];
+				key_table[j] = key_table[j+mid];
+				key_table[j+mid] = tmp;
+			}
+	time2 = tick();
+	return time2-time1;
+}
+
+unsigned long long int bubblesort_table(book_t *books, int *count)
+{
+	unsigned long long int time1, time2;
+	time1 = tick();
+	for (int i = 0; i < *count; i++)
+		for (int j = *count-1; j > i; j--)
+			if (books[j].pages < books[j-1].pages)
+			{
+				book_t tmp = books[j];
+				books[j] = books[j-1];
+				books[j-1] = tmp;
+			}
+	time2 = tick();
+	return time2-time1;
+}
+
+unsigned long long int shell_table(book_t *books, int *count)
+{
+	unsigned long long int time1, time2;
+	time1 = tick();
+	for (int mid = *count / 2; mid > 0; mid /= 2)
+		for (int i = mid; i < *count; i++)
+			for (int j = i - mid; (j >= 0) && (books[j+mid].pages < books[j].pages); j -= mid)
+			{
+				book_t tmp = books[j];
+				books[j] = books[j+mid];
+				books[j+mid] = tmp;
+			}
+	time2 = tick();
+	return time2-time1;
+}
+
+
 int main(int argc, char **argv)
 {	
 	char filename[] = "table.txt";
 	FILE *table = fopen(filename, "r");
+	unsigned long long int sort_keys_bubble, sort_keys_shell, sort_table_bubble, sort_table_shell;
+	{
+		int count_of_records = 0;
+		book_t books[MAXCOUNT];
+		key key_table[MAXCOUNT];
+		load_table(table, &count_of_records, books, key_table);
+		sort_keys_bubble = bubblesort_keys(books, key_table, &count_of_records);
+	}
+	rewind(table);
+		{
+		int count_of_records = 0;
+		book_t books[MAXCOUNT];
+		key key_table[MAXCOUNT];
+		load_table(table, &count_of_records, books, key_table);
+		sort_table_bubble = bubblesort_table(books, &count_of_records);
+	}
+	rewind(table);
+	{
+		int count_of_records = 0;
+		book_t books[MAXCOUNT];
+		key key_table[MAXCOUNT];
+		load_table(table, &count_of_records, books, key_table);
+		sort_keys_shell = shell_keys(books, key_table, &count_of_records);
+	}
+	rewind(table);
+		{
+		int count_of_records = 0;
+		book_t books[MAXCOUNT];
+		key key_table[MAXCOUNT];
+		load_table(table, &count_of_records, books, key_table);
+		sort_table_shell = shell_table(books, &count_of_records);
+	}
+	rewind(table);
+
 	int count_of_records = 0;
 	book_t books[MAXCOUNT];
-	load_table(table, &count_of_records, books);
+	key key_table[MAXCOUNT];
+	load_table(table, &count_of_records, books, key_table);
+	
 	int menu;
 	do
 	{	
 		printf("\n%sМЕНЮ:\n", YELLOW);
-		printf("* 1 Вывод таблицы на экран \n");
-		printf("* 2 Упорядочивание таблицы по ключам\n");
+		printf("* 1 Вывод элементов на экран\n");
+		printf("* 2 Вывод на экран элементов, упорядоченных по ключу\n");
 		printf("* 3 Сортировка таблицы\n");
 		printf("* 4 Добавление новой записи\n");
 		printf("* 5 Удаление записи\n");
 		printf("* 6 Отчет о времени сортировки\n");
 		printf("* 7 Поиск записи по указанной отрасли и году\n");
 		printf("* 8 Выход%s\n", RESET);
-
-
 		printf("Выберите пункт меню:");
 		scanf("%d", &menu);
 		switch(menu)
 		{
 			case 1:
-				print_table(books, &count_of_records);
+			{
+				printf("%sСписок книг.%s\n",RED, RESET);
+				printf("-----------------------------------------\n");
+				for (int i = 0; i < count_of_records; i++)
+					print_table(books, i);
 				break;
+			}
 			case 2:
+				bubblesort_keys(books, key_table, &count_of_records);
+				printf("%sСписок книг, отсортированный по количеству страниц.%s\n",RED, RESET);
+				printf("-----------------------------------------\n");
+				for (int i = 0; i < count_of_records; i++)
+					print_table(books, key_table[i].number);
 				break;
 			case 3:
+				bubblesort_table(books, &count_of_records);
+				printf("%sТаблица отсортирована.%s\n",RED,RESET);
 				break;
 			case 4:
-				add_new_rec(books, &count_of_records, filename);
+				add_new_rec(books, key_table, &count_of_records, filename);
 				break;
 			case 5:
+				del_rec(books, key_table, &count_of_records, filename);
 				break;
 			case 6:
+				printf("Сортировка таблицы методом пузырька: %lld тиков\n", sort_table_bubble);
+				printf("Сортировка таблицы методом Шелла: %lld тиков\n", sort_table_shell);
+				printf("Сортировка таблицы ключей методом пузырька: %lld тиков\n", sort_keys_bubble);
+				printf("Сортировка таблицы ключей методом Шелла: %lld тиков\n", sort_keys_shell);
 				break;
 			case 7:
 				break;
