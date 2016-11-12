@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define RESET   "\033[0m"
+#define RED     "\033[1;31m"
+#define YELLOW  "\033[1;33m"
+#define WHITE   "\033[1;37m"
+
 /*
 Разреженная (содержащая много нулей) матрица хранится в форме 3-х объектов:
      - вектор A содержит значения ненулевых элементов;
@@ -41,9 +46,9 @@ void matrix_generate(int *matrix, int m, int n, int *count)
 		}
 }
 
-void matrix_print(int *matrix, int m, int n)
+void matrix_print(int *matrix, int m, int n, char *text)
 {
-	printf("Matrix:\n");
+	printf("%s%s%s\n", RED, text, RESET);
 	for (int i = 0; i < m; i++)
 	{
 		for (int j = 0; j < n; j++)
@@ -62,6 +67,7 @@ void vectors(int *matrix, int m, int n, int *A, int *JA, int *IA, int count)
 		{
 			if (*(matrix + n*i + j) != 0)
 			{
+				//printf("num=%d, stolb=%d\n", *(matrix + n*i + j), j);
 				A[k] = *(matrix + n*i + j);
 				JA[k] = j;
 				if (!first)
@@ -102,19 +108,47 @@ void matrix_input(int *matrix, int m, int n, int *count)
 				(*count)++;
 }
 
+unsigned long long int tick(void)
+{
+	unsigned long long int time = 0;
+	__asm__ __volatile__ ("rdtsc" : "=A" (time));
+	return time;
+}
+
+unsigned long long int matrix_multiplication(const int *matrix, const int *vector, int *result, int m, int n, int count_matr, int count_vec)
+{
+	unsigned long long int time1, time2;
+	for (int j = 0; j < m; j++)
+			*(result + j) = 0;
+	int k = 0;
+	time1 = tick();
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++)
+			*(result + k) += *(matrix + n*i + j) * *(vector + j);
+		k++;
+	}
+	time2 = tick();
+	return time2-time1;
+}
+
 int main(void)
 {
 
-	printf("Введите размерность матрицы (через пробел): ");
+	printf("%sВведите размерность матрицы (2 числа через пробел): %s", YELLOW, RESET);
 	int m,n;
 	scanf("%d %d",&m, &n);
 	int matrix[m][n];
+	int vector[m][1];
+	int result[m][1];
 	int *tmp = matrix[0];
+	int *vec = vector[0];
+	int *res = result[0];
 	int count=0;
 	int number = 0;
 	while (number != 1 && number != 2)
 	{
-		printf("Выберите способ ввода матрицы: (1)Ручной ввод / (2)Random: ");
+		printf("%sВыберите способ ввода матрицы: %s(1)Ручной ввод / (2)Random: ", YELLOW, RESET);
 		scanf("%d", &number);
 	}
 
@@ -129,10 +163,26 @@ int main(void)
 			break;
 
 	}
-	matrix_print(tmp, m, n);
-	int A[count];
-	int JA[count];
-	int IA[n];
+	number = 0;
+	while (number != 1 && number != 2)
+	{
+		printf("%sВыберите способ ввода вектора-столбца: %s(1)Ручной ввод / (2)Random: ", YELLOW, RESET);
+		scanf("%d", &number);
+	}
+	int count_vec = 0;
+	switch(number)
+	{
+		case 1:
+			matrix_input(vec, n, 1,&count_vec);
+			break;
+
+		case 2:
+			matrix_generate(vec, n, 1 ,&count_vec);
+			break;
+
+	}
+	matrix_print(tmp, m, n, "Matrix: ");
+	int A[count], JA[count], IA[n];
 	vectors(tmp, m, n, A, JA, IA, count);
 	printf("\nA:  ");
 	vector_print(A, count);
@@ -141,7 +191,20 @@ int main(void)
 	printf("IA: ");
 	vector_print(IA, m);
 
+	matrix_print(vec, n, 1, "Vector: ");
+	int Av[count_vec], JAv[count_vec], IAv[n];
+	vectors(vec, n, 1, Av, JAv, IAv, count_vec);
+	printf("\nA:  ");
+	vector_print(Av, count_vec);
+	printf("JA: ");
+	vector_print(JAv, count_vec);
+	printf("IA: ");
+	vector_print(IAv, n);
 
+	unsigned long long int time_matrix;
+	time_matrix = matrix_multiplication(tmp, vec, res, m, n, count, count_vec);
+	matrix_print(res, m, 1, "Result of multiplication (matrix form): ");
+	printf("Time %lld\n", time_matrix);
 
 	return 0;
 
