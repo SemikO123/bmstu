@@ -21,7 +21,7 @@
 этих 2-х алгоритмов при различном проценте заполнения матриц.
 */
 
-
+// проверить правильность подсчета count в генераторе (он ублюдок)
 
 void matrix_generate(int *matrix, int m, int n, int *count)
 {
@@ -40,10 +40,19 @@ void matrix_generate(int *matrix, int m, int n, int *count)
 			else
 			{
 				*(matrix + n*i + j) = rand()%10;
-				if (*(matrix + n*i + j) != 0)
-					*count+=1;
+				// if (*(matrix + n*i + j) != 0)
+				// 	*count+=1;
 			}
 		}
+	for (int i = 0; i < m; i++)
+		for (int j = 0; j < n; j++)
+			if (*(matrix + n*i + j) != 0)
+			{
+				printf("%d ", *(matrix + n*i + j));
+				*count+=1;
+			}
+
+	printf("c=%d\n", *count);
 }
 
 void matrix_print(int *matrix, int m, int n, char *text)
@@ -57,42 +66,47 @@ void matrix_print(int *matrix, int m, int n, char *text)
 	}
 }
 
-void vectors(int *matrix, int m, int n, int *A, int *JA, int *IA, int count)
-{
-	int k=0;
-	for (int i = 0; i < m; i++)
-	{
-		int flag = 0, first = 0;
-		for (int j = 0; j < n; j++)
-		{
-			if (*(matrix + n*i + j) != 0)
-			{
-				//printf("num=%d, stolb=%d\n", *(matrix + n*i + j), j);
-				A[k] = *(matrix + n*i + j);
-				JA[k] = j;
-				if (!first)
-				{
-					IA[i] = k;
-					first = 1;
-				}
-				k++;
-			}
-			else
-				flag += 1;
-			
-		}
-		if (flag == n)
-			IA[i] = -1;
-	}
-	//printf("count=%d k=%d\n", count, k);
-}
-
 void vector_print(int *vector, int count)
 {
 	for (int i = 0; i < count; i++)
 		printf("%d ", vector[i]);
 	printf("\n");
 }
+
+void vectors(const int *matrix, int m, int n, int *A, int *JA, int *IA, int count)
+{
+	int k=0;
+	int flag = 0, first = 0;
+	for (int i = 0; i < m; i++)
+	{
+		flag = 0;
+		first = 0;
+		for (int j = 0; j < n; j++)
+		{
+			if (*(matrix + n*i + j) != 0)
+			{
+				A[k] = *(matrix + n*i + j);
+				JA[k] = j;
+				k++;
+				if (!first)
+				{
+					IA[i] = k-1;
+					first = 1;
+				}
+			}
+			else
+			{
+				flag += 1;
+			}
+			
+		}
+		if (flag == n)
+		{
+			IA[i] = -1;
+		}
+	}
+}
+
 
 void matrix_input(int *matrix, int m, int n, int *count)
 {
@@ -118,23 +132,120 @@ unsigned long long int tick(void)
 unsigned long long int matrix_multiplication(const int *matrix, const int *vector, int *result, int m, int n, int count_matr, int count_vec)
 {
 	unsigned long long int time1, time2;
+	time1 = tick();
+	int res = 0;
 	for (int j = 0; j < m; j++)
 			*(result + j) = 0;
 	int k = 0;
-	time1 = tick();
 	for (int i = 0; i < m; i++)
 	{
+		res = 0;
 		for (int j = 0; j < n; j++)
-			*(result + k) += *(matrix + n*i + j) * *(vector + j);
+			res += *(matrix + n*i + j) * *(vector + j);
+			//*(result + k) += *(matrix + n*i + j) * *(vector + j);
+		*(result+k) = res;
 		k++;
 	}
 	time2 = tick();
 	return time2-time1;
 }
 
+unsigned long long int vectors_multiplication(int *A, int *JA, int *IA, int m, int count, int *Av, int *JAv, int *IAv, int *Ares, int *JAres, int *IAres, int *newcount)
+{
+	int notnull = 0;
+	unsigned long long int time1, time2;
+	*newcount = m;
+	for (int i = 0; i < m; i++)
+		IAres[i] = 0;
+	time1 = tick();
+	for (int i = 0; i < m; i++)
+		if (IA[i] != -1)
+		{
+			int result = 0;
+			if (i == m-1)
+			{
+				for (int j = IA[i]; j < count; j++)
+					if (IAv[JA[j]] != -1)
+					{
+						//printf("%d * %d\n", A[j],Av[IAv[JA[j]]]);
+						result += A[j]*Av[IAv[JA[j]]];
+					}
+				if (result != 0)
+				{
+					IAres[i] = notnull;
+					Ares[notnull] = result;
+					JAres[notnull++] = 0; 
+				}
+				else
+				{
+					IAres[i] = -1;
+					(*newcount)--;
+				}
+			}
+			else
+			{
+				if (IA[i+1] != -1)
+				{
+					for (int j = IA[i]; j < IA[i+1]; j++)
+						if (IAv[JA[j]] != -1)
+						{
+							//printf("%d * %d\n", A[j],Av[IAv[JA[j]]]);
+							result += A[j]*Av[IAv[JA[j]]];
+						}
+					if (result != 0)
+					{
+						IAres[i] = notnull;
+						Ares[notnull] = result;
+						JAres[notnull++] = 0; 
+					}
+					else
+					{
+						IAres[i] = -1;
+						(*newcount)--;
+					}
+				}
+				else
+				{
+					int t = 1;
+					int gran;
+					while (IA[i+t] == -1 )
+						t++;
+					if (i+t >= m)
+						gran = count;
+					else
+						gran = IA[i+t];
+					//printf("-1POWER granica=%d\n",gran);
+					for (int j = IA[i]; j < gran; j++)
+						if (IAv[JA[j]] != -1)
+						{
+							//printf("%d * %d\n", A[j],Av[IAv[JA[j]]]);
+							result += A[j]*Av[IAv[JA[j]]];
+						}
+					if (result != 0)
+					{
+						IAres[i] = notnull;
+						Ares[notnull] = result;
+						JAres[notnull++] = 0; 
+					}
+					else
+					{
+						IAres[i] = -1;
+						(*newcount)--;
+					}
+				}
+			}
+		}
+		else
+		{
+			IAres[i] = -1;
+			(*newcount)--;
+		}
+	time2 = tick();
+	return time2-time1;
+}
+
 int main(void)
 {
-
 	printf("%sВведите размерность матрицы (2 числа через пробел): %s", YELLOW, RESET);
 	int m,n;
 	scanf("%d %d",&m, &n);
@@ -182,7 +293,8 @@ int main(void)
 
 	}
 	matrix_print(tmp, m, n, "Matrix: ");
-	int A[count], JA[count], IA[n];
+	printf("count=%d\n", count);
+	int A[count], JA[count], IA[m];
 	vectors(tmp, m, n, A, JA, IA, count);
 	printf("\nA:  ");
 	vector_print(A, count);
@@ -204,7 +316,23 @@ int main(void)
 	unsigned long long int time_matrix;
 	time_matrix = matrix_multiplication(tmp, vec, res, m, n, count, count_vec);
 	matrix_print(res, m, 1, "Result of multiplication (matrix form): ");
-	printf("Time %lld\n", time_matrix);
+	printf("%s[M] Time: %lld ticks\n",YELLOW, time_matrix);
+	printf("[M] Memory: %ld bytes for matrix and vector%s\n", sizeof(int)*(m*n+n+n), RESET);
+	
+
+	int newcount;
+	int Ares[m], JAres[m], IAres[m];	
+	unsigned long long int time_vectors;
+	time_vectors = vectors_multiplication(A, JA, IA, m, count, Av, JAv, IAv, Ares, JAres, IAres, &newcount);
+	printf("%sResult of multiplication (vectors form): %s", RED, RESET);
+	printf("\nA:  ");
+	vector_print(Ares, newcount);
+	printf("JA: ");
+	vector_print(JAres, newcount);
+	printf("IA: ");
+	vector_print(IAres, m);
+	printf("%s[V] Time: %lld ticks\n", YELLOW, time_vectors);
+	printf("[V] Memory: %ld bytes for vectors%s\n", sizeof(int)*(count*2+m+count_vec*2+n+newcount*2+n), RESET);
 
 	return 0;
 
