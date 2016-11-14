@@ -25,8 +25,13 @@
 int main(void)
 {
 	printf("%sВведите размерность матрицы (2 числа через пробел): %s", YELLOW, RESET);
-	int m,n;
-	scanf("%d %d",&m, &n);
+	int m = 0,n = 0;
+	while (m > 500 || n > 500 || m < 1 || n < 1)
+	{
+		printf("Размерность матрицы - 2 числа в интервале [1;500]: ");
+		scanf("%d %d",&m, &n);
+	}
+
 	int matrix[m][n];
 	int vector[n][1];
 	int result[m][1];
