@@ -16,4 +16,5 @@ void strdup_test(char *string, char *text);
 
 
 
+
 #endif // FUNCTIONS_H

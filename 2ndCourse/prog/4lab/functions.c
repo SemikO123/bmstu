@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define LENGTH 10
+
+
 /*Функция strchr выполняет поиск первого вхождения символа symbol 
 * в строку string. Возвращает указатель на первое вхождение символа в строке.
 **/ 
@@ -43,23 +46,23 @@ int strlen_f(const char *string)
 }
 
 
-char *read_line(FILE *file)
+char *read_line1(FILE *file)
 {
 	int size = 2;
 	int count = 0;
 	int symbol;
-	char *string = malloc(2 * sizeof(char));
+	char *string = malloc(size * sizeof(char));
 	if (!string)
 		return NULL;
 	else
 	{
 		symbol = fgetc(file);
-		while (symbol != EOF)
+		while (symbol != '\n')
 		{
 			if (count >= size)
 			{
 				size *= 2;
-				char *new_string = malloc(size* sizeof(char)); // СПРОСИТЬ 
+				char *new_string = malloc(size* sizeof(char));  
 				if (!new_string)
 					return NULL;
 				else
@@ -69,6 +72,7 @@ char *read_line(FILE *file)
 					string = new_string;
 				}
 			}
+			printf("len=%d count=%d symb=%c\n",(int)strlen(string), count, string[count-1]);
 			string[count++] = symbol;
 			symbol = fgetc(file);
 		}
@@ -77,30 +81,48 @@ char *read_line(FILE *file)
 	return string;	
 }
 
+char *concat_string(char *string, const char *str)
+{
+	//printf("string=%d str=%d\n", strlen_f(string), strlen_f(str));
+	char *result = malloc((strlen_f(string)+strlen_f(str)+1)*sizeof(char));
+	int k = 0;
+	for (int i = 0; i < strlen_f(string); i++)
+		result[k++] = string[i];
+	for (int i = 0; i <= strlen_f(str); i++)
+		result[k++] = str[i];
+	return result;
+
+}
+
+char *read_line(FILE *file)
+{
+	char str[LENGTH];
+	//int string_length = 0;
+	//int already_readed = 0;
+	//char *result;
+	int flag = 0;
+	char *string = malloc(sizeof(char));
+	*string = '\0';
+	while (fgets(str, LENGTH, file) != NULL && flag != 1)
+	{
+		int count = strlen_f(str);
+		// printf("str=%s//////count=%d   str[%d]=%d \n",str,count, count, str[count-1]);
+		if (str[count-1] == '\n')
+		{
+			// printf("THE END OF THE STRING\n");
+			flag = 1;
+		}
+		char *result = concat_string(string, str);
+		printf("result=%s\n",result);
+		free(string);
+		string = result;
+		printf("result=%s\n",string);
+
+	}
+	return string;
+}
+
 // char *change_string(const char *string, const char *old, const char *new)
 // {
-// 	int i = 0;
-// 	while (string[i] != '\0')
-// 	{
-// 		int flag = 0;
-// 		for (int j = 0; j < strlen(old); j++)
-// 			if (string[i] == old[j])
-// 			{
-// 				flag = 1;
-// 				i++;
-// 			}
-// 			else
-// 			{
-// 				flag = 0;
-// 				break;
-// 			}
-// 		if (flag == 1)
-// 			for (int j == 0; j < strlen(new); j++)
-// 				new_string[i++] = new[j];
-// 		else
-// 		{
-// 			new_string[i] = string[i];
-// 			i++;
-// 		}
-// 	}
+
 // }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "functions.h"
 #include <stdlib.h>
+#include <string.h>
 
 
 char *read_line(FILE *file);
@@ -24,15 +25,15 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			char *string = read_line(file);
-			if (string == NULL)
-				out_error = MEMPROBLEM;
-			else
+			char *string;
+			do
 			{
-				printf("%s\n",string);
-				out_error = OK;
+				
+				string = read_line(file);
+				printf("ETO STROKA = %s", string);	
 			}
-			free(string);
+			while (string != NULL);
+				
 		}
 		fclose(file);
 	}
