@@ -58,6 +58,7 @@ void print_list(struct list *head, FILE *out)
 char *get_word(const char *string)
 {
 	int count = length(string);
+	printf("count word = %d\n", count);
 	char *word = malloc((count+1)*sizeof(char));
 	for (int i = 0; i < count; i++)
 	{
@@ -73,23 +74,26 @@ struct list *take_words(FILE *f)
 {
 	struct list *head = NULL;
 	char string[N+1];
-	while (fgets(string, N+1, f) != NULL)
+	while (fgets(string, N+1, f) != NULL && strlen(string) < 100)
 	{
-		//printf("\n * STRING = %s * LEN = %d\n", string, (int)strlen(string));
+		printf("\n * STRING = %s * LEN = %d\n", string, (int)strlen(string));
 		int length = strlen(string);
-		int flag = 1;
-		for (int i = 0; i < length; i++)
+		if (length > 1) // если вдруг есть пустые строки
 		{
-			if (strchr(" \0\n", string[i]))
-				flag = 1;
-			else
-				if (flag)
-				{
-					char *new_word = get_word(string+i);
-					head = add(head, new(new_word));	
-					//printf("Current word: %s\n", head->data);
-					flag = 0;
-				}
+			int flag = 1;
+			for (int i = 0; i < length; i++)
+			{
+				if (strchr(" \0\n", string[i]))
+					flag = 1;
+				else
+					if (flag)
+					{
+						char *new_word = get_word(string+i);
+						head = add(head, new(new_word));	
+						//printf("Current word: %s\n", head->data);
+						flag = 0;
+					}
+			}
 		}
 	}
 	return head;			

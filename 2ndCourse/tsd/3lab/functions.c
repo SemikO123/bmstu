@@ -5,6 +5,19 @@
 #include "structurs.h"
 #include "functions.h"
 
+static char *tech[] = 
+{
+	"Отечественная", 
+	"Переведенная"
+};
+
+static char *art[] = 
+{
+	"Роман",
+	"Пьеса",
+	"Стихи"
+};
+
 int load_table(FILE *file, int *count, book_t *books, key *key_table)
 {
 	while (fscanf(file, "%s", books[*count].author) != EOF && *count < MAXCOUNT)
@@ -89,7 +102,7 @@ int add_new_rec(book_t *books,key *key_table ,int *count, char *filename)
 	//scanf("%s", string);
 
 	read_line(string, N);
-	if (strlen(string) < N)
+	if (strlen(string) < N && strlen(string) > 1)
 	{
 		replace_spaces(string);
 		strcpy(books[*count].author,string);
@@ -103,7 +116,7 @@ int add_new_rec(book_t *books,key *key_table ,int *count, char *filename)
 	printf("Введите название книги: ");
 	//scanf("%s", string);
 	read_line(string, N);
-	if (strlen(string) < N)
+	if (strlen(string) < N && strlen(string) > 1)
 	{
 		replace_spaces(string);
 		strcpy(books[*count].title,string);
@@ -117,7 +130,7 @@ int add_new_rec(book_t *books,key *key_table ,int *count, char *filename)
 	printf("Введите название издательства: ");
 	//scanf("%s", string);
 	read_line(string, N);
-	if (strlen(string) < N)
+	if (strlen(string) < N && strlen(string) > 1)
 	{
 		replace_spaces(string);
 		strcpy(books[*count].publisher,string);
@@ -152,7 +165,7 @@ int add_new_rec(book_t *books,key *key_table ,int *count, char *filename)
 			printf("Введите отрасль: ");
 			scanf("%s", string);
 			//read_line(string, N);
-			if (strlen(string) < N)
+			if (strlen(string) < N && strlen(string) > 1)
 			{
 				replace_spaces(string);
 				strcpy(books[*count].book_type.technical.sector,string);
@@ -222,7 +235,8 @@ int del_rec(book_t *books,key *key_table ,int *count, char *filename)
 	int number;
 	scanf("%d", &number);
 	number--;
-	if (number > 0 && number < *count)
+	//printf("count=%d number = %d",*count,number );
+	if (number >= 0 && number < *count)
 	{
 		int i = 0;
 		while (i < *count)

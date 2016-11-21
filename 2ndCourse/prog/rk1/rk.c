@@ -22,6 +22,8 @@ int main(int argc, char *argv[])
 			if (out)
 			{
 				print_list(head, out);
+				printf("\nRESULT: ");
+				print_list(head, stdout);
 				// print_list(head, stdout);
 				printf("\nYou can find result in 'out.txt'\n");
 			}

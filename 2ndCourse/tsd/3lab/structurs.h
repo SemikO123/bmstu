@@ -37,18 +37,7 @@ typedef struct
 	int pages;
 } key;
 
-static char *tech[] = 
-{
-	"Отечественная", 
-	"Переведенная"
-};
 
-static char *art[] = 
-{
-	"Роман",
-	"Пьеса",
-	"Стихи"
-};
 
 
 #endif // _STRUCTURS_H_
