@@ -54,26 +54,44 @@ void test_changings(const char *string, const char *substring, int right, const 
 		test(0, text);
 }
 
+void test_replace(const char *string, const char *old, const char *new, const char *rightresult, const char *text)
+{
+	int flag = 1;
+	char *result = change_string(string, old, new);
+	if (strlen(result) == strlen(rightresult))
+	{
+		for (int i = 0; i < strlen(result); i++)
+			if(result[i] != rightresult[i])
+				flag = 0;
+	}
+	else
+		flag = 0;
+	test(flag, text);
+	free(result);
+}
+
 int main(void)
 {
 	printf("-------Test function 'concat_string'-------\n");
-	test_concat("", "", "", "two empty strings    ");
-	test_concat("aaa", "", "aaa", "second empty string  ");
-	test_concat("", "aaa", "aaa", "first empty string   ");
-	test_concat("aaa", "bbb", "aaabbb","two strings          ");
+	test_concat("", "", "", "two empty strings      ");
+	test_concat("aaa", "", "aaa", "second empty string    ");
+	test_concat("", "aaa", "aaa", "first empty string     ");
+	test_concat("aaa", "bbb", "aaabbb","two strings            ");
 
 	printf("\n-------Test function 'read_line'-----------\n");
-	test_read("file1.txt", "", "empty file           ");
-	test_read("file2.txt", "aaa bbb ccccc\n", "not empty file       ");
+	test_read("file1.txt", "", "empty file             ");
+	test_read("file2.txt", "aaa bbb ccccc\n", "not empty file         ");
 
 	printf("\n---Test function 'count_of_changings'------\n");
-	test_changings("", "aaa", 0, "empty initial string ");
-	test_changings("aaa", "aaa", 1, "string = substring   ");
-	test_changings("aaaaabaaaa", "aaa", 2, "overlap              ");
-	test_changings("aaabaaaaaabbb", "aaa", 3, "ordinary situation   ");
+	test_changings("", "aaa", 0, "empty initial string   ");
+	test_changings("aaa", "aaa", 1, "string = substring     ");
+	test_changings("aaaaabaaaa", "aaa", 2, "overlap                ");
+	test_changings("aaabaaaaaabbb", "aaa", 3, "ordinary situation     ");
 
 	printf("\n---Test function 'change_string'------\n");
-
-
-
+	test_replace("aaabaa bbb a aa", "aa", "Q", "QabQ bbb a Q", "2symbols->1symbol      ");
+	test_replace("", "aa", "Q", "", "empty initial string   ");
+	test_replace("aaaaaaaa", "aaa", "111", "111111aa", "overlap                ");
+	test_replace("aabaabba", "b", " ", "aa aa  a", "symbol->space          ");
+	test_replace("aabaabba", "b", "", "aaaaa", "symbol->empty substring");
 }
