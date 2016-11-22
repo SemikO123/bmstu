@@ -103,6 +103,32 @@ void matrix_input(int *matrix, int m, int n, int *count)
 				(*count)++;
 }
 
+void matrix_elements(int *matrix, int m, int n, int *count)
+{
+	int num;
+	for (int i = 0; i < m; i++)
+		for (int j = 0; j < n; j++)
+			if (*(matrix+n*i+j) != 0)
+				*(matrix+n*i+j) = 0;
+	do
+	{
+		printf("Введите (1) чтобы добавить элемент, (0) чтобы закончить ввод: ");
+		scanf("%d", &num);
+		if (num != 1)
+			break;
+		printf("Введите i-строку, j-столбец для ввода и значение: ");
+		int i, j, elem;
+		scanf("%d %d %d", &i, &j, &elem);
+		if (i < m && j < n)
+		{
+			*(matrix+n*i+j) = elem;
+			printf("%d %d %d\n", elem, *(matrix+n*i+j), *count);
+			(*count)++;
+		}
+	}
+	while (num == 1);
+}
+
 unsigned long long int tick(void)
 {
 	unsigned long long int time = 0;

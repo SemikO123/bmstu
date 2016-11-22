@@ -9,6 +9,7 @@
 void matrix_generate(int *matrix, int m, int n, int *count);
 void matrix_print(int *matrix, int m, int n, char *text);
 void vector_print(int *vector, int count);
+void matrix_elements(int *matrix, int m, int n, int *count);
 void vectors(const int *matrix, int m, int n, int *A, int *JA, int *IA, int count);
 void matrix_input(int *matrix, int m, int n, int *count);
 unsigned long long int tick(void);

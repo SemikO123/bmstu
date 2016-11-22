@@ -8,6 +8,8 @@
 #define YELLOW  "\033[1;33m"
 #define WHITE   "\033[1;37m"
 
+// отрицательные числа и числа больше 9
+
 /*
 Разреженная (содержащая много нулей) матрица хранится в форме 3-х объектов:
      - вектор A содержит значения ненулевых элементов;
@@ -26,9 +28,9 @@ int main(void)
 {
 	printf("%sВведите размерность матрицы (2 числа через пробел): %s", YELLOW, RESET);
 	int m = 0,n = 0;
-	while (m > 500 || n > 500 || m < 1 || n < 1)
+	while (m > 2000 || n > 2000 || m < 1 || n < 1)
 	{
-		printf("Размерность матрицы - 2 числа в интервале [1;500]: ");
+		printf("Размерность матрицы - 2 числа в интервале [1;2000]: ");
 		scanf("%d %d",&m, &n);
 	}
 
@@ -40,9 +42,9 @@ int main(void)
 	int *res = result[0];
 	int count=0;
 	int number = 0;
-	while (number != 1 && number != 2)
+	while (number != 1 && number != 2 && number != 3)
 	{
-		printf("%sВыберите способ ввода матрицы: %s(1)Ручной ввод / (2)Random: ", YELLOW, RESET);
+		printf("%sВыберите способ ввода матрицы: %s(1)Ручной ввод / (2)Random / (3) Поэлементно: ", YELLOW, RESET);
 		scanf("%d", &number);
 	}
 
@@ -55,12 +57,14 @@ int main(void)
 		case 2:
 			matrix_generate(tmp, m, n ,&count);
 			break;
+		case 3:
+			matrix_elements(tmp, m, n, &count);
 
 	}
 	number = 0;
-	while (number != 1 && number != 2)
+	while (number != 1 && number != 2 && number != 3)
 	{
-		printf("%sВыберите способ ввода вектора-столбца: %s(1)Ручной ввод / (2)Random: ", YELLOW, RESET);
+		printf("%sВыберите способ ввода вектора-столбца: %s(1)Ручной ввод / (2)Random / (3) Поэлементно: ", YELLOW, RESET);
 		scanf("%d", &number);
 	}
 	int count_vec = 0;
@@ -74,8 +78,12 @@ int main(void)
 			matrix_generate(vec, n, 1, &count_vec);
 			break;
 
+		case 3:
+			matrix_elements(vec, n, 1, &count_vec);
+
 	}
-	matrix_print(tmp, m, n, "Matrix: ");
+	if (m <= 10 || n <= 10)
+		matrix_print(tmp, m, n, "Matrix: ");
 	int A[count], JA[count], IA[m];
 	vectors(tmp, m, n, A, JA, IA, count);
 	printf("\nA:  ");
@@ -85,7 +93,8 @@ int main(void)
 	printf("IA: ");
 	vector_print(IA, m);
 
-	matrix_print(vec, n, 1, "Vector: ");
+	if (m <= 10 || n <= 10)
+		matrix_print(vec, n, 1, "Vector: ");
 	int Av[count_vec], JAv[count_vec], IAv[n];
 	vectors(vec, n, 1, Av, JAv, IAv, count_vec);
 	printf("\nA:  ");
@@ -97,7 +106,8 @@ int main(void)
 
 	unsigned long long int time_matrix;
 	time_matrix = matrix_multiplication(tmp, vec, res, m, n, count, count_vec);
-	matrix_print(res, m, 1, "Result of multiplication (matrix form): ");
+	if (m <= 10 || n <= 10)
+		matrix_print(res, m, 1, "Result of multiplication (matrix form): ");
 	printf("%s[M] Time: %lld ticks\n",YELLOW, time_matrix);
 	printf("[M] Memory: %ld bytes for matrix and vector%s\n", sizeof(int)*(m*n+n+m), RESET);
 	
