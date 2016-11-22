@@ -5,6 +5,7 @@
 
 
 char *read_line(FILE *file);
+char *change_string(const char *string, const char *old, const char *new);
 
 int main(int argc, char **argv)
 {
@@ -26,13 +27,37 @@ int main(int argc, char **argv)
 		else
 		{
 			char *string;
-			do
+			FILE *out = fopen(argv[2], "w");
+			if (!out)
 			{
-				
-				string = read_line(file);
-				printf("ETO STROKA = %s", string);	
+				printf("\nOutput file doesn't found\n");
+				out_error = NOFILE;
 			}
-			while (string != NULL);
+			else
+			{
+				printf("---------------------------\n");
+				printf("Input old substring: ");
+				char *old = read_line(stdin);
+				printf("Input new substring: ");
+				char *new = read_line(stdin);
+				printf("---------------------------\n");
+				while (!feof(file))
+				{
+					string = read_line(file);
+					if (string != NULL && string[0] != 0)
+					{
+						printf("Current string -> %s", string);
+						char *new_string = change_string(string, old, new);
+						printf("New string -> %s", new_string);
+						fprintf(out,"%s",new_string);
+						free(new_string);	
+					}
+					free(string);
+				}
+				free(old);
+				free(new);
+			}
+			fclose(out);
 				
 		}
 		fclose(file);
