@@ -1,69 +1,78 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
+
+
+
+#define N 20
+#define REITERATION -1
+
+/*
+Обход дерева, включение,  исключение и поиск узлов.
+2. Построить двоичное дерево поиска, в вершинах которого находятся слова из 
+текстового файла. Вывести его на экран в виде дерева. Определить количество 
+вершин дерева, содержащих слова, начинающиеся на указанную букву. Выделить 
+эти вершины цветом. Сравнить время поиска начинающихся на указанную букву слов 
+в дереве и в файле. \
+*/
 
 struct BinaryTree
 {
-	int data;
+	char data[N];
 	struct BinaryTree *left;
 	struct BinaryTree *right;
-	struct BinaryTree *father;
 };
 
-struct BinaryTree *new(int data)
+struct BinaryTree *add_new(char *data)
 {
 	struct BinaryTree *new = malloc(sizeof(struct BinaryTree));
-	new->data = data;
-	new->left = NULL;
-	new->right = NULL;
-	new->father = NULL;
+	if (new)
+	{
+		strcpy(new->data, data);
+		new->left = NULL;
+		new->right = NULL;
+	}
 	return new;
 }
 
-void Make_Binary_Tree(BinaryTree** Node, int n){
-  BinaryTree** ptr;//вспомогательный указатель
-  srand(time(NULL)*1000);
-  while (n > 0) {
-    ptr = Node;
-    while (*ptr != NULL) {
-      if ((double) rand()/RAND_MAX < 0.5) 
-        ptr = &((*ptr)->Left);
-      else ptr = &((*ptr)->Right);
-    }
-    (*ptr) = new BinaryTree();
-    cout << "Введите значение ";
-    cin >> (*ptr)->Data;
-    n--;
-  }
+struct BinaryTree *insert_element(struct BinaryTree *head, struct BinaryTree *new)
+{
+	if (head == NULL)
+		return new;
+
+	int compare = strcmp(new->data, head->data);
+	if (compare < 0)
+		head->left = insert_element(head->left, new);
+	else
+		head->right = insert_element(head->right, new);
+
+	return head;
 }
 
-struct BinaryTree *make_tree(struct BinaryTree *head; struct BinaryTree *new)
+void print_tree(struct BinaryTree *head, int down)
 {
-	struct BinaryTree *tmp = head;
-	while (tmp != NULL)
+	if (head)
 	{
-		if (tmp->left != NULL)
-			if (tmp->right != NULL)
-				tmp = tmp->left;
-			else
-			{
-				
-			}
-		else
-		{
-			tmp->left = new;
-			new->father = tmp;
-		}
-
+		print_tree(head->right, down+1);
+		for (int i = 0; i < down; i++)
+			printf("           ");
+		printf("%s\n",head->data);
+		print_tree(head->left, down+1);
 	}
-
 
 }
 
 int main(void)
 {
-	struct BinaryTree *head = new(5);
-	printf("%d\n", head->data);
-	free(head);
-	printf("QQQQQQQQ!");
+	FILE *input = fopen("input.txt", "r");
+	struct BinaryTree *head = NULL;
+	char tmp[20];
+	while (fscanf(input, "%s", tmp) > 0)
+	{
+		//printf("len=%d slovo=%s", (int)strlen(tmp), tmp);
+		head = insert_element(head, add_new(tmp));
+	}
+	print_tree(head, 0);
+	fclose(input);	
 }
