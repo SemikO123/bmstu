@@ -44,16 +44,21 @@ struct BinaryTree *add_new(char *data)
 	return new;
 }
 
-struct BinaryTree *insert_element(struct BinaryTree *head, struct BinaryTree *new)
+struct BinaryTree *insert_element(struct BinaryTree *head, struct BinaryTree *prev, struct BinaryTree *new, FILE *graph)
 {
+
 	if (head == NULL)
+	{
+		if (prev != NULL)
+			fprintf(graph, "%s -> %s \n", prev->data, new->data);
 		return new;
+	}
 
 	int compare = strcmp(new->data, head->data);
 	if (compare < 0)
-		head->left = insert_element(head->left, new);
+		head->left = insert_element(head->left, head, new, graph);
 	else
-		head->right = insert_element(head->right, new);
+		head->right = insert_element(head->right, head, new, graph);
 
 	return head;
 }
@@ -110,27 +115,69 @@ void task()
 	char tmp[20];
 	while (fscanf(input, "%s", tmp) > 0)
 	{
-		head = insert_element(head, add_new(tmp));
+		head = insert_element(head, NULL, add_new(tmp), NULL);
 	}
 	print_tree(head, 0, 0);
 	fclose(input);
 }
 
-void tree_traversal()
+void pre_order(struct BinaryTree *def_head)
 {
-	
+	if (def_head)
+	{
+		printf("%s ", def_head->data);
+		pre_order(def_head->left);
+		pre_order(def_head->right);
+	}	
 }
+
+void in_order(struct BinaryTree *def_head)
+{
+	if (def_head)
+	{
+		in_order(def_head->left);
+		printf("%s ", def_head->data);
+		in_order(def_head->right);
+	}	
+}
+
+void post_order(struct BinaryTree *def_head)
+{
+	if (def_head)
+	{
+		post_order(def_head->left);
+		post_order(def_head->right);
+		printf("%s ", def_head->data);
+	}	
+}
+
+void tree_traversal(struct BinaryTree *def_head)
+{
+	// прямой обход
+	printf("%sПрямой обход графа:%s\n", RED, RESET);
+	pre_order(def_head);
+	// поперечный обход
+	printf("%sПоперечный обход графа:%s\n", RED, RESET);
+	in_order(def_head);
+	// обратный обход
+	printf("%sОбратный обход графа:%s\n", RED, RESET);
+	post_order(def_head);
+}
+
+
 
 
 int main(void)
 {	
 	int menu = -1;
 	struct BinaryTree *def_head = NULL;
+	FILE *graph = fopen("graph.gv", "w");
+	fprintf(graph, "digraph G{\n");
 	do
 	{
 		printf("%sМеню работы с бинарным деревом:\n",YELLOW);
-		printf("(1) Добавить элемент в дерево\n");
-		printf("(2) Удалить элемент из дерева\n");
+		printf("(1) Добавить элемент (слово) в дерево\n");
+		printf("(2) Удалить элемент (слово) из дерева\n");
 		printf("(3) Поиск узла\n");
 		printf("(4) Печать дерева\n");
 		printf("(5) Обход дерева\n");
@@ -144,7 +191,7 @@ int main(void)
 				printf("Введите информацию для узла: ");
 				char data[20];
 				scanf("%s", data);
-				def_head = insert_element(def_head, add_new(data));
+				def_head = insert_element(def_head, NULL, add_new(data), graph);
 				printf("%sЭлемент %s добавлен%s\n", RED, data, RESET);
 				break;	
 			case 2:
@@ -154,15 +201,26 @@ int main(void)
 				char data1[20];
 				scanf("%s", data1);
 				struct BinaryTree *element = search_element(def_head, data1);
-				element->color = 1;
-				print_tree(def_head, 0, 0);
-				element->color = 0;
+				if (element == NULL)
+					printf("%s Не найдено%s\n", RED, RESET);
+				else
+				{	
+					element->color = 1;
+					print_tree(def_head, 0, 0);
+					element->color = 0;
+				}
 				break;
 			case 4:
-				print_tree(def_head, 0, 0);
+				if (def_head == NULL)
+					printf("%s Дерево пусто\n %s", RED, RESET);
+				else
+					print_tree(def_head, 0, 0);
 				break;
 			case 5:
-				tree_traversal();
+				if (def_head == NULL)
+					printf("%s Дерево пусто\n %s", RED, RESET);
+				else
+					tree_traversal(def_head);
 				break;
 			case 6:
 				task();
@@ -175,6 +233,8 @@ int main(void)
 		}
 	}
 	while (menu != 0); 
+	fprintf(graph, "}");
+	fclose(graph);
 
 
 

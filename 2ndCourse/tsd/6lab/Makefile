@@ -24,5 +24,9 @@ st : 6.exe
 vlgr : 6.exe
 	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./6.exe 
 
+graph : graph.gv
+	dot -Tpng graph.gv -o graph.png
+	xdg-open graph.png
+
 clean :
 	rm *.o *.exe 
