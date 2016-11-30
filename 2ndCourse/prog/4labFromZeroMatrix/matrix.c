@@ -15,6 +15,26 @@
 параметры командной строки.
 */
 
+double **addition(int n, int m, double **matrix1, double **matrix2, double **result)
+{
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < m; j++)
+			result[i][j] = matrix1[i][j] + matrix2[i][j];
+	return result;
+}
+
+double **multiplication(int n, int t, int m, double **matrix1, double **matrix2, double **result)
+{
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < m; j++)
+		{
+			result[i][j] = 0;
+			for (int k = 0; k < t; k++)
+				result[i][j] += matrix1[i][k]*matrix2[k][j];
+		}
+	return result;
+}
+
 double **allocate_memory(int n, int m)
 {
 	double **data = malloc(n*sizeof(double*) + n*m*sizeof(double));
@@ -44,7 +64,6 @@ void print_matrix(int n, int m, double **matrix)
         	else
             	printf(" %5.2f", matrix[i][j]);
         }
-
         printf("\n");
     }
 }
@@ -75,44 +94,80 @@ int main(int argc, char **argv)
 
 			int n1,m1, n2, m2;
 			fscanf(first, "%d %d", &n1, &m1);
-			printf("Размерность первой матрицы - %d на %d\n", n1, m1);
+			printf("Dimension of the first matrix - %d by %d\n", n1, m1);
 			fscanf(second, "%d %d", &n2, &m2);
-			printf("Размерность второй матрицы - %d на %d\n", n2, m2);
+			printf("Dimension of the second matrix - %d by %d\n", n2, m2);
 			switch(operation) 
 			{
 				case '+':
-					printf("Сложение\n");
+					printf("ADDITION\n");
 					if (m1 != m2 || n1 != n2)
-						printf("Матрицы сложить нельзя!\n");
+						printf("Matrix can not be folded!\n");
 					else
 					{
 						double **matrix1 = allocate_memory(n1, m1);
 						double **matrix2 = allocate_memory(n2, m2);
 						matrix1 = filling_matrix(n1, m1, matrix1, first);
 						matrix2 = filling_matrix(n2, m2, matrix2, second); 
+						printf("First matrix:\n");
 						print_matrix(n1,m1, matrix1);
+						printf("Second matrix:\n");
 						print_matrix(n2,m2, matrix2);	
 						double **result = allocate_memory(n1, m1);
-						result = addition(n1, m1, matrix1, matrix2);
+						result = addition(n1, m1, matrix1, matrix2, result);
+						printf("Result matrix:\n");
+						print_matrix(n1,m1, result);
 						free(matrix1);
 						free(matrix2);
 						free(result);
 					}
 					break;
 				case 'x':
-					printf("Умножение\n");
+					printf("MULTIPLICATION\n");
 					if (m1 != n2)
-						printf("Матрицы перемножить нельзя!\n");
+						printf("Matrix can not multiply!\n");
 					else
 					{
+						double **matrix1 = allocate_memory(n1, m1);
+						double **matrix2 = allocate_memory(n2, m2);
+						matrix1 = filling_matrix(n1, m1, matrix1, first);
+						matrix2 = filling_matrix(n2, m2, matrix2, second); 
+						printf("First matrix:\n");
+						print_matrix(n1,m1, matrix1);
+						printf("Second matrix:\n");
+						print_matrix(n2,m2, matrix2);
+						double **result = allocate_memory(n1, m2);
+						result = multiplication(n1, m1, m2, matrix1, matrix2, result);
+						printf("Result matrix:\n");
+						print_matrix(n1, m2, result);
+						free(matrix1);
+						free(matrix2);
+						free(result);
 					}
 					break;
 				case '-':
-					printf("Обратная\n");
+					printf("INVERSE MATRIX\n");
+					if (m1 != n1)
+						printf("Inverse matrix can not be obtained\n");
+					else
+					{
+						double **matrix1 = allocate_memory(n1, m1);
+						matrix1 = filling_matrix(n1, m1, matrix1, first);
+						printf("Matrix:\n");
+						print_matrix(n1,m1, matrix1);
+						double **result = allocate_memory(n1, m1);
+						result = inverse(n1, m1, matrix1, result);
+						printf("Inverse matrix:\n");
+						print_matrix(n1, m2, result);
+						free(matrix1);
+						free(result);
+					}
 					break;
 				default:
 					return BADOPERATION;
 			}
 		}
+		fclose(first);
+		fclose(second);
 	}
 }
