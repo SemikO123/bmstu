@@ -1,11 +1,14 @@
 CC := gcc
 FLAGS := -std=c99 -Wall -Werror -pedantic
 
-matrix.exe : matrix.o #functions.o
-	$(CC) -o matrix.exe matrix.o
+matrix.exe : matrix.o functions.o
+	$(CC) -o matrix.exe matrix.o functions.o
 
-matrix.o : matrix.c #functions.c #functions.h
+matrix.o : matrix.c functions.c functions.h
 	$(CC) $(FLAGS) -c matrix.c 
+
+functions.o : functions.c functions.h
+	$(CC) $(FLAGS) -c functions.c
 
 st1 : matrix.exe
 	./matrix.exe 1.txt 2.txt + result.txt
