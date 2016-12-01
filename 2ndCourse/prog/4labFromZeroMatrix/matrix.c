@@ -15,6 +15,59 @@
 параметры командной строки.
 */
 
+double **allocate_memory(int n, int m)
+{
+	double **data = malloc(n*sizeof(double*) + n*m*sizeof(double));
+	if (!data)
+		return NULL;
+	for (int i = 0; i < n; i++)
+		data[i] = (double*)((char*)data+n*sizeof(double*)+i*m*sizeof(double));
+	return data;
+} 
+
+void print_matrix(int n, int m, double **matrix)
+{
+	for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+        	if (matrix[i][j] - (int)matrix[i][j] == 0)
+        		printf("%6d", (int)matrix[i][j]);
+        	else
+            	printf(" %5.2f", matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+double **add_identity_matrix(int n, double **matrix)
+{
+	for (int i = 0; i < n; i++)
+		for (int j = n; j < 2*n; j++)
+			if (j-i == n)
+				matrix[i][j] = 1;
+			else
+				matrix[i][j] = 0;
+	return matrix;
+}
+
+double **copy(int n, int m, double **matrix, double **new_matrix)
+{
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < m; j++)
+			new_matrix[i][j] = matrix[i][j];
+	return new_matrix;
+}
+
+double **inverse(int n, double **matrix, double **result)
+{
+	double **big_matrix = allocate_memory(n, 2*n);
+	big_matrix = copy(n, n, matrix, big_matrix);
+	big_matrix = add_identity_matrix(n, big_matrix);
+	print_matrix(n, 2*n, big_matrix);
+	return NULL;
+}
+
 double **addition(int n, int m, double **matrix1, double **matrix2, double **result)
 {
 	for (int i = 0; i < n; i++)
@@ -35,15 +88,6 @@ double **multiplication(int n, int t, int m, double **matrix1, double **matrix2,
 	return result;
 }
 
-double **allocate_memory(int n, int m)
-{
-	double **data = malloc(n*sizeof(double*) + n*m*sizeof(double));
-	if (!data)
-		return NULL;
-	for (int i = 0; i < n; i++)
-		data[i] = (double*)((char*)data+n*sizeof(double*)+i*m*sizeof(double));
-	return data;
-} 
 
 double **filling_matrix(int n, int m, double **matrix, FILE *file)
 {
@@ -51,21 +95,6 @@ double **filling_matrix(int n, int m, double **matrix, FILE *file)
 		for (int j = 0; j < m; j++)
 			fscanf(file, "%lf", &matrix[i][j]);
 	return matrix;
-}
-
-void print_matrix(int n, int m, double **matrix)
-{
-	for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < m; j++)
-        {
-        	if (matrix[i][j] - (int)matrix[i][j] == 0)
-        		printf("%6d", (int)matrix[i][j]);
-        	else
-            	printf(" %5.2f", matrix[i][j]);
-        }
-        printf("\n");
-    }
 }
 
 int main(int argc, char **argv)
@@ -156,9 +185,9 @@ int main(int argc, char **argv)
 						printf("Matrix:\n");
 						print_matrix(n1,m1, matrix1);
 						double **result = allocate_memory(n1, m1);
-						result = inverse(n1, m1, matrix1, result);
-						printf("Inverse matrix:\n");
-						print_matrix(n1, m2, result);
+						result = inverse(n1, matrix1, result);
+						// printf("Inverse matrix:\n");
+						// print_matrix(n1, m2, result);
 						free(matrix1);
 						free(result);
 					}

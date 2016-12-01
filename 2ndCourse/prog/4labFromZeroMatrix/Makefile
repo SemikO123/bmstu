@@ -13,5 +13,8 @@ st1 : matrix.exe
 st2 : matrix.exe
 	./matrix.exe 1.txt 2.txt x result.txt
 
+st3 : matrix.exe
+	./matrix.exe 1.txt 2.txt - result.txt
+
 rm :
 	rm *.exe *.o
