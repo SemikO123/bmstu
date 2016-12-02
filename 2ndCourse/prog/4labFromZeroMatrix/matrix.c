@@ -125,9 +125,9 @@ int main(int argc, char **argv)
 						if (result)
 						{
 							printf("Inverse matrix:\n");
-							print_matrix(n1, m2, result);
+							print_matrix(n1, m1, result);
 							FILE *out = fopen(argv[4], "w");
-							print_to_file(n1, m2, result, out);
+							print_to_file(n1, m1, result, out);
 							fclose(out);
 						}
 						else
