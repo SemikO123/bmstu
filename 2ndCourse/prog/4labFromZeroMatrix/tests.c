@@ -43,33 +43,152 @@ void test_addition(FILE *f1, FILE *f2, double **rightresult, int n, int m, const
 	matrix2 = filling_matrix(n, m, matrix2, f2);
 	double **result = allocate_memory(n, m);
 	result = addition(n, m, matrix1, matrix2, result);
-	print_matrix(n,m, result);
 	test(compare(result, n, m, rightresult), text);
 	free(result);
 	free(matrix1);
 	free(matrix2);
 }
 
+void test_multiplication(FILE *f1, FILE *f2, double **rightresult, int n, int k, int m, const char *text)
+{
+	double **matrix1 = allocate_memory(n, k);
+	double **matrix2 = allocate_memory(k, m);
+	matrix1 = filling_matrix(n, k, matrix1, f1);
+	matrix2 = filling_matrix(k, m, matrix2, f2);
+	double **result = allocate_memory(n, m);
+	result = multiplication(n, k, m, matrix1, matrix2, result);
+	test(compare(result, n, m, rightresult), text);
+	free(result);
+	free(matrix1);
+	free(matrix2);
+}
+
+void test_inverse(FILE *file, double **rightresult, int n, int work, const char* text)
+{
+	double **matrix = allocate_memory(n, n);
+	matrix = filling_matrix(n, n, matrix, file);
+	double **result = allocate_memory(n, n);
+	result = inverse(n, matrix, result);
+	if (result)
+		test(compare(result, n, n, rightresult), text);
+	else
+		if (work == 0)
+			test(1, text);
+		else
+			test(0, text);
+	free(result);
+	free(matrix);
+}
+
 int main(void)
 {
-	// double **filling_matrix(int n, int m, double **matrix, FILE *file);
-	// double **add_identity_matrix(int n, double **matrix);
-	// double **copy(int n, int m, double **matrix, double **new_matrix);
-	// double **transformation(int n, int m, double **matrix);
-	// double **inverse(int n, double **matrix, double **result);
-	// double **addition(int n, int m, double **matrix1, double **matrix2, double **result);
-	// double **multiplication(int n, int t, int m, double **matrix1, double **matrix2, double **result);
-	printf("Test function 'Addition'\n");
+	printf("--------> Test function 'Addition' <--------\n");
 	FILE *m1 = fopen("tests/a1_1.txt", "r");
 	FILE *m2 = fopen("tests/a1_2.txt", "r");
-	double **result_a1 = allocate_memory(2, 2);
-	result_a1[0][0] = 6;
-	result_a1[0][1] = 15;
-	result_a1[1][0] = 10;
-	result_a1[1][1] = -24;
-	test_addition(m1, m2, result_a1, 2, 2, "2 matrix 2*2");
+	double **resultt = allocate_memory(2, 2);
+	resultt[0][0] = 6;
+	resultt[0][1] = 15;
+	resultt[1][0] = 10;
+	resultt[1][1] = -24;
+	test_addition(m1, m2, resultt, 2, 2, "#1 2 matrix 2*2      ");
 	fclose(m1);
 	fclose(m2);
-	free(result_a1);
+	free(resultt);
+
+	m1 = fopen("tests/a2_1.txt", "r");
+	m2 = fopen("tests/a2_2.txt", "r");
+	resultt = allocate_memory(4, 2);
+	resultt[0][0] = 10;
+	resultt[0][1] = 10;
+	resultt[1][0] = -10;
+	resultt[1][1] = -10;
+	resultt[2][0] = 10;
+	resultt[2][1] = 10;
+	resultt[3][0] = -10;
+	resultt[3][1] = -10;
+	test_addition(m1, m2, resultt, 4, 2, "#2 2 matrix 4*2      ");
+	fclose(m1);
+	fclose(m2);
+	free(resultt);	
+
+	m1 = fopen("tests/a3_1.txt", "r");
+	m2 = fopen("tests/a3_2.txt", "r");
+	resultt = allocate_memory(3, 4);
+	resultt[0][0] = 7;
+	resultt[0][1] = 9;
+	resultt[0][2] = 3;
+	resultt[0][3] = 13;
+	resultt[1][0] = -4;
+	resultt[1][1] = -7;
+	resultt[1][2] = -5;
+	resultt[1][3] = -6;
+	resultt[2][0] = 1;
+	resultt[2][1] = 10;
+	resultt[2][2] = 10;
+	resultt[2][3] = 10;
+	test_addition(m1, m2, resultt, 3, 4, "#3 2 matrix 3*4      ");
+	fclose(m1);
+	fclose(m2);
+	free(resultt);
+
+	printf("-----> Test function 'Multiplication' <-----\n");
+	m1 = fopen("tests/m1_1.txt", "r");
+	m2 = fopen("tests/m1_2.txt", "r");
+	resultt = allocate_memory(2, 2);
+	resultt[0][0] = 46;
+	resultt[0][1] = 57;
+	resultt[1][0] = 8;
+	resultt[1][1] = 14;
+	test_multiplication(m1, m2, resultt, 2, 2, 2, "#1 2 matrix 2*2      ");
+	fclose(m1);
+	fclose(m2);
+	free(resultt);
+
+	m1 = fopen("tests/m2_1.txt", "r");
+	m2 = fopen("tests/m2_2.txt", "r");
+	resultt = allocate_memory(2, 4);
+	resultt[0][0] = 26;
+	resultt[0][1] = 38;
+	resultt[0][2] = 50;
+	resultt[0][3] = 62;
+	resultt[1][0] = 44;
+	resultt[1][1] = 65;
+	resultt[1][2] = 86;
+	resultt[1][3] = 107;
+	test_multiplication(m1, m2, resultt, 2, 3, 4, "#2 matrix 2*3 and 3*4");
+	fclose(m1);
+	fclose(m2);
+	free(resultt);
+
+	m1 = fopen("tests/m3_1.txt", "r");
+	m2 = fopen("tests/m3_2.txt", "r");
+	resultt = allocate_memory(3, 1);
+	resultt[0][0] = 0;
+	resultt[0][1] = -14;
+	resultt[0][2] = -70;
+	test_multiplication(m1, m2, resultt, 3, 4, 1, "#3 matrix 3*4 and 4*1");
+	fclose(m1);
+	fclose(m2);
+	free(resultt);
+
+	printf("--------> Test function 'Inverse' <---------\n");
+	m1 = fopen("tests/i1.txt", "r");
+	resultt = allocate_memory(3, 3);
+	resultt[0][0] = -7.0/12.0;
+	resultt[0][1] = -1.0/12.0;
+	resultt[0][2] = 19.0/6.0;
+	resultt[1][0] = 1.0/6.0;
+	resultt[1][1] = 1.0/6.0;
+	resultt[1][2] = -1.0/3.0;
+	resultt[2][0] = 5.0/12.0;
+	resultt[2][1] = -1.0/12.0;
+	resultt[2][2] = -11.0/6.0;
+	test_inverse(m1, resultt, 3, 1, "#1 matrix 3*3        ");
+	fclose(m1);
+
+	m1 = fopen("tests/i2.txt", "r");
+	test_inverse(m1, resultt, 3, 0, "#2 determinant = 0   ");
+	fclose(m1);
+	free(resultt);
 
 }

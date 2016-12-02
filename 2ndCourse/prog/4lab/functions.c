@@ -85,6 +85,7 @@ char *read_line(FILE *file, int *out_error)
 		if (strlen_f(string) == 0)
 			{
 				*out_error = EMPTYSTRING;
+				free(string);
 				return NULL;
 			}
 	}

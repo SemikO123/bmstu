@@ -46,7 +46,7 @@ void test_read(const char *filename, const char *rightresult , int error, const 
 	{
 		if (err == OK)
 			test(compare(result, rightresult), text);
-		else if (err == EMPTYSTRING && error == EMPTYSTRING)
+		if (err == EMPTYSTRING && error == EMPTYSTRING)
 			test(1, text);
 	}
 	free(result);
