@@ -11,17 +11,17 @@ int array_generate(FILE *file, int *count, int **array)
 	switch (len_of_array(file, &count_of_numbers))
 	{
 		case EMPTY:
-			printf("\nFile is empty\n");
+			//printf("\nFile is empty\n");
 			fclose(file);
 			error_code = EMPTY;
 			break;
 		case BADINPUT:
-			printf("\nCan't get numbers from file\n");
+			//printf("\nCan't get numbers from file\n");
 			fclose(file);
 			error_code = BADINPUT;
 			break;
 		case OK:
-			printf("\nCount of numbers = %d\n", count_of_numbers);
+			//printf("\nCount of numbers = %d\n", count_of_numbers);
 			rewind(file);
 			if (count)
 			{
@@ -70,7 +70,7 @@ int len_of_array(FILE *file, int *count)
 * @function array_filling
 * This function puts numbers from file to array
 * @param[in] first element's pointer
-* @param[in] end after last element's pointer
+* @param[in] end after last elem/ent's pointer
 * @param[in] file file with numbers
 * @return code of error
 */
@@ -121,4 +121,117 @@ int counting(int *begin, int *end, int *min)
 	}
 	return OK;
 
+}
+
+void minmax_search(int *begin, int *end, int **min, int **max)
+{
+	*min = begin;
+	*max = begin;
+	for (int *curr = begin; curr < end; curr++)
+	{
+		if (*curr < **min)
+			*min = curr;
+		if (*curr > **max)
+			*max = curr;
+	}
+}
+
+
+int *filter_array(int *begin, int *end, int *count, int *out_error)
+{
+	int *min, *max;
+	minmax_search(begin, end, &min, &max);
+	if (abs(max-min) > 1)
+	{
+		int *left, *right;
+		if (max > min)
+		{
+			left = min;
+			right = max;
+		}
+		else
+		{
+			left = max;
+			right = min;
+		}
+		left++;
+		*count = right-left;
+		int *new_array = malloc(*count*sizeof(int));
+		if (new_array)
+		{
+			int i = 0;
+			for (int *curr = left; curr < right; curr++)
+				*(new_array + i++) = *curr;
+		}
+		else
+			*out_error = MEMORYPROBLEM;
+		*out_error = OK;
+		return new_array;
+	}
+	else
+	{
+		*count = 0;
+		return NULL;
+	}
+}
+
+void print_array(int *array, int count)
+{
+	for (int i = 0; i < count; i++)
+		printf("%d ", *(array+i));
+}
+
+
+int compare_int(const void *a, const void *b)
+{
+	const int *x = a;
+	const int *y = b;
+	return *x-*y;
+}
+
+void swap(void *a, void *b, size_t size)
+{
+	char *x = a;
+	char *y = b;
+	for (int i = 0; i < size; i++)
+	{
+		char tmp = *x;
+		*(x++) = *y;
+		*(y++) = tmp;
+	}
+}
+
+void my_sort(void *base, size_t num, size_t size, compare_t compare)
+{
+	char *left = base;
+	char *right = (char *)base + size*(num-1);
+	int flag = 1;
+	while (left < right && flag == 1)
+	{
+		flag = 0;
+		for (char *i = left; i < right; i += size)
+		{
+			if(compare(i, i + size) > 0)
+			{
+				swap(i, i + size, size);
+				flag = 1;
+			}
+		}
+		right -= size;
+		for (char *i = right; i > left; i -= size)
+		{
+			if (compare(i - size, i) > 0)
+			{
+				swap(i - size, i, size);
+				flag = 1;
+			}
+		}
+		left += size;
+	}
+}
+
+void print_to_file(FILE *file, int *array, int count)
+{
+	for (int i = 0; i < count; i++)
+		fprintf(file, "%d ", *(array+i));
 }
