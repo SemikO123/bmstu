@@ -113,13 +113,18 @@ void search_words_in_file(FILE *input, char letter, int *count, char *word)
 
 void task()
 {
-	FILE *input = fopen("input.txt", "r");
+	//FILE *input = fopen("input.txt", "r");
+	FILE *input = fopen("25words.txt", "r");
 	struct BinaryTree *head = NULL;
 	char tmp[20];
+	unsigned long long int time01, time02;
+	time01 = tick();
 	while (fscanf(input, "%s", tmp) > 0)
 	{
 		head = insert_element(head, add_new(tmp));
 	}
+	time02 = tick();
+	printf("Время создания дерева: %lld\n", time02-time01);
 	char letter;
 	printf("Поиск слов на определенную букву (введите букву): ");
 	scanf("%c", &letter);
