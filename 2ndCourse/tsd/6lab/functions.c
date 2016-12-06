@@ -113,8 +113,8 @@ void search_words_in_file(FILE *input, char letter, int *count, char *word)
 
 void task()
 {
-	//FILE *input = fopen("input.txt", "r");
-	FILE *input = fopen("25words.txt", "r");
+	FILE *input = fopen("input.txt", "r");
+	//FILE *input = fopen("25words.txt", "r");
 	struct BinaryTree *head = NULL;
 	char tmp[20];
 	unsigned long long int time01, time02;
@@ -125,25 +125,34 @@ void task()
 	}
 	time02 = tick();
 	printf("Время создания дерева: %lld\n", time02-time01);
+	// построение графика в dot
+	FILE *graph = fopen("graph.gv", "w");		
+	fprintf(graph, "digraph G{\n");
+	fprintf(graph, "%s\n", head->data);
+	make_graph(head, NULL, graph);
+	fprintf(graph, "}");
+	fclose(graph);
+	system("/bin/bash /home/irina/Документы/bmstu/2ndCourse/tsd/6lab/file.sh");
+	
 	char letter;
 	printf("Поиск слов на определенную букву (введите букву): ");
 	scanf("%c", &letter);
 	scanf("%c", &letter);
 	int count = 0;
-	unsigned long long int time1, time2, time3, time4;
-	time1 = tick();
+	//unsigned long long int time1, time2, time3, time4;
+	//time1 = tick();
 	search_words_to_same_letter(head, letter, &count);
-	time2 = tick();
+	//time2 = tick();
 	print_tree(head, 0, 0);
 	printf("%sКоличество слов на букву '%c': %d %s\n", RED, letter, count, RESET);
 	rewind(input);
 	int count1 = 0;
-	time3 = tick();
+	//time3 = tick();
 	char word[20] = "";
 	search_words_in_file(input, letter, &count1, word);
-	time4 = tick();
-	printf("%sВремя поиска слов на букву %c в дереве: %lld\n", RED, letter, time2-time1);
-	printf("Время поиска слов на букву %c в файле: %lld%s\n", letter, time4-time3, RESET);
+	//time4 = tick();
+	//printf("%sВремя поиска слов на букву %c в дереве: %lld\n", RED, letter, time2-time1);
+	//printf("Время поиска слов на букву %c в файле: %lld%s\n", letter, time4-time3, RESET);
 	fclose(input);
 }
 
@@ -180,13 +189,13 @@ void post_order(struct BinaryTree *def_head)
 void tree_traversal(struct BinaryTree *def_head)
 {
 	// прямой обход
-	printf("%sПрямой обход графа:%s\n", RED, RESET);
+	printf("%sПрефиксный обход графа:%s\n", RED, RESET);
 	pre_order(def_head);
 	// поперечный обход
-	printf("\n%sПоперечный обход графа:%s\n", RED, RESET);
+	printf("\n%sИнфиксный обход графа:%s\n", RED, RESET);
 	in_order(def_head);
 	// обратный обход
-	printf("\n%sОбратный обход графа:%s\n", RED, RESET);
+	printf("\n%sПостфиксный обход графа:%s\n", RED, RESET);
 	post_order(def_head);
 }
 
@@ -221,19 +230,45 @@ struct BinaryTree *delete_element(struct BinaryTree *head, char *data)
 		else if (compare > 0)
 			head->right = delete_element(head->right, data);
 		else if (head->left != NULL && head->right != NULL)
-		{
-			strcpy(head->data, min(head->right)->data);
-			//head->data = min(head->right)->data;
-			head->right = delete_element(head->right, head->right->data);
-		}
+			{
+				strcpy(head->data, min(head->right)->data);
+				//head->data = min(head->right)->data;
+				head->right = delete_element(head->right, head->right->data);
+			}
 		else
 			if (head->left != NULL)
 				head = head->left;
-			else
+			else 
 				head = head->right;
 	}
 	return head;
 }
+
+// struct BinaryTree *delete_element(struct BinaryTree *head, char *data)
+// {
+// 	if (head == NULL)
+// 		return head;
+// 	else 
+// 	{
+// 		int compare = strcmp(data, head->data);
+// 		if (compare < 0)
+// 			head->left = delete_element(head->left, data);
+// 		else if (compare > 0)
+// 			head->right = delete_element(head->right, data);
+// 		else if (head->left != NULL && head->right != NULL)
+// 			{
+// 				strcpy(head->data, min(head->right)->data);
+// 				//head->data = min(head->right)->data;
+// 				head->right = delete_element(head->right, head->right->data);
+// 			}
+// 		else
+// 			if (head->left != NULL)
+// 				head = head->left;
+// 			else 
+// 				head = head->right;
+// 	}
+// 	return head;
+// }
 
 void free_tree(struct BinaryTree *head)
 {
