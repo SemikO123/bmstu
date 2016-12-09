@@ -18,6 +18,9 @@ endif
 tests.exe : tests.o functions.o
 	$(CC) -o  tests.exe tests.o functions.o
 
+tests_2.exe : tests_2.o functions.o
+	$(CC) -o tests_2.exe tests_2.o functions.o
+
 2lab.o : 2lab.c functions.h errors.h
 	$(CC) $(FLAGS) -c 2lab.c
 
@@ -30,6 +33,9 @@ functions.o : functions.c functions.h errors.h
 tests.o : tests.c functions.h errors.h
 	$(CC) $(FLAGS) -c tests.c
 
+tests_2.o : tests_2.c functions.h errors.h
+	$(CC) $(FLAGS) -c tests_2.c
+
 st2 : 2_2.exe
 	./2_2.exe in.txt out.txt 1
 
@@ -38,6 +44,9 @@ st : 2lab.exe
 
 sttests : tests.exe
 	./tests.exe
+
+tests2 : tests_2.exe
+	./tests_2.exe
 
 vg : 2lab.exe
 	valgrind --tool=memcheck ./2lab.exe input.txt
