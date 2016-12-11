@@ -33,5 +33,7 @@ double **copy(int n, int m, double **matrix, double **new_matrix);
 double **transformation(int n, int m, double **matrix);
 // копирование в квадратную матрицу из прямоугольной
 double **get_result(int n, double **matrix, double **result);
+// свап двух строк
+void swap(int n, int m, double **matrix);
 
 #endif

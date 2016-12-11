@@ -64,12 +64,35 @@ double **copy(int n, int m, double **matrix, double **new_matrix)
 	return new_matrix;
 }
 
+void swap(int n, int m, double **matrix)
+{
+	double *ptr = matrix[n];
+	matrix[n] = matrix[m];
+	matrix[m] = ptr;
+}
+
 double **transformation(int n, int m, double **matrix)
 {
+	// printf("begin:\n");
+	// print_matrix(n,m,matrix);
 	for (int i = 0; i < n; i++)
-	{
+	{		
+		// printf("->%d\n",i);
+		// print_matrix(n,m,matrix);
 		if (matrix[i][i] == 0)
-			return NULL;
+		{
+			int t = i;
+			for (; t < n; t++)
+				if (matrix[t][i] != 0)
+				{
+					swap(i,t,matrix);
+					// printf("swap %d and %d strings:\n",i,t);
+					// print_matrix(n,m,matrix);
+					break;
+				}
+			if (t == n)
+				return NULL;
+		}
 		for (int j = m-1; j >= 0; j--)
 			matrix[i][j] /= matrix[i][i];
 		for (int j = 0; j < n; j++)
@@ -96,7 +119,7 @@ double **inverse(int n, double **matrix, double **result)
 		big_matrix = copy(n, n, matrix, big_matrix);
 		big_matrix = add_identity_matrix(n, big_matrix);
 		big_matrix = transformation(n, 2*n, big_matrix);
-		if (big_matrix)
+		if (big_matrix != NULL)
 			result = get_result(n, big_matrix, result);
 		else
 			result = NULL;
