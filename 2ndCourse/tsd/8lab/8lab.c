@@ -158,6 +158,48 @@ int connected_graph(int **matr, int **matrix, int count)
 	return 1;
 }
 
+int firstzero(int *mass, int n)
+{
+	for (int i = 0; i < n; i++)
+		if (mass[i] == 0)
+			return i;
+	return -1;
+}
+
+int *prim(int **matrix, int *result, int count, int v0)
+{
+	// printf("\nresult = ");
+	// for (int i = 0; i < count; i++)
+	// 	printf("%d", result[i]);
+	// printf("\nalready = ");
+	// for (int i = 0; i < count; i++)
+	// 	printf("%d", already_used[i]);
+	for (int i = 0; i < count; i++)
+		for (int j = 0; j < count; j++)
+			if (matrix[i][j] == 0)
+				matrix[i][j] = INF;
+	int *already_used = malloc(count* sizeof(int));
+	for (int i = 0; i < count; i++)
+		already_used[i] = 0;
+	already_used[v0] = 1;
+
+	result[0] = v0;
+	for (int i = 1; i < count; i++)
+	{
+		int min = matrix[v0][firstzero(already_used, count)];
+		result[i] = firstzero(already_used,count);
+		for (int j = 0; j < count; j++)
+			if (matrix[v0][j] < min && already_used[j] == 0)
+			{
+				min = matrix[v0][j];
+				result[i] = j;
+			}
+		v0 = result[i];
+		already_used[v0] = 1;
+	}
+	return result;		
+}
+
 int main(void)
 {
 	int menu = -1;
@@ -174,6 +216,7 @@ int main(void)
 		printf("%s(5) Длины кратчайшего пути из одного города до других\n", YELLOW);
 		printf("(6) Вывод на экран матрицы кратчайших расстояний\n");
 		printf("(7) Проверка связности графа\n");
+		printf("(8) Построение минимального остовного дерева\n");
 		printf("(0) Завершение работы%s\n",RESET);
 		scanf("%d", &menu);
 		switch(menu)
@@ -304,7 +347,20 @@ int main(void)
 				free(matr);
 				break;
 			case 8:
+			{
+				int *result = malloc(count*sizeof(int));
+				int v0;
+				printf("Введите начальную вершину: ");
+				scanf("%d", &v0);
+				result = prim(matrix, result, count, v0-1);
+				printf("%sМинимальное остовное дерево: \n%s", PINK, RESET);
+				for (int i = 0; i < count; i++)
+					if (i != count-1)
+						printf("%d -> ", result[i]+1);
+					else
+						printf("%d\n", result[i]+1);
 				break;
+			}
 			case 0:
 				free(matrix);
 				break;
