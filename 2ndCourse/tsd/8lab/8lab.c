@@ -2,11 +2,18 @@
 #include <stdlib.h>
 
 /*
-Реализовать алгоритмы обработки графовых структур: поиск различных путей, 
-проверка связности, построение остовых деревьев минимальной стоимости.
-Задана система двусторонних дорог. Найти два города и соединяющий их путь, 
-который проходит через каждую из дорог системы только один раз
+Задана система двусторонних дорог. Для каждой пары городов найти длину 
+кратчайшего пути между ними.
 */
+
+#define RESET   "\033[0m"
+#define RED     "\033[1;31m"
+#define GREEN   "\033[1;32m"
+#define YELLOW  "\033[1;33m"
+#define PINK    "\033[1;35m"
+#define WHITE   "\033[1;37m"
+
+#define INF 10000
 
 int **allocate_memory(int n, int m)
 {
@@ -62,11 +69,14 @@ void print_matrix(int **matrix, int count, int flag)
 void get_graph(int **matrix, int count)
 {
 	FILE *graph = fopen("graph.gv", "w");
-	fprintf(graph, "digraph G{\n");
+	fprintf(graph, "graph G{\n");
 	for (int i = 0; i < count; i++)
-		for (int j = 0; j < count; j++)
+	{
+		fprintf(graph,"%d\n", i+1);
+		for (int j = i; j < count; j++)
 			if (matrix[i][j] != 0)
-				fprintf(graph, "%d->%d\n", i, j);
+				fprintf(graph, "%d -- %d [label=%d]\n", i+1, j+1, matrix[i][j]);
+	}
 	fprintf(graph, "}");
 	fclose(graph);
 }
@@ -77,14 +87,14 @@ int *dijkstra(int count, int **matrix, int v0, int *min_rasst)
 	int min_ind, min, tmp;
 	for (int i = 0; i < count; i++)
 	{
-		min_rasst[i] = 10000;
+		min_rasst[i] = INF;
 		already_used[i] = 1;
 	}
 	min_rasst[v0] = 0;
 	do
 	{
-		min_ind = 10000;
-		min = 10000;
+		min_ind = INF;
+		min = INF;
 		for (int i = 0; i < count; i++)
 		{
 			if (already_used[i] == 1 && min_rasst[i] < min)
@@ -93,7 +103,7 @@ int *dijkstra(int count, int **matrix, int v0, int *min_rasst)
 				min_ind = i;
 			}
 		}
-		if (min_ind != 10000)
+		if (min_ind != INF)
 		{
 			for (int i = 0; i < count; i++)
 			{
@@ -108,27 +118,63 @@ int *dijkstra(int count, int **matrix, int v0, int *min_rasst)
 			already_used[min_ind] = 0;
 		}
 	}
-	while (min_ind < 10000);
+	while (min_ind < INF);
 	return min_rasst;
+}
+
+int minimum(int a, int b)
+{
+	return (a < b) ? a : b;
+}
+
+int **floyd_warshall(int n, int **matrix, int **matr)
+{
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++)
+			if (matrix[i][j] != 0)
+				matr[i][j] = matrix[i][j];
+			else
+				matr[i][j] = INF;
+	for (int k = 0; k < n; k++)
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j < n; j++)
+				matr[i][j] = minimum(matr[i][j], matr[i][k]+matr[k][j]);
+	for (int i = 0; i < n; i++)
+	{
+		matr[i][i] = 0;
+	}
+
+	return matr;
+}
+
+int connected_graph(int **matr, int **matrix, int count)
+{
+	matr = allocate_memory(count, count);
+	matr = floyd_warshall(count, matrix, matr);
+	for (int i = 0; i < count; i++)
+		for (int j = 0; j < count; j++)
+			if (matr[i][j] == INF)
+				return 0;
+	return 1;
 }
 
 int main(void)
 {
 	int menu = -1;
-	int **matrix;
+	int **matrix = NULL;
+	int **matr = NULL;
 	int count;
 	do
 	{
-		printf("Меню работы с графами:\n");
+		printf("%sМеню работы с графами:\n", YELLOW);
 		printf("(1) Загрузка графа из файла\n");
 		printf("(2) Задание графа вручную\n");
 		printf("(3) Печать графа\n");
-		printf("(4) Поиск пути из одной вершины до остальных\n");
-		printf("(5) ?\n");
-		printf("(6) Проверка связности графа\n");
-		printf("(7) Построение остовых деревьев минимальной стоимости\n");
-		printf("(8) Задание лабораторной работы\n");
-		printf("(0) Завершение работы\n");
+		printf("%s(4) Длина кратчайшего пути между каждой парой городов\n", GREEN);
+		printf("%s(5) Длины кратчайшего пути из одного города до других\n", YELLOW);
+		printf("(6) Вывод на экран матрицы кратчайших расстояний\n");
+		printf("(7) Проверка связности графа\n");
+		printf("(0) Завершение работы%s\n",RESET);
 		scanf("%d", &menu);
 		switch(menu)
 		{
@@ -147,20 +193,31 @@ int main(void)
 			}
 			case 2:
 			{
-				printf("Количество вершин:");
+				printf("Количество вершин: ");
 				scanf("%d", &count);
 				matrix = allocate_memory(count, count);
 				for (int i = 0; i < count; i++)
 					for (int j = 0; j < count; j++)
+						matrix[i][j] = 0;
+				int a, b, rasst;
+				printf("%sВвод данных.%s Для завершения введите отрицательные числа.\n", PINK, RESET);
+				do
+				{
+					printf("Введите через пробел номера двух вершин (<=%d) и расстояние между ними: ", count);
+					scanf("%d %d %d", &a, &b, &rasst);
+					if (a <= count && a > 0 && b <= count && b > 0 && rasst > 0)
 					{
-						// if (i == j)
-						// 	matrix[i][j] = 0;
-						// else
-						// {
-							printf("Введите вес ребра между %d и %d вершинами или 0, если ребра нет: ",i,j);
-							scanf("%d", &matrix[i][j]);
-						// }
+						matrix[a-1][b-1] = rasst;
+						matrix[b-1][a-1] = rasst;
+						//printf("[%d][%d] = %d", a-1,b-1,rasst);
 					}
+					else 
+						if (a < 0)
+							break;
+						else
+							printf("%sНеверный ввод%s\n", RED, RESET);
+				}
+				while (a > -1);
 				printf("Матрица достижимости:\n");
 				print_matrix(matrix, count, 2);
 				printf("Матрица стоимостей:\n");
@@ -168,30 +225,88 @@ int main(void)
 				break;
 			}
 			case 3:
-				get_graph(matrix, count);
-				system("/bin/bash /home/irina/Документы/bmstu/2ndCourse/tsd/8lab/file.sh");
+				if (matrix == NULL)
+					printf("Загрузите матрицу из файла(1) или задайте вручную(2)!\n");
+				else
+				{
+					get_graph(matrix, count);
+					system("/bin/bash /home/irina/Документы/bmstu/2ndCourse/tsd/8lab/file.sh");
+				}
 				break;
 			case 4:
+				if (!matrix)
+					printf("Загрузите матрицу из файла(1) или задайте вручную(2)!\n");
+				else
+				{
+					printf("%s| Город 1 | Город 2 | Кратчайшее расстояние |\n", WHITE);
+					for (int i = 0; i < count; i++)
+					{
+						int *min_rasst = malloc(sizeof(int)*count);
+						min_rasst = dijkstra(count, matrix, i, min_rasst);
+						for (int j = i+1; j < count; j++)
+						{
+							printf("+—————————+—————————+———————————————————————+\n");
+							if (min_rasst[j] != INF)
+								printf("|  %2d     |   %2d    |         %3d           |\n", i+1, j+1, min_rasst[j]);
+							else
+								printf("|  %2d     |   %2d    |           %s∞%s           | %s\n", i+1, j+1, RED, RESET, RESET);
+						}
+					}
+					printf("+—————————+—————————+———————————————————————+\n");
+				}
+				break;
+			case 5:
 			{
-				int v0;
-				printf("Введите начальную вершину: ");
-				scanf("%d", &v0);
-				int *min_rasst = malloc(sizeof(int)*count);
-				// int already_used[count];
-				min_rasst = dijkstra(count, matrix, v0, min_rasst);
-				for (int i = 0; i < count; i++)
-					printf("%d ", min_rasst[i]);
+				if (!matrix)
+					printf("Загрузите матрицу из файла(1) или задайте вручную(2)!\n");
+				else
+				{
+					int v0;
+					printf("Введите номер начальной вершины(город): ");
+					scanf("%d", &v0);
+					v0 -= 1;
+					int *min_rasst = malloc(sizeof(int)*count);
+					// int already_used[count];
+					min_rasst = dijkstra(count, matrix, v0, min_rasst);
+					for (int i = 0; i < count; i++)
+						if (v0 != i)
+						{
+							if (min_rasst[i] == INF)
+								printf("%s  Из города %d нельзя попасть в город %d               \n%s",PINK, v0+1, i+1, RESET);
+							else
+								printf("%s  Кратчайшее расстояние между городами %d и %d - %3d  \n%s",PINK, v0+1, i+1, min_rasst[i], RESET);
+						}
+					free(min_rasst);
+				}
 				break;
 			}
-			case 5:
-				break;
 			case 6:
+				printf("%sМатрица достижимости (Алгоритм Флойда — Уоршелла): %s\n", PINK, RESET);
+				matr = allocate_memory(count, count);
+				matr = floyd_warshall(count, matrix, matr);
+				for (int i = 0; i < count; i++)
+					for (int j = 0; j < count; j++)
+						if (matr[i][j] == INF)
+							matr[i][j] = 0;
+				print_matrix(matr, count, 1);
+				free(matr);
 				break;
 			case 7:
+				switch(connected_graph(matr, matrix, count))
+				{
+					case 0:
+						printf("%s   Граф несвязный%s\n", RED, RESET);
+						break;
+					case 1:
+						printf("%s   Граф связный%s\n", RED, RESET);
+						break;
+				}
+				free(matr);
 				break;
 			case 8:
 				break;
 			case 0:
+				free(matrix);
 				break;
 			default:
 				printf("Пункт меню выбран неверно!\n");
