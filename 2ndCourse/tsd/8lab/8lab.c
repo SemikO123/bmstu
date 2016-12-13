@@ -81,6 +81,24 @@ void get_graph(int **matrix, int count)
 	fclose(graph);
 }
 
+void get_graph_prim(int count, int **matrix, int *vector)
+{
+	FILE *graph = fopen("graph.gv", "w");
+	fprintf(graph, "graph G{\n");
+	for (int i = 0; i < count; i++)
+	{
+		for (int j = i; j < count; j++)
+			if (matrix[i][j] != INF)
+				fprintf(graph, "%d -- %d [label=%d]\n", i+1, j+1, matrix[i][j]);
+	}
+	for (int i = 0; i < count-1; i++)
+	{
+		fprintf(graph, "%d -- %d [color=blue]\n", vector[i]+1, vector[i+1]+1);
+	}
+	fprintf(graph, "}");
+	fclose(graph);
+}
+
 int *dijkstra(int count, int **matrix, int v0, int *min_rasst)
 {
 	int already_used[count];
@@ -218,6 +236,7 @@ int main(void)
 		printf("(7) Проверка связности графа\n");
 		printf("(8) Построение минимального остовного дерева\n");
 		printf("(0) Завершение работы%s\n",RESET);
+		printf("Введите пункт меню: ");
 		scanf("%d", &menu);
 		switch(menu)
 		{
@@ -338,27 +357,35 @@ int main(void)
 				switch(connected_graph(matr, matrix, count))
 				{
 					case 0:
-						printf("%s   Граф несвязный%s\n", RED, RESET);
+						printf("%s   Граф несвязный%s\n", PINK, RESET);
 						break;
 					case 1:
-						printf("%s   Граф связный%s\n", RED, RESET);
+						printf("%s   Граф связный%s\n", PINK, RESET);
 						break;
 				}
 				free(matr);
 				break;
 			case 8:
 			{
-				int *result = malloc(count*sizeof(int));
-				int v0;
-				printf("Введите начальную вершину: ");
-				scanf("%d", &v0);
-				result = prim(matrix, result, count, v0-1);
-				printf("%sМинимальное остовное дерево: \n%s", PINK, RESET);
-				for (int i = 0; i < count; i++)
-					if (i != count-1)
-						printf("%d -> ", result[i]+1);
-					else
-						printf("%d\n", result[i]+1);
+				if (connected_graph(matr, matrix, count) == 0)
+					printf("%sНе удаётся построить\n%s",RED, RESET);
+				else
+				{
+					int *result = malloc(count*sizeof(int));
+					int v0;
+					printf("Введите начальную вершину: ");
+					scanf("%d", &v0);
+					result = prim(matrix, result, count, v0-1);
+					printf("%sМинимальное остовное дерево: \n%s", PINK, RESET);
+					for (int i = 0; i < count; i++)
+						if (i != count-1)
+							printf("%d -> ", result[i]+1);
+						else
+							printf("%d\n", result[i]+1);
+					get_graph_prim(count, matrix, result);
+					system("/bin/bash /home/irina/Документы/bmstu/2ndCourse/tsd/8lab/file.sh");
+					free(result);
+				}
 				break;
 			}
 			case 0:
