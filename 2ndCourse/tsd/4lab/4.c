@@ -36,6 +36,11 @@
 
 #define MAX_SIZE 100
 
+#define RESET   "\033[0m"
+#define YELLOW     "\033[1;33m"
+#define RED     "\033[1;31m"
+#define GREEN   "\033[1;32m"
+
 struct request
 {
 	float arrival_time;
@@ -182,7 +187,9 @@ void array(void)
 	ta = new.arrival_time;
 
 
-	printf("t=%f idle=%f ta= %f\n", t, idle, ta);
+	//printf("t=%f idle=%f ta= %f\n", t, idle, ta);
+	printf("%sОбработано       Текущая длина     Средняя длина\n", GREEN);
+	printf("  заявок            очереди            очереди%s\n", RESET);
 	while (N != 1000)
 	{
 		iterations++;
@@ -227,11 +234,7 @@ void array(void)
 				twait += old.down_time;
 				N++;
 				if (N % 100 == 0 && N != 0)
-				{
-					printf("Обработано заявок - %d\n", N);
-					printf("Текущая длина очереди - %d\n", q1->last - q1->first);
-					printf("Средняя длина очереди - %.2f\n",length/iterations);
-				}
+					printf(" %5d               %3d                 %.2f\n", N, q1->last - q1->first, length/iterations);
 			}
 		}
 		else
@@ -250,17 +253,18 @@ void array(void)
 	}
 	free(q1);
 
-	printf("\nВремя моделирования - %.2f\n", model);
-	printf("Вошедших заявок - %d\n", count_in);
-	printf("Вышедших заявок - %d\n", N);
+	printf("\n Время моделирования - %s%.2f%s\n",GREEN, model, RESET);
 	if (N != 0)
-		printf("Среднее время пребывания заявки в очереди - %.2f\n", twait/N);
-	printf("ОА работал %d раз\n", Nwork);
+		printf(" Среднее время пребывания заявки в очереди - %s%.2f%s\n",GREEN, twait/N, RESET);
+	printf("\n Вошедших заявок - %s%d%s\n",GREEN, count_in, RESET);
+	printf(" Вышедших заявок - %s%d%s\n",GREEN, N, RESET);
+	printf(" ОА проработал %s%d%s раз\n",GREEN, Nwork, RESET);
+	//printf(" Простой ОА - %s%.2f%s",GREEN, idle, RESET);
 
 	float aver_in = (t1+t2)/2;
 	float aver_out = (t3+t4)/2;
-	printf("Погрешность по входу - %.2f процентов\n", 100*fabs(count_in - model/aver_in)/(model/aver_in));
-	printf("Погрешность по выходу - %.2f процентов\n", 100*fabs(Nwork*aver_out + idle - model)/(Nwork*aver_out + idle));
+	printf("\n%sПогрешность по входу -  %.2f процентов\n",GREEN, 100*fabs(count_in - model/aver_in)/(model/aver_in));
+	printf("Погрешность по выходу - %.2f процентов\n%s", 100*fabs(Nwork*aver_out + idle - model)/(Nwork*aver_out + idle), RESET);
 
 	}
 
@@ -284,8 +288,8 @@ void list(void)
 	create_new_request_list(new, t1, t2, t3, t4);
 	ta = new->arrival_time;
 
-	printf("t=%f idle=%f ta= %f\n", t, idle, ta);
-
+	printf("%sОбработано       Текущая длина     Средняя длина\n", GREEN);
+	printf("  заявок            очереди            очереди%s\n", RESET);
 	while (N != 1000)
 	{
 		iterations++;
@@ -325,11 +329,7 @@ void list(void)
 				twait += old->down_time;
 				N++;
 				if (N % 100 == 0 && N != 0)
-				{
-					printf("Обработано заявок - %d\n", N);
-					printf("Текущая длина очереди - %d\n", q2->length);
-					printf("Средняя длина очереди - %.2f\n",length/iterations);
-				}
+					printf(" %5d               %3d                 %.2f\n", N, q2->length, length/iterations);
 			}
 		}
 		else
@@ -348,6 +348,121 @@ void list(void)
 	free(q2);
 	free(new);
 	free(old);
+
+
+	printf("\n Время моделирования - %s%.2f%s\n",GREEN, model, RESET);
+	if (N != 0)
+		printf(" Среднее время пребывания заявки в очереди - %s%.2f%s\n",GREEN, twait/N, RESET);
+	printf("\n Вошедших заявок - %s%d%s\n",GREEN, count_in, RESET);
+	printf(" Вышедших заявок - %s%d%s\n",GREEN, N, RESET);
+	printf(" ОА проработал %s%d%s раз\n",GREEN, Nwork, RESET);
+	//printf(" Простой ОА - %s%.2f%s",GREEN, idle, RESET);
+
+	float aver_in = (t1+t2)/2;
+	float aver_out = (t3+t4)/2;
+	printf("\n%sПогрешность по входу -  %.2f процентов\n",GREEN, 100*fabs(count_in - model/aver_in)/(model/aver_in));
+	printf("Погрешность по выходу - %.2f процентов\n%s", 100*fabs(Nwork*aver_out + idle - model)/(Nwork*aver_out + idle), RESET);
+}
+
+void print_table(struct queue_list *que)
+{
+	printf("%s         Заявка                 Адрес \n", GREEN);
+	printf("пocтупление    обработка       в памяти%s\n", RESET);
+	for (struct request *i = que->out; i; i = i->next)
+		printf("  %.2f           %.2f          %p\n", i->arrival_time, i->process_time, (void*)i);
+	printf("\n");
+
+}
+
+void fragmentation(void)
+{
+	int menu = -1;
+	struct queue_list *que = malloc(sizeof(struct queue_list));
+	init_queue_list(que);
+	struct request *new;
+	do
+	{
+		print_table(que);
+		printf("%s(1) Добавление заявки в очередь\n", YELLOW);
+		printf("(2) Исключение заявки из очереди\n");
+		printf("(0) Выход%s\n", RESET);
+		scanf("%d", &menu);
+		switch(menu)
+		{
+			case 1:
+				new = (struct request*)malloc(sizeof(struct request));
+				create_new_request_list(new, t1, t2, t3, t4);
+				qin_list(que, new);
+				break;
+			case 2:
+				if (empty_queue_list(que) == 0)
+					qout_list(que);
+				else
+				{
+					printf("%sОчередь пуста!%s\n", RED, RESET);
+				}
+				break;
+			case 0:
+				break;
+			default:
+				printf("%sВыберите пункт меню!%s\n", RED, RESET);
+				break;
+		}
+	} 
+	while (menu != 0);
+
+	while (empty_queue_list(que) != 1)
+		qout_list(que);
+	free(que);
+}
+
+unsigned long long int tick(void)
+{
+	unsigned long long int time = 0;
+	__asm__ __volatile__ ("rdtsc" : "=A" (time));
+	return time;
+}
+
+void compare(int n)
+{
+	struct queue_list *que_list = malloc(sizeof(struct queue_list));
+	init_queue_list(que_list); 
+	struct queue_arr *que_arr = malloc(sizeof(struct queue_arr));
+	init_queue_arr(que_arr);
+	struct request *list, array;
+	unsigned long long timel1, timel2, timel3;
+	unsigned long long timea1, timea2, timea3;
+
+	timel1 = tick();
+	for (int i = 0; i < n; i++)
+	{
+		list = (struct request*)malloc(sizeof(struct request));
+		create_new_request_list(list, t1, t2, t3, t4);
+		qin_list(que_list, list);
+	}
+	timel2 = tick();
+	for (int i = 0; i < n; i++)
+		qout_list(que_list);
+	timel3 = tick();
+	//free(list);
+	free(que_list);
+
+	timea1 = tick();
+	for (int i = 0; i < n; i++)
+	{
+		array = create_new_request_arr(t1, t2, t3, t4);
+		qin_arr(que_arr, array);
+	}
+	timea2 = tick();
+	for (int i = 0; i < n; i++)
+		qout_arr(que_arr);
+	timea3 = tick();
+	free(que_arr);
+
+	printf("%s                  Время  входа        Время выхода     Используемая\n", GREEN);
+	printf("                   %d заявок          %d заявок         память\n%s", n, n, RESET);
+	printf(" %s Массив%s           %6lld тик         %8lld тик       %4d байт\n",GREEN, RESET, timea2-timea1, timea3-timea2, (int)sizeof(struct queue_arr));
+	printf("  %sСписок%s           %6lld тик         %8lld тик       %4d байт\n", GREEN, RESET, timel2-timel1, timel3-timel2, (int)sizeof(struct queue_list)*MAX_SIZE + (int)sizeof(struct request));
 }
 
 int main(void)
@@ -363,10 +478,12 @@ int main(void)
 		count_in = 0; 
 		Nwork = 0;  
 		twait = 0;
-
+		printf("\n%s МЕНЮ ПРОГРАММЫ:\n", YELLOW);
 		printf("(1) Очередь в виде массива\n");
 		printf("(2) Очередь в виде списка\n");
-		printf("(0) Завершение работы\n");
+		printf("(3) Проверка фрагментации при работе со списком\n");
+		printf("(4) Сравнение времени работы и используемой памяти\n");
+		printf("(0) Завершение работы%s\n",RESET);
 		printf("Выберите пункт меню: ");
 		scanf("%d", &menu);
 		switch(menu)
@@ -377,13 +494,19 @@ int main(void)
 			case 2:
 				list();
 				break;
+			case 3:
+				fragmentation();
+				break;
+			case 4:
+				compare(100);
+				break;
 			case 0:
 				break;
 			default:
-				printf("Неверно выбран пункт меню!\n");
+				printf("%sНеверно выбран пункт меню!%s\n", RED, RESET);
 				break;
 		}
 	}
-	while (menu != 0);
+	while (menu != 0 && menu != 2);
 }
 
