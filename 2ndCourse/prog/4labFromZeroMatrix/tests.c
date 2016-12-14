@@ -191,4 +191,19 @@ int main(void)
 	fclose(m1);
 	free(resultt);
 
+	m1 = fopen("tests/i3.txt", "r");
+	resultt = allocate_memory(4, 4);
+	resultt[0][0] = 8.0/3.0;  resultt[2][0] = -4.0/9.0;
+	resultt[0][1] = -7.0/3.0; resultt[2][1] = 5.0/9.0;
+	resultt[0][2] = -4.5;     resultt[2][2] = 17.0/18.0;
+	resultt[0][3] = 10.0/3.0; resultt[2][3] = -5.0/9.0;
+	resultt[1][0] = 1.0/9.0;  resultt[3][0] = 0;
+	resultt[1][1] = 1.0/9.0;  resultt[3][1] = 0;
+	resultt[1][2] = 1.0/18.0; resultt[3][2] = 1.0/6.0;
+	resultt[1][3] = -1.0/9.0; resultt[3][3] = 0;
+	test_inverse(m1, resultt, 4, 1, "#3 zeros on diagonal ");
+	fclose(m1);
+	free(resultt);
+
+
 }
