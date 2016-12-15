@@ -30,6 +30,9 @@ int main(void)
 {
 	srand(time(NULL));
 	int menu = -1;
+	printf("array %ld\n", sizeof(struct queue_arr));
+	printf("list %ld\n", sizeof(struct queue_list));
+	printf("request %ld\n", sizeof(struct request));
 	do
 	{
 		idle = 0;
