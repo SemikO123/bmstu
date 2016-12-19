@@ -16,17 +16,18 @@ int length_num(int n)
 	int i = 0;
 	while (n != 0)
 	{
-		n /= 10;
+		n /= 8;
 		i++;
 	}
 	return i;
 }
 
 
-char *to_octal(int num)
+char *to_octal(unsigned int num)
 {
 	int count = length_num(num);
-	char *result = malloc(count+2);
+	// char *result = malloc(count+2);
+	char *result = malloc(count+1);
 	int i = 0;
 	while (num != 0)
 	{
@@ -42,8 +43,8 @@ char *to_octal(int num)
 	}
 	if (i == count)
 		result[count] = '\0';
-	else
-		result[count+1] = '\0';
+	// else
+	// 	result[count+1] = '\0';
 	return result;
 
 }
@@ -56,12 +57,12 @@ int strlen_f(const char *string)
 		return i;	
 }
 
-char *strtochr(char ch, char *string)
-{
-	string[0] = ch;
-	string[1] = '\0';
-	return string;
-}
+// char *strtochr(char ch, char *string)
+// {
+// 	string[0] = ch;
+// 	string[1] = '\0';
+// 	return string;
+// }
 
 int my_snprintf(char *s, size_t n, const char *format, ...)
 {
@@ -98,7 +99,7 @@ int my_snprintf(char *s, size_t n, const char *format, ...)
 				}
 				case O:
 				{
-					int data1 = va_arg(args, int);
+					unsigned int data1 = va_arg(args, unsigned int);
 					data = to_octal(data1);
 					int string_length = strlen_f(data);
 					for (int i = 0; i < string_length; i++)
@@ -128,10 +129,10 @@ int my_snprintf(char *s, size_t n, const char *format, ...)
 					}
 					break;
 				}
-				default:
-					s[count++] = '%';
-					s[count++] = *format;
-					break;
+				// default:
+				// 	s[count++] = '%';
+				// 	s[count++] = *format;
+				// 	break;
 			}
 		}
 		else

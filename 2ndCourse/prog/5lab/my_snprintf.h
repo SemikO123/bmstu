@@ -11,7 +11,7 @@
 
 int get_type(char specificator);
 int length_num(int n);
-char *to_octal(int num);
+char *to_octal(unsigned int num);
 int strlen_f(const char *string);
 char *strtochr(char ch, char *string);
 int my_snprintf(char *s, size_t n, const char *format, ...);
