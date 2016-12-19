@@ -35,8 +35,13 @@ void print(int n)
 		printf("%s%25s%s\n", GREEN, "PASSED", RESET);
 }
 
-
-
+void test_octal(int num, char *answer, int n, const char *text)
+{
+	char *a = to_octal(num);
+	printf("%15s -> %15s", text, a);
+	print(compare(a, answer, n, n));
+	free(a);
+}
 
 int main(void)
 {
@@ -49,6 +54,21 @@ int main(void)
 
 	printf("%s%15s %25s %25s %25s%s\n",PINK ,"","expected", "received", "TEST", RESET);
 
+	snprintf(string, 4, "%o", 333);
+	my_snprintf(string1, 4, "%o", 333);
+	printf("%15s %25s %25s ","only octal", string, string1);
+	print(compare(string, string1, strlen_f(string), strlen_f(string1)));
+
+	snprintf(string, 4, "%s", "abc");
+	my_snprintf(string1, 4, "%s", "abc");
+	printf("%15s %25s %25s ","only string", string, string1);
+	print(compare(string, string1, strlen_f(string), strlen_f(string1)));	
+
+	snprintf(string, 2, "%c", 's');
+	my_snprintf(string1, 2, "%c", 's');
+	printf("%15s %25s %25s ","only char", string, string1);
+	print(compare(string, string1, strlen_f(string), strlen_f(string1)));
+
 	snprintf(string, 10, "word %s", "ab");
 	my_snprintf(string1, 10, "word %s", "ab");
 	printf("%15s %25s %25s ","string", string, string1);
@@ -56,7 +76,7 @@ int main(void)
 
 	snprintf(string, 13, "str: %s", "very_long_word");
 	my_snprintf(string1, 13, "str: %s", "very_long_word");
-	printf("%15s %25s %25s ","string more", string, string1);
+	printf("%15s %25s %25s ","string (>)", string, string1);
 	print(compare(string, string1, strlen_f(string), strlen_f(string1)));
 
 	snprintf(string, 10, "oct: %o", 123);
@@ -71,7 +91,7 @@ int main(void)
 
 	snprintf(string, 10, "oct: %o", 923923);
 	my_snprintf(string1, 10, "oct: %o", 923923);
-	printf("%15s %25s %25s ","octal more", string, string1);
+	printf("%15s %25s %25s ","octal (>)", string, string1);
 	print(compare(string, string1, strlen_f(string), strlen_f(string1)));
 
 	snprintf(string, 10, "char: %c", 's');
@@ -81,7 +101,7 @@ int main(void)
 
 	snprintf(string, 10, "char: %c & oct: %o", 's', 123);
 	my_snprintf(string1, 10, "char: %c & oct: %o", 's', 123);
-	printf("%15s %25s %25s ","symb & oct more", string, string1);
+	printf("%15s %25s %25s ","symb & oct (>)", string, string1);
 	print(compare(string, string1, strlen_f(string), strlen_f(string1)));
 
 	snprintf(string, 20, "char: %c & oct: %o", 's', 123);
@@ -91,7 +111,7 @@ int main(void)
 
 	snprintf(string, 10, "%s & %c","string" , 's');
 	my_snprintf(string1, 10, "%s & %c", "string" , 's');
-	printf("%15s %25s %25s ","str & symb more", string, string1);
+	printf("%15s %25s %25s ","str & symb (>)", string, string1);
 	print(compare(string, string1, strlen_f(string), strlen_f(string1)));
 
 	snprintf(string, 20, "%s & %c","string" , 's');
@@ -111,7 +131,7 @@ int main(void)
 
 	snprintf(string, 20, "%s str, %s str","first" , "second");
 	my_snprintf(string1, 20, "%s str, %s str","first" , "second");
-	printf("%15s %25s %25s ","2 strings", string, string1);
+	printf("%15s %25s %25s ","2 strings (>)", string, string1);
 	print(compare(string, string1, strlen_f(string), strlen_f(string1)));
 
 	snprintf(string, 20, "%o %o %o" , 1, 111, 11111);
@@ -123,4 +143,13 @@ int main(void)
 	my_snprintf(string1, 20, "text only");
 	printf("%15s %25s %25s ","nospecificators", string, string1);
 	print(compare(string, string1, strlen_f(string), strlen_f(string1)));
+
+	printf("\n------------------> Test function TO_OCTAL <------------------\n");
+	test_octal(10, "12", 3,"10");
+	test_octal(100, "144", 4, "100");
+	test_octal(90, "132", 4,"90");
+	test_octal(900, "1604", 5,"900");
+	test_octal(1234, "2322", 5, "1234");
+	test_octal(98765, "300715", 7, "98765");
+
 }
