@@ -144,10 +144,11 @@ int main(void)
 	printf("%15s %25s %25s ","nospecificators", string, string1);
 	print(compare(string, string1, strlen_f(string), strlen_f(string1)));
 
-	printf("\n------------------> Test function TO_OCTAL <------------------\n");
+	printf("\n%s------------------> Test function TO_OCTAL <------------------%s\n", PINK, RESET);
+	test_octal(1, "1", 2, "1");
 	test_octal(10, "12", 3,"10");
-	test_octal(100, "144", 4, "100");
 	test_octal(90, "132", 4,"90");
+	test_octal(100, "144", 4, "100");
 	test_octal(900, "1604", 5,"900");
 	test_octal(1234, "2322", 5, "1234");
 	test_octal(98765, "300715", 7, "98765");
