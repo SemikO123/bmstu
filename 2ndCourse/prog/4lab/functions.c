@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LENGTH 11
+#define LENGTH 5
 
 /*Функция strchr выполняет поиск первого вхождения символа symbol 
 * в строку string. Возвращает указатель на первое вхождение символа в строке.
