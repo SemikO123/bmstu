@@ -51,7 +51,7 @@ int main(void)
 	// printf("%s\n", to_octal(900));  //1604
 	// printf("%s\n\n", to_octal(90)); //132
 
-	char string[25], string1[25];
+	char string[50], string1[50];
 
 	printf("%s%15s %25s %25s %25s%s\n",PINK ,"","expected", "received", "TEST", RESET);
 
@@ -59,6 +59,13 @@ int main(void)
 	my_snprintf(string1, 4, "%o", 333);
 	printf("%15s %25s %25s ","only octal", string, string1);
 	print(compare(string, string1, strlen_f(string), strlen_f(string1)));
+
+	int r1 = snprintf(string, 5, "My %s\tis %s. I am %o years old%c. %s\n", "name" , "Irina", 19, '!', "");
+	int r2 = my_snprintf(string1, 5, "My %s\tis %s. I am %o years old%c. %s\n", "name" , "Irina", 19, '!', "");
+	// printf("%15s %25s %25s ","only octal", string, string1);
+	printf("%d %s\n", r1,string);
+	printf("%d %s\n",r2, string1);
+	// print(compare(string, string1, strlen_f(string), strlen_f(string1)));
 
 	snprintf(string, 15, "%o", -3234);
 	my_snprintf(string1, 15, "%o", -3234);
