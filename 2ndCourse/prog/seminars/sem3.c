@@ -4,9 +4,10 @@ char *pr(char *str)
 	char *pe = str;
 	while (*pe)
 		putchar(*pe++);
+	printf("~");
 	do
 	{
-		putchar(*pe--);
+		putchar(*--pe);
 	}
 	while (pe-str);
 	return pe;
