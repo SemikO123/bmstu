@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "trees.h"
 
 /*
 построить хеш-таблицу по указанным данным. Сравнить эффективность поиска в 
@@ -20,6 +21,9 @@
 количество сравнений при использовании различных структур данных. 
 */
 
+#define LIMIT_COLLISIONS 10
+#define ADD_SIZE 5
+
 #define RESET   "\033[0m"
 #define RED     "\033[1;31m"
 #define GREEN   "\033[1;32m"
@@ -27,224 +31,148 @@
 #define PINK    "\033[1;35m"
 #define WHITE   "\033[1;37m"
 
-typedef struct Tree
+typedef struct Hash_op
 {
+	struct Hash_op *next;
 	char data;
 	int count;
-	unsigned char height;
-	struct Tree *left;
-	struct Tree *right;
-}Tree;
+} Hash_op;
 
-Tree *add_new(char data)
+typedef struct Hash_Open_Table
 {
-	Tree *new = malloc(sizeof(Tree));
-	if (new)
-	{
-		new->data = data;
-		new->left = NULL;
-		new->right = NULL;
-		new->count = 1; 
-		new->height = 0;
-	}
-	return new;
+	int size;
+	int collisions;
+	Hash_op *tbl;
+} Hash_Open_Table;
+
+
+Hash_Open_Table *restucture_hashO(Hash_Open_Table *table);
+
+int hash(char ch, int key)
+{
+	return (int)ch % key;
 }
 
-void print_tree(Tree *head, int down, int lr)
+Hash_op *add_to_end(Hash_op *head, Hash_op *node, int *collis)
 {
-	if (head)
-	{
-		print_tree(head->right, down+1, 2);
-		for (int i = 0; i < down; i++)
-			printf("         ");
-		switch(lr)
-		{
-			case 0:
-				printf("➙");
-				break;
-			case 1:
-				printf("➘");
-				break;
-			case 2:
-				printf("➚");
-				break;
-		}
-		printf(" %c(%d)-%d\n",head->data, head->count, head->height);
-		print_tree(head->left, down+1, 1);
-	}
-}
-
-Tree *insert_element_bst(Tree *head, Tree *new)
-{
-
-	if (head == NULL)
-		return new;
-
-	if (new->data < head->data)
-		head->left = insert_element_bst(head->left, new);
-	else if (new->data > head->data)
-		head->right = insert_element_bst(head->right, new);
-
+	if (!head)
+		return node;
+	Hash_op *current = head;
+	for (; current->next; current = current->next)
+		;
+	current->next = node;
+	(*collis) = 1;
 	return head;
 }
 
-Tree *search_element(Tree *head, char data)
+Hash_Open_Table *add_new_hashO(Hash_Open_Table *table, char ch)
 {
-	if (head == NULL)
+	if (!table)
 		return NULL;
-	if (head->data == data)
-		return head;
-	else if (data < head->data)
-		return search_element(head->left, data);
+	while (table->collisions >= LIMIT_COLLISIONS)
+		table = restucture_hashO(table);
+	int num = hash(ch, table->size);
+	int collis = 0;
+	Hash_op *res = malloc(sizeof(Hash_op));
+	if (res)
+	{
+		res->next = NULL;
+		res->data = ch;
+	}
 	else
-		return search_element(head->right, data);
+		return NULL;
+	table->tbl[num].next = add_to_end(table->tbl[num].next, res, &collis);
+	table->collisions += collis;
+	return table;
 }
 
-unsigned char height(Tree* tr)
+Hash_op *new_hash_o_elem(int size)
 {
-	return tr ? tr->height : 0;
-}
-
-void get_height(Tree* tr)
-{
-	unsigned char left = height(tr->left);
-	unsigned char right = height(tr->right);
-	tr->height = (left>right ? left : right) + 1;
-}
-
-
-int baldiff(Tree* tr)
-{
-	return height(tr->right) - height(tr->left);
-}
-
-Tree* rotateright(Tree* tr) 
-{
-	Tree* p = tr->left;
-	tr->left = p->right;
-	p->right = tr;
-	get_height(tr);
-	get_height(p);
-	return p;
-}
-
-Tree* rotateleft(Tree* tr) 
-{
-	Tree* p = tr->right;
-	tr->right = p->left;
-	p->left = tr;
-	get_height(tr);
-	get_height(p);
-	return p;
-}
-
-Tree* balance(Tree* tr)
-{
-	get_height(tr);
-	if (baldiff(tr) == 2)
-	{
-		if (baldiff(tr->right) < 0)
-			tr->right = rotateright(tr->right);
-		return rotateleft(tr);
-	}
-	if (baldiff(tr) == -2)
-	{
-		if (baldiff(tr->left) > 0)
-			tr->left = rotateleft(tr->left);
-		return rotateright(tr);
-	}
-	return tr;
-}
-
-Tree *insert_element_avl(Tree *head, Tree *new)
-{
-
-	if (head == NULL)
-		return new;
-
-	if (new->data < head->data)
-		head->left = insert_element_avl(head->left, new);
-	else if (new->data > head->data)
-		head->right = insert_element_avl(head->right, new);
-
-	return balance(head);
-}
-
-Tree *from_file_to_avl(Tree *tree)
-{
-	FILE *f = fopen("in.txt", "r");
-	char ch = '.';
-	while (ch != '\n')
-	{
-		fscanf(f, "%c", &ch);
+	Hash_op *result = malloc(sizeof(Hash_op)*size);
+	if (!result)
+		for (int i = 0; i < size; i++)
 		{
-			if (ch != '\n')
-			{
-				Tree *find_elem = search_element(tree, ch);
-				if (find_elem)
-					(find_elem->count)++;
-				else
-					tree = insert_element_avl(tree, add_new(ch));
-			}
+			result[i].next = NULL;
+			result[i].data = '0';
+			result[i].count = 1;
 		}
-	}
-	fclose(f);
-	return tree;
+	return result;
 }
 
-Tree *from_file_to_bst(Tree *tree)
+Hash_Open_Table *new_open_hash(int size)
+{
+	Hash_Open_Table *table = malloc(sizeof(Hash_Open_Table));
+	table->size = size;
+	table->tbl = new_hash_o_elem(table->size);
+	table->collisions = 0;
+	return table;
+}
+
+Hash_Open_Table *restucture_hashO(Hash_Open_Table *table)
+{
+	if (!table)
+		return NULL;
+	printf("Реструктуризация хеш-таблицы. Размер увеличен на %d\n", ADD_SIZE);
+	Hash_Open_Table *new_table = new_open_hash(table->size + ADD_SIZE);
+	for (int i = 0; i < table->size; i++)
+		if (!table->tbl[i].next)
+		{
+			Hash_op *current = table->tbl[i].next;
+			for (; current; current = current->next)
+				new_table = add_new_hashO(new_table, current->data);
+		}
+	return new_table;
+}
+
+
+Hash_op *search_in_HashO(Hash_Open_Table *table, char ch)
+{
+	if (!table)
+		return NULL;
+	int num = hash(ch, table->size);
+	Hash_op *current = table->tbl[num].next;
+	for (; current; current = current->next)
+		if (current->data == ch)
+			return current;
+	return NULL;
+}
+
+Hash_Open_Table *from_file_to_hashO(Hash_Open_Table *table)
 {
 	FILE *f = fopen("in.txt", "r");
+	table = new_open_hash(5);
 	char ch = '.';
 	while (ch != '\n')
 	{
 		fscanf(f, "%c", &ch);
 		if (ch != '\n')
 		{
-			Tree *find_elem = search_element(tree, ch);
+			Hash_op *find_elem = search_in_HashO(table, ch);
 			if (find_elem)
 				(find_elem->count)++;
 			else
-				tree = insert_element_bst(tree, add_new(ch));
+				table = add_new_hashO(table, ch);
 		}
 	}
 	fclose(f);
-	return tree;
+	return table;
 }
 
-Tree *input_to_avl(Tree *tree, char *string)
+void print_open_hash(const Hash_Open_Table *table)
 {
-	int count = strlen(string);
-	for (int i = 0; i < count; i++)
-	{
-		Tree *find_elem = search_element(tree, string[i]);
-		if (find_elem)
-			(find_elem->count)++;
-		else
-			tree = insert_element_avl(tree, add_new(string[i]));
-	}
-	return tree;
-}
-
-Tree *input_to_bst(Tree *tree, char *string)
-{
-	int count = strlen(string);
-	for (int i = 0; i < count; i++)
-	{
-		Tree *find_elem = search_element(tree, string[i]);
-		if (find_elem)
-			(find_elem->count)++;
-		else
-			tree = insert_element_bst(tree, add_new(string[i]));
-	}
-	return tree;
-}
-
-void free_all(Tree *tree)
-{
-	free_all(tree->left);
-	free_all(tree->right);
-	free(tree);
+    if (table == NULL)
+        return;
+    printf("Collisions: %d\n", table->collisions);
+    for (int i = 0; i < table->size; i++)
+    {
+        if (table->tbl[i].next != NULL)
+        {
+            printf("%5d)", i);
+            for (Hash_op *cur = table->tbl[i].next; cur; cur = cur->next)
+                printf("%c ", cur->data);
+            puts("");
+        }
+    }
 }
 
 int main(void)
@@ -252,6 +180,7 @@ int main(void)
 	int menu = -1;
 	Tree *bst = NULL;
 	Tree *avl = NULL;
+	Hash_Open_Table *open_tbl = NULL;
 	do
 	{
 		printf("%sМЕНЮ:\n", YELLOW);
@@ -265,7 +194,8 @@ int main(void)
 		printf("(0) Завершение работы программы%s\n", RESET);
 		printf("Выберите пункт меню: ");
 		scanf("%d", &menu);
-
+		fflush(stdin);
+        getchar();
 		switch(menu)
 		{
 			case 1:
@@ -278,8 +208,12 @@ int main(void)
 				avl = from_file_to_avl(avl);
 				if (avl)
 					printf("%sAVL создано!%s\n", PINK, RESET);
-				// info_to_close(hash_close close_table);
+				open_tbl = from_file_to_hashO(open_tbl);
+				if (open_tbl)
+					printf("%sOpenHashTable создано!%s\n", PINK, RESET);
 				// info_to_open(hash_open open_table);
+				// fflush(stdin);
+    //         	getchar();
 				break;
 			}
 			case 2:
@@ -295,8 +229,9 @@ int main(void)
 				avl = input_to_avl(avl, string);
 				if (avl)
 					printf("%sAVL создано!%s\n", PINK, RESET);
-				// fflush(stdin);
-    //         	getchar();
+
+				fflush(stdin);
+            	getchar();
 				break;
 			case 3:
 				if (bst)
@@ -315,11 +250,49 @@ int main(void)
 				else
 					printf("%sAVL doesn't found!%s\n", PINK, RESET);
 
+				if (open_tbl)
+				{
+					printf("%sOpen Hash Table \n%s", RED, RESET);
+					print_open_hash(open_tbl);
+				}
+				else
+					printf("%sOHT doesn't found!%s\n", PINK, RESET);
+
 				break;
 			case 4:
+			{
+				printf("Введите элемент (букву), который нужно добавить: ");
+				char ch;
+				scanf("%c", &ch);
+				//bst
+				Tree *find_elem = search_element(bst, ch);
+				if (find_elem)
+					(find_elem->count)++;
+				else
+					bst = insert_element_bst(bst, add_new_tree(ch));
+				printf("%sЭлемент добавлен в BST!\n%s", PINK, RESET);
+				//avl
+				Tree *find_elem1 = search_element(avl, ch);
+				if (find_elem1)
+					(find_elem1->count)++;
+				else
+					avl = insert_element_avl(avl, add_new_tree(ch));
+				printf("%sЭлемент добавлен в AVL!\n%s", PINK, RESET);
 				break;
+			}
 			case 5:
+			{
+				printf("Введите элемент (букву), который нужно удалить: ");
+				char ch;
+				scanf("%c", &ch);
+				//bst
+				bst = delete_element_bst(bst, ch);
+				printf("%sЭлемент удален из BST!\n%s", PINK, RESET);
+				//avl
+				avl = delete_element_avl(avl, ch);
+				printf("%sЭлемент удален из AVL!\n%s", PINK, RESET);
 				break;
+			}
 			case 6:
 				break;
 			case 0:
