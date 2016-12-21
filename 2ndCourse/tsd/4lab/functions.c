@@ -142,7 +142,7 @@ void array(void)
 	printf("\n Вошедших заявок - %s%d%s\n",GREEN, count_in, RESET);
 	printf(" Вышедших заявок - %s%d%s\n",GREEN, N, RESET);
 	printf(" ОА проработал %s%d%s раз\n",GREEN, Nwork, RESET);
-	//printf(" Простой ОА - %s%.2f%s",GREEN, idle, RESET);
+	printf(" Простой ОА - %s%.2f%s",GREEN, idle, RESET);
 
 	float aver_in = (t1+t2)/2;
 	float aver_out = (t3+t4)/2;
@@ -297,7 +297,7 @@ void list(void)
 	printf("\n Вошедших заявок - %s%d%s\n",GREEN, count_in, RESET);
 	printf(" Вышедших заявок - %s%d%s\n",GREEN, N, RESET);
 	printf(" ОА проработал %s%d%s раз\n",GREEN, Nwork, RESET);
-	//printf(" Простой ОА - %s%.2f%s",GREEN, idle, RESET);
+	printf(" Простой ОА - %s%.2f%s",GREEN, idle, RESET);
 
 	float aver_in = (t1+t2)/2;
 	float aver_out = (t3+t4)/2;
