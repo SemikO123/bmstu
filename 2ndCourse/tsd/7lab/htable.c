@@ -150,7 +150,7 @@ void free_table_cl(hmap_cl *table)
 
 hmap_cl *restruct_cl(hmap_cl *table)
 {
-    //printf("%sРеструктурирование таблицы\n%s", PINK, RESET);
+    printf("%sРеструктурирование таблицы %d -> %d\n%s", PINK,(int)table->size,(int)table->size+START_SIZE, RESET);
     hmap_cl *new = new_hmap_cl(table->size + START_SIZE);
     for (int i = 0; i < table->size; i++)
     {

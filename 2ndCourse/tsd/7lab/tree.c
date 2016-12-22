@@ -13,7 +13,6 @@ unsigned long long int tick(void)
 
 unsigned int hash(int info, int key)
 {
-    //printf("info = %d key = %d\n", info, key);
     return (unsigned int) info % key;
 }
 
@@ -153,12 +152,34 @@ tree_node *bst_insert(tree_node *tree, tree_node *node, int *count)
         free(node);
     }
     else if (node->info < tree->info)
-        tree->left = insert(tree->left, node);
+        tree->left = bst_insert(tree->left, node, count);
     else
-        tree->right = insert(tree->right, node);
+        tree->right = bst_insert(tree->right, node, count);
     //puts("insert done");
     return tree;
 }
+
+// tree_node *bst_insert(tree_node *tree, tree_node *node, int *count)
+// {
+//     node_count++;
+//     if (tree == NULL)
+//         return node;
+//     (*count)++;
+//     // if (node->info == tree->info)
+//     // {
+//     //     tree->count++;
+//     //     free(node);
+//     // }
+
+//     if (node->info - tree->info < 0)
+//         tree->left = bst_insert(tree->left, node, count);
+//     else
+//         tree->right = bst_insert(tree->right, node, count);
+//     //puts("insert done");
+//     return tree;
+// }
+
+
 
 tree_node *read_tree_from_file(FILE *f)
 {
