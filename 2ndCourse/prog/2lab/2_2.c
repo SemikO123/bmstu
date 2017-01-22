@@ -99,7 +99,6 @@ int main(int argc, char **argv)
 						default:
 							printf("\nPut 1(use filter) or 0(don't use filter) as fourth parameter of launch\n");
 							break;
-
 					}
 				}
 			}
