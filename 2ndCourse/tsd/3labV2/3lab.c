@@ -2,6 +2,15 @@
 #include <string.h>
 #define N 50
 #define MAXCOUNT 45
+
+/*
+KOSTILI:
+1. Mne bilo lenivo zaparivat'sya s adresom tak chto on vvoditsya 
+bez probelov.
+2. 
+
+*/
+
 /*
 Создать таблицу, содержащую не менее 40-ка записей (тип – запись 
 с вариантами). Упорядочить данные в ней по возрастанию ключей, 
@@ -46,8 +55,9 @@ typedef struct
 	} annex;
 } apartment_t;
 
-int load_table(FILE *in, apartment_t *apartments, int *count)
+int load_table(apartment_t *apartments, int *count, char *filename)
 {
+	FILE *in = fopen(filename, "r");
 	while (fscanf(in, "%s", apartments[*count].adress) != EOF && *count < MAXCOUNT)
 	{
 		apartments[*count].number = *count;
@@ -86,6 +96,7 @@ int load_table(FILE *in, apartment_t *apartments, int *count)
 		}
 		(*count)++;
 	}
+	fclose(in);
 	return 0;
 }
 
@@ -131,15 +142,176 @@ void task(apartment_t *ap, int count)
 			}
 }
 
+int thatfloor(int floor, int floors)
+{
+	if (floor == 1)
+		return 1;
+	else if (floor == floors)
+		return 3;
+	else if (floor > 1 && floor < floors)
+		return 2;
+	else
+		return -1;
+}
+
+int reload(apartment_t *ap, int count, char *filename)
+{
+	FILE *table = fopen(filename, "w");
+
+	for (int i = 0; i < count; i++)
+	{
+		switch(thatfloor(ap[i].floor, ap[i].floors))
+		{
+			case 1:
+				fprintf(table,"%s %d %d %d %d %d %d\n", ap[i].adress, ap[i].area, ap[i].rooms, ap[i].floor, ap[i].floors, ap[i].permeter, ap[i].annex.first.isbasement);
+				break;
+			case 2:
+				fprintf(table, "%s %d %d %d %d %d %d ", ap[i].adress, ap[i].area, ap[i].rooms, ap[i].floor, ap[i].floors, ap[i].permeter, ap[i].annex.notfirstorlast.isbalcony);
+				if (ap[i].annex.notfirstorlast.isbalcony == 1)
+					fprintf(table, "%d",ap[i].annex.notfirstorlast.balarea);
+				fprintf(table, "\n");
+				break;
+			case 3:
+				fprintf(table, "%s %d %d %d %d %d %d ", ap[i].adress, ap[i].area, ap[i].rooms, ap[i].floor, ap[i].floors, ap[i].permeter, ap[i].annex.last.isattic);
+				if (ap[i].annex.last.isattic == 1)
+					fprintf(table, "%d %d", ap[i].annex.last.attarea, ap[i].annex.last.isprivate);
+				fprintf(table, "\n");
+				break;
+			default:
+				break;
+		}
+	}
+	fclose(table);
+	return 0;
+}
+
+int add_record(apartment_t *ap, int *count, char *filename)
+{
+	printf("#### ADD NEW RECORD ####\n");
+	ap[*count].number = *count;
+	char string[N];
+	printf("Input adress: ");
+	scanf("%s", string);
+	if (strlen(string) < N && strlen(string) > 1)
+		strcpy(ap[*count].adress, string);
+	else
+		return -1; // incorrect input
+
+	printf("Input area of apartment:  ");
+	int num;
+	scanf("%d", &num);
+	if (num > 0)
+		ap[*count].area = num;
+	else
+		return -1;
+
+	printf("Input number of rooms:    ");
+	scanf("%d", &num);
+	if (num > 0)
+		ap[*count].rooms = num;
+	else
+		return -1;
+
+	printf("Input floor of apartment: ");
+	scanf("%d", &num);
+	if (num > 0)
+		ap[*count].floor = num;
+	else
+		return -1;
+
+	printf("How many floors in house: ");
+	scanf("%d", &num);
+	if (num > 0)
+		ap[*count].floors = num;
+	else
+		return -1;	
+
+	printf("Price per meter (rub):    ");
+	scanf("%d", &num);
+	if (num > 0)
+		ap[*count].permeter = num;
+	else
+		return -1;
+
+	int fl = thatfloor(ap[*count].floor, ap[*count].floors);
+	switch(fl)
+	{
+		case 1:
+			printf("Basement there? yes(1) or no(0): ");
+			scanf("%d", &num);
+			if (num == 1 || num == 0)
+				ap[*count].annex.first.isbasement = num;
+			else
+				return -1;
+			break;
+		case 2:
+			printf("Balcony there? yes(1) or no(0): ");
+			scanf("%d", &num);
+			if (num == 1 || num == 0)
+			{
+				ap[*count].annex.notfirstorlast.isbalcony = num;
+				if (num == 1)
+				{
+					printf("Balcony area: ");
+					scanf("%d", &num);
+					if (num > 0)
+						ap[*count].annex.notfirstorlast.balarea = num;
+					else
+						return -1;
+				}
+				else
+					ap[*count].annex.notfirstorlast.balarea = -1;
+			}
+			else
+				return -1;
+			break;
+		case 3:
+			printf("Attic there? yes(1) or no(0): ");
+			scanf("%d", &num);
+			if (num == 1 || num == 0)
+			{
+				ap[*count].annex.last.isattic = num;
+				if (num == 1)
+				{
+					printf("Attic area: ");
+					scanf("%d", &num);
+					if (num > 0)
+						ap[*count].annex.last.attarea = num;
+					else
+						return -1;
+					printf("Can it be privatized? yes(1) or no(0): ");
+					scanf("%d", &num);
+					if (num == 0 || num == 1)
+						ap[*count].annex.last.isprivate = num;
+					else
+						return -1;
+				}
+				else
+				{
+					ap[*count].annex.last.attarea = -1;
+					ap[*count].annex.last.isprivate = -1;
+				}
+			}
+			else
+				return -1;
+
+			break;
+	}
+
+	(*count)++;
+	printf("RECORD ADDED!\n\n");
+	reload(ap, *count, filename);
+	return 0;
+
+}
+
 int main(void)
 {
 	char filename[] = "table.txt";
-	FILE *table = fopen(filename, "r");
-	if (table)
-	{
+
 		apartment_t apartments[MAXCOUNT];
 		int count_of_records = 0;
-		if (load_table(table, apartments, &count_of_records) == -1)
+		if (load_table(apartments, &count_of_records, filename) == -1)
 		{
 			printf("Incorrect load of table!\n");
 			return -1;
@@ -174,6 +346,10 @@ int main(void)
 				case 3:
 					break;
 				case 4:
+					if (count_of_records < MAXCOUNT)
+						add_record(apartments, &count_of_records, filename);
+					else
+						puts("Can't add new record!\n");
 					break;
 				case 5:
 					break;
@@ -181,12 +357,9 @@ int main(void)
 					task(apartments, count_of_records);
 					break;
 				case 0:
-					fclose(table);
+					//fclose(table);
 					break;
 			}
 		}
 		while (menu != 0);
-	}
-	else
-		puts("File doesn'f found!\n");
 }

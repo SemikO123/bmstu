@@ -1,8 +1,8 @@
 st.Tverskaya 70 3 5 8 530000 1 8
-st.Aviamotornaya 80 3 4 5 150000 0 
+st.Aviamotornaya 80 3 4 5 150000 0
 hwy.Dmitrovskoe 40 1 8 8 125000 1 10 1
 pr.Tankoviy 71 2 7 7 225000 1 15 0
-st.Zoologicheskaya 120 3 12 14 400000 0 
+st.Zoologicheskaya 120 3 12 14 400000 0
 st.Iskry 52 2 1 10 240000 1
 st.Noyabrskaya 20 1 1 5 50000 0
 st.Chkalova 20 1 5 5 80000 1 10 1
@@ -11,13 +11,7 @@ st.Institutskaya 64 2 5 5 33000 1 8 1
 v.Presnenstiy 72 3 5 8 322000 1 10
 st.Efremova 174 3 7 7 500000 0 
 hwy.Lomonosovskiy 183 4 9 9 400000 1 30 1
-st.Zarechnaya 21 1 1 6 108000 1
-st.Sovetskaya 34 1 2 5 93000 0 
+st.Zarechnaya 21 1 1 6 108000 1 
+st.Sovetskaya 34 1 2 5 93000 0
 hwy.Dudec 69 3 9 9 228000 1 5 1
-st.Novoslobodskaya 56 2 5 5 230000 1 12 14
-st.Pokrovka 59 2 5 5 540000 1 12 1
-per.Bolshevikov 45 2 1 5 235000 1
-st.Leskova 34 1 1 8 210000 0
-hwy.Leningradskoe 88 2 5 19 315000 1 15
-st.Krasnoselskaya 66 1 8 8 195000 0 
-pr.Tishinskiy 45 2 1 9 173000 0
+
