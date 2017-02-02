@@ -55,13 +55,23 @@ typedef struct
 	} annex;
 } apartment_t;
 
-int load_table(apartment_t *apartments, int *count, char *filename)
+typedef struct 
+{
+	int number;
+	int area;
+}key_t;
+
+int load_table(apartment_t *apartments, key_t *keys, int *count, char *filename)
 {
 	FILE *in = fopen(filename, "r");
 	while (fscanf(in, "%s", apartments[*count].adress) != EOF && *count < MAXCOUNT)
 	{
 		apartments[*count].number = *count;
-		fscanf(in, "%d", &apartments[*count].area);
+		keys[*count].number = *count;
+		int area;
+		fscanf(in, "%d", &area);
+		apartments[*count].area = area;
+		keys[*count].area = area;
 		fscanf(in, "%d", &apartments[*count].rooms);
 		fscanf(in, "%d", &apartments[*count].floor);
 		fscanf(in, "%d", &apartments[*count].floors);
@@ -185,10 +195,11 @@ int reload(apartment_t *ap, int count, char *filename)
 	return 0;
 }
 
-int add_record(apartment_t *ap, int *count, char *filename)
+int add_record(apartment_t *ap, key_t *keys, int *count, char *filename)
 {
 	printf("#### ADD NEW RECORD ####\n");
 	ap[*count].number = *count;
+	keys[*count].number = *count;
 	char string[N];
 	printf("Input adress: ");
 	scanf("%s", string);
@@ -201,7 +212,10 @@ int add_record(apartment_t *ap, int *count, char *filename)
 	int num;
 	scanf("%d", &num);
 	if (num > 0)
+	{
 		ap[*count].area = num;
+		keys[*count].area = num;
+	}
 	else
 		return -1;
 
@@ -302,7 +316,59 @@ int add_record(apartment_t *ap, int *count, char *filename)
 	printf("RECORD ADDED!\n\n");
 	reload(ap, *count, filename);
 	return 0;
+}
 
+void del_record(apartment_t *ap, key_t *keys, int num, int *count, char *filename)
+{
+	for (int i = num-1; i < *count; i++)
+	{
+		ap[i] = ap[i+1];
+		ap[i].number = i;
+		keys[i] = keys[i+1];
+		keys[i].number = i;
+	}
+	(*count)--;
+	printf("RECORD DELETED!\n\n");
+	reload(ap, *count, filename);
+}
+
+unsigned long long int tick(void)
+{
+	unsigned long long int time = 0;
+	__asm__ __volatile__ ("rdtsc" : "=A" (time));
+	return time;
+}
+
+unsigned long long int bubblesort_a(apartment_t *ap, int *count, char *filename)
+{
+	unsigned long long int time1, time2;
+	time1 = tick();
+	for (int i = 0; i < *count; i++)
+		for (int j = *count - 1; j > i; j--)
+			if (ap[j].area < ap[j-1].area)
+			{
+				apartment_t tmp = ap[j];
+				ap[j] = ap[j-1];
+				ap[j-1] = tmp;
+			}
+	time2 = tick();
+	return time2-time1;
+}
+
+unsigned long long int bubblesort_k(key_t *keys, int *count, char *filename)
+{
+	unsigned long long int time1, time2;
+	time1 = tick();
+	for (int i = 0; i < *count; i++)
+		for (int j = *count - 1; j > i; j--)
+			if (keys[j].area < keys[j-1].area)
+			{
+				key_t tmp = keys[j];
+				keys[j] = keys[j-1];
+				keys[j-1] = tmp;
+			}
+	time2 = tick();
+	return time2-time1;
 }
 
 int main(void)
@@ -310,22 +376,25 @@ int main(void)
 	char filename[] = "table.txt";
 
 		apartment_t apartments[MAXCOUNT];
+		key_t keys[MAXCOUNT];
 		int count_of_records = 0;
-		if (load_table(apartments, &count_of_records, filename) == -1)
+		if (load_table(apartments, keys, &count_of_records, filename) == -1)
 		{
 			printf("Incorrect load of table!\n");
 			return -1;
 		}
 		int menu;
+		unsigned long long int bub = 0, quick = 0, bub_keys = 0, quick_keys = 0;
 		// -------- MENU ----------- // 
 		do
 		{
 			printf("(1) Print table\n");
 			printf("(2) Sort table\n");
 			printf("(3) Sort table with the key\n");
-			printf("(4) Add record\n");
-			printf("(5) Delete record\n");
-			printf("(6) Task\n");
+			printf("(4) Info about sorting\n");
+			printf("(5) Add record\n");
+			printf("(6) Delete record\n");
+			printf("(7) Task\n");
 			printf("(0) EXIT\n");
 			printf("\nChoose number: ");
 			scanf("%d", &menu);
@@ -342,18 +411,55 @@ int main(void)
 					break;
 				}
 				case 2:
+					bub = bubblesort_a(apartments, &count_of_records, filename);
+					printf("############ APARTMENTS ############\n");
+					for (int i = 0; i < count_of_records; i++)
+					{
+						print_table(apartments, i); ///////// !!!!!!!
+						puts("####################################\n");
+					}
+					count_of_records = 0;
+					load_table(apartments, keys, &count_of_records, filename);
 					break;
 				case 3:
+					bub_keys = bubblesort_k(keys, &count_of_records, filename);
+					printf("############ APARTMENTS ############\n");
+					for (int i = 0; i < count_of_records; i++)
+					{
+						print_table(apartments, keys[i].number);
+						puts("####################################\n");
+					}
+					count_of_records = 0;
+					load_table(apartments, keys, &count_of_records, filename);
 					break;
 				case 4:
+					printf("####### SORTING TIME #######\n");
+					if (bub)
+						printf("[Bubble sort] TABLE: %lld\n", bub);
+					if (quick)
+						printf("[Quick sort]  TABLE: %lld\n", quick);
+					if (bub_keys)
+						printf("[Bubble sort]  KEYS: %lld\n", bub_keys);
+					if (quick_keys)
+						printf("[Quick sort]   KEYS: %lld\n", quick_keys);
+					printf("\n");
+					break;
+				case 5:
 					if (count_of_records < MAXCOUNT)
-						add_record(apartments, &count_of_records, filename);
+						add_record(apartments, keys, &count_of_records, filename);
 					else
 						puts("Can't add new record!\n");
 					break;
-				case 5:
-					break;
 				case 6:
+					printf("Input number of deleting record: ");
+					int num;
+					scanf("%d",&num);
+					if (num <= count_of_records)
+						del_record(apartments, keys, num, &count_of_records, filename);
+					else
+						puts("Can't delete record!");
+					break;
+				case 7:
 					task(apartments, count_of_records);
 					break;
 				case 0:
