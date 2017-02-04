@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
 #define N 50
 #define MAXCOUNT 45
 
@@ -339,10 +341,8 @@ unsigned long long int tick(void)
 	return time;
 }
 
-unsigned long long int bubblesort_a(apartment_t *ap, int *count, char *filename)
+void bubblesort_a(apartment_t *ap, int *count, char *filename)
 {
-	unsigned long long int time1, time2;
-	time1 = tick();
 	for (int i = 0; i < *count; i++)
 		for (int j = *count - 1; j > i; j--)
 			if (ap[j].area < ap[j-1].area)
@@ -351,8 +351,6 @@ unsigned long long int bubblesort_a(apartment_t *ap, int *count, char *filename)
 				ap[j] = ap[j-1];
 				ap[j-1] = tmp;
 			}
-	time2 = tick();
-	return time2-time1;
 }
 
 unsigned long long int bubblesort_k(key_t *keys, int *count, char *filename)
@@ -371,6 +369,16 @@ unsigned long long int bubblesort_k(key_t *keys, int *count, char *filename)
 	return time2-time1;
 }
 
+int comp(const apartment_t *i, const apartment_t *j)
+{
+	return i->area-j->area;
+}
+
+int comp_k(const key_t *i, const key_t *j)
+{
+	return i->area-j->area;
+}
+
 int main(void)
 {
 	char filename[] = "table.txt";
@@ -384,6 +392,7 @@ int main(void)
 			return -1;
 		}
 		int menu;
+		unsigned long long int time1;
 		unsigned long long int bub = 0, quick = 0, bub_keys = 0, quick_keys = 0;
 		// -------- MENU ----------- // 
 		do
@@ -411,7 +420,12 @@ int main(void)
 					break;
 				}
 				case 2:
-					bub = bubblesort_a(apartments, &count_of_records, filename);
+					time1 = tick();
+					bubblesort_a(apartments, &count_of_records, filename);
+					bub = tick() - time1;
+					time1 = tick();
+					qsort(apartments, count_of_records+1, sizeof(apartment_t), (int(*) (const void *, const void *)) comp);
+					quick = tick() - time1;
 					printf("############ APARTMENTS ############\n");
 					for (int i = 0; i < count_of_records; i++)
 					{
@@ -422,7 +436,12 @@ int main(void)
 					load_table(apartments, keys, &count_of_records, filename);
 					break;
 				case 3:
-					bub_keys = bubblesort_k(keys, &count_of_records, filename);
+					time1 = tick();
+					bubblesort_k(keys, &count_of_records, filename);
+					bub_keys = tick() - time1;
+					time1 = tick();
+					qsort(keys, count_of_records+1, sizeof(key_t), (int(*) (const void *, const void *)) comp_k);
+					quick_keys = tick() - time1;
 					printf("############ APARTMENTS ############\n");
 					for (int i = 0; i < count_of_records; i++)
 					{
