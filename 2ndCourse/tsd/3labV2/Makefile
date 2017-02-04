@@ -9,11 +9,14 @@ ifeq ($(mode), release)
 	FLAGS += -DNDEBUG -g0
 endif
 
-3lab.o : 3lab.c 
+3lab.o : 3lab.c functions.h structurs.h
 	$(CC) $(FLAGS) -c 3lab.c 
 
-3lab.exe : 3lab.o 
-	$(CC) -o 3lab.exe 3lab.o 
+functions.o : functions.c functions.h structurs.h
+	$(CC) $(FLAGS) -c functions.c
+
+3lab.exe : 3lab.o functions.o
+	$(CC) -o 3lab.exe 3lab.o functions.o
 
 
 st: 3lab.exe
