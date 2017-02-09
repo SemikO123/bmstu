@@ -55,7 +55,7 @@ void print_table(apartment_t *ap, int count)
 	if (ap[count].area)
 	{
 		printf("   Apartment №%d.\n", ap[count].number+1);
-		printf("Adress:          %s\n", ap[count].adress);
+		printf("Address:          %s\n", ap[count].adress);
 		printf("Area (meters):   %d\n", ap[count].area);
 		printf("Rooms:           %d\n", ap[count].rooms);
 		printf("Floor:           %d/%d\n", ap[count].floor, ap[count].floors);

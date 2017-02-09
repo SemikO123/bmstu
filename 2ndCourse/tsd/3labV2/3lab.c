@@ -2,11 +2,23 @@
 #include "functions.h"
 
 /*
-КОСТЫЛИ И БАГИ:
-1. Адреса вводятся без пробелов ибо мне лень запариваться.
-2. Сортировка пузырьком не войдовая
+КОСТЫЛИ,БАГИ,НЕДОФИКСЫ:
+0. Это говнокод, я не отрицаю, но это лучше чем ничего, так что критику 
+	воспринимаю негативно, за исключением ну оооочень конструктивной.
+1. Адреса вводятся без пробелов
+2. Сортировка пузырьком не войдовая - их две идентичных под разные типы(sorry)
 3. На утечки не чекала
 4. На превышение количества записей не чекала, но должно работать
+5. В структурах все поля - инты, так считать удобнее. Но Силантьева может
+	прикопаться к площади и стоит исправить на float/double
+6. 7 строка кода - два сайзофа, под убунтой там 88 и 8, если под вин это не
+	так, то в отчете в конце надо чутка подфиксить.
+7. Время для отчета измерено тиками это 6-ти значные числа. (функция ломы).
+	В отчете тоже 6-ти значные числа - на скрине и в таблице. В таблице
+	стоит исправить, только подогнать бы под процентное соотношение.
+8. По файловой структуре: table.txt тот который юзает программа, прописан
+	в коде константой, tablebackup.txt на случай если что то сломается.
+9. Удалить комментарии в коде и перечитать пункт 0.
 */
 
 /*
@@ -31,6 +43,7 @@ int main(void)
 
 		apartment_t apartments[MAXCOUNT];
 		key_t keys[MAXCOUNT];
+		printf("key %ld, apartment %ld\n", sizeof(apartment_t), sizeof(key_t));
 		int count_of_records = 0;
 		if (load_table(apartments, keys, &count_of_records, filename) == -1)
 		{
@@ -66,9 +79,12 @@ int main(void)
 					break;
 				}
 				case 2:
+					// 
 					time1 = tick();
 					bubblesort_a(apartments, &count_of_records);
 					bub = tick() - time1;
+					count_of_records = 0;
+					load_table(apartments, keys, &count_of_records, filename);
 					time1 = tick();
 					qsort(apartments, count_of_records+1, sizeof(apartment_t), (int(*) (const void *, const void *)) comp);
 					quick = tick() - time1;
@@ -85,6 +101,8 @@ int main(void)
 					time1 = tick();
 					bubblesort_k(keys, &count_of_records);
 					bub_keys = tick() - time1;
+					count_of_records = 0;
+					load_table(apartments, keys, &count_of_records, filename);
 					time1 = tick();
 					qsort(keys, count_of_records+1, sizeof(key_t), (int(*) (const void *, const void *)) comp_k);
 					quick_keys = tick() - time1;
